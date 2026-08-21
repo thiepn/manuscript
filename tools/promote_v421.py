@@ -6,8 +6,11 @@ from pathlib import Path
 
 VERSION='4.2.1'
 RC6_BLOB='3dede116014ae19de2f23f6deabefae139ffa18f'
-STABLE_SHA256='5896562604d4985624ad260fbca9e8cf6f76819c8975837c96be1200a92e31db'
+LEGACY_STABLE_SHA256='5896562604d4985624ad260fbca9e8cf6f76819c8975837c96be1200a92e31db'
+STABLE_SHA256='6d3900a2c973dc2d36099fc596b77b21268c11fdc1cff46bba7e66f08d83aba6'
 PATCH_NAME='v421-release.patch.gz.b64'
+THEME_LOADER_OLD="state.theme = p.theme === 'dark' ? 'dark' : p.theme === 'light' ? 'light' : systemDark ? 'dark' : 'light';"
+THEME_LOADER_NEW="state.theme = MANUSCRIPT_THEMES.some(theme => theme.id === p.theme) ? p.theme : systemDark ? 'dark' : 'light';"
 CONTRACTS={
  'scroll':'screen-scoped-scroll-ownership-v2',
  'mobile_viewport':'dvh-keyboard-safe-v3',
@@ -20,6 +23,18 @@ CONTRACTS={
 def sha256(b:bytes)->str:return hashlib.sha256(b).hexdigest()
 def git_blob(b:bytes)->str:
  h=hashlib.sha1();h.update(f'blob {len(b)}\0'.encode());h.update(b);return h.hexdigest()
+
+def apply_release_fixes(stable:bytes)->bytes:
+ text=stable.decode('utf-8')
+ old_count=text.count(THEME_LOADER_OLD)
+ new_count=text.count(THEME_LOADER_NEW)
+ if old_count==1:
+  text=text.replace(THEME_LOADER_OLD,THEME_LOADER_NEW,1)
+ elif old_count==0 and new_count==1:
+  pass
+ else:
+  raise SystemExit(f'Unexpected interface-theme loader state: old={old_count}, new={new_count}')
+ return text.encode('utf-8')
 
 def validate(text:str)->list[dict]:
  checks=[]
@@ -46,6 +61,7 @@ def validate(text:str)->list[dict]:
  add('legacy viewport contract absent', 'fit-width-safe-area-pinch-v2' not in text)
  add('manual main-stage arithmetic absent', re.search(r'\.main-stage\s*\{[^}]*height\s*:\s*calc\([^}]*--appbar-h',text,re.S) is None)
  add('six neutral paper themes', text.count('--paper:#fffefa;--paper-muted:#f8f5ec;')>=6)
+ add('all curated themes persist', text.count(THEME_LOADER_NEW)==1 and THEME_LOADER_OLD not in text)
  add('HTML doctype', text.lstrip().lower().startswith('<!doctype html'))
  add('APP_VERSION', 'exports.APP_VERSION' not in text or re.search(r'exports\.APP_VERSION\s*=\s*["\']4\.2\.1["\']',text) is not None)
  return checks
@@ -60,6 +76,8 @@ def promote(source:Path,output:Path,manifest:Path,patch_file:Path):
  original=source.read_bytes(); source_sha=sha256(original); source_blob=git_blob(original)
  if source_sha==STABLE_SHA256:
   stable=original
+ elif source_sha==LEGACY_STABLE_SHA256:
+  stable=apply_release_fixes(original)
  elif source_blob==RC6_BLOB:
   if not shutil.which('git'):raise SystemExit('git is required')
   raw=gzip.decompress(base64.b64decode(patch_bytes(patch_file)))
@@ -68,7 +86,7 @@ def promote(source:Path,output:Path,manifest:Path,patch_file:Path):
    subprocess.run(['git','init','-q'],cwd=work,check=True)
    subprocess.run(['git','apply','--check','release.patch'],cwd=work,check=True)
    subprocess.run(['git','apply','release.patch'],cwd=work,check=True)
-   stable=(work/'index.html').read_bytes()
+   stable=apply_release_fixes((work/'index.html').read_bytes())
  else:
   raise SystemExit(f'Unsupported source: git blob {source_blob}, sha256 {source_sha}')
 
