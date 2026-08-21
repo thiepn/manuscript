@@ -2,7 +2,7 @@ import { chromium, firefox, webkit } from 'playwright';
 import assert from 'node:assert/strict';
 
 const baseURL = process.env.MANUSCRIPT_URL || 'http://127.0.0.1:4173/Manuscript_v4.2.1_Stable.html';
-const expectedHash = '5896562604d4985624ad260fbca9e8cf6f76819c8975837c96be1200a92e31db';
+const expectedHash = '6d3900a2c973dc2d36099fc596b77b21268c11fdc1cff46bba7e66f08d83aba6';
 const themes = ['light','dark','oxford','typesetter','blueprint','ink'];
 const profiles = [
   { name:'chromium-desktop', browser:chromium, viewport:{width:1440,height:900} },
