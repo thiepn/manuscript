@@ -77,7 +77,10 @@ jobs:
           echo "$EXPECTED_STABLE_SHA256  index.html" | sha256sum --check --strict
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html "$STABLE_MANIFEST"
+          # Only the production HTML is promotion state. The manifest contains a
+          # generation timestamp and is intentionally kept as a CI/release artifact
+          # so repeated certification is idempotent and cannot create a commit loop.
+          git add index.html
           if git diff --cached --quiet; then
             echo "Stable bytes already committed."
           else
