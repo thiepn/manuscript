@@ -47,13 +47,12 @@ jobs:
 
       - name: Install certification dependencies
         run: |
-          python -m pip install --disable-pip-version-check tinycss2 playwright
           npm install --no-save playwright
           npx playwright install --with-deps chromium firefox webkit
 
       - name: Generate Stable artifact
         run: |
-          python tools/manuscript_v4_2_1_final_production_integration_stable_promotion.py index.html --no-browser-smoke
+          python tools/promote_v421.py index.html
           echo "$EXPECTED_STABLE_SHA256  $STABLE_FILE" | sha256sum --check --strict
 
       - name: Serve Stable artifact
@@ -113,8 +112,7 @@ jobs:
 
       - name: Regenerate release manifest from merged bytes
         run: |
-          python -m pip install --disable-pip-version-check tinycss2 playwright
-          python tools/manuscript_v4_2_1_final_production_integration_stable_promotion.py index.html --no-browser-smoke -o "$STABLE_FILE"
+          python tools/promote_v421.py index.html --output "$STABLE_FILE" --manifest "$STABLE_MANIFEST"
           echo "$EXPECTED_STABLE_SHA256  $STABLE_FILE" | sha256sum --check --strict
 
       - name: Create GitHub Stable release and tag
