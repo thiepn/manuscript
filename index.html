@@ -12,18 +12,18 @@
   <meta name="manuscript-backup-contract" content="sha256-verified-v1">
   <meta name="manuscript-recovery-contract" content="previewed-transactional-v1">
   <meta name="manuscript-persistence-format" content="split-v2">
-  <meta name="manuscript-release-channel" content="release-candidate">
+  <meta name="manuscript-release-channel" content="stable">
   <meta name="manuscript-release-gate-contract" content="rc-audit-suite-v1">
   <meta name="manuscript-navigation-contract" content="clear-workflow-navigation-v2">
-  <meta name="manuscript-mobile-viewport-contract" content="fit-width-safe-area-pinch-v2">
-  <meta name="manuscript-scroll-contract" content="explicit-scroll-ownership-v1">
+  <meta name="manuscript-mobile-viewport-contract" content="dvh-keyboard-safe-v3">
+  <meta name="manuscript-scroll-contract" content="screen-scoped-scroll-ownership-v2">
   <meta name="manuscript-feature-freeze" content="true">
   <meta name="manuscript-security-contract" content="adversarial-sanitization-v1">
   <meta name="manuscript-browser-contract" content="capability-evidence-v1">
   <meta name="manuscript-deployment-contract" content="relative-sw-github-pages-v1">
   <meta name="manuscript-concurrency-contract" content="lock-and-conflict-guard-v1">
-  <meta name="description" content="Manuscript v4.0.0 RC6 — Phase 9 scroll-ownership regression repair. Feature-frozen local-first professional Markdown publishing with explicit viewport containment, reliable vertical scrolling, verified persistence/backups, publishing preflight, academic references, Book Projects, security hardening, and offline deployment.">
-  <title>Manuscript v4.0.0 RC6 — Scroll Ownership Fixes</title>
+  <meta name="description" content="Manuscript v4.2.1 Stable — local-first Markdown publishing studio with screen-scoped scrolling, six curated interface themes, consolidated editorial visual architecture, deterministic pagination, and publication-ready export.">
+  <title>Manuscript v4.2.1 Stable</title>
   <style>:root {
   --app-bg:#f1f2f0;--workspace-bg:#e7e8e5;--surface-1:#fff;--surface-2:#f8f8f6;--surface-3:#f1f2ef;
   --surface-hover:#eceeeb;--surface-active:#e4e9ed;--paper:#fffefb;--paper-muted:#fbfaf5;
@@ -38,7 +38,7 @@
   --serif:"Source Serif 4",Georgia,"Times New Roman",serif;--mono:"JetBrains Mono","SFMono-Regular",Consolas,"Liberation Mono",monospace;
   --appbar-h:52px;--toolbar-h:44px;--status-h:26px;--rail-w:48px;--inspector-w:304px;--leftpanel-w:260px;
 }
-html[data-theme="dark"] {
+html[data-theme-mode="dark"] {
   --app-bg:#171918;--workspace-bg:#111312;--surface-1:#202321;--surface-2:#262927;--surface-3:#2d302e;
   --surface-hover:#303431;--surface-active:#334049;--paper:#fffefb;--paper-muted:#f7f5ee;
   --text-primary:#eff1ed;--text-secondary:#b7bbb5;--text-muted:#888d87;--text-disabled:#5f635f;--text-on-accent:#10202a;
@@ -49,13 +49,13 @@ html[data-theme="dark"] {
   --selection:rgba(142,177,199,.22);--focus-ring:rgba(142,177,199,.38);--overlay:rgba(0,0,0,.68);
   --shadow-page:0 1px 2px rgba(0,0,0,.40),0 12px 30px rgba(0,0,0,.35);--shadow-menu:0 4px 18px rgba(0,0,0,.42);
 }
-*{box-sizing:border-box}html,body{height:100%;margin:0}body{font-family:var(--ui-font);font-size:14px;line-height:1.45;background:var(--app-bg);color:var(--text-primary);overflow:hidden}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%}body{font-family:var(--ui-font);font-size:14px;line-height:1.45;background:var(--app-bg);color:var(--text-primary);overflow-x:hidden;overflow-y:auto}
 button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.46}a{color:var(--accent)}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}.noscript{padding:24px;background:var(--danger-bg);color:var(--danger)}
 .hidden{display:none!important}.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
 .skip-link{position:fixed;left:12px;top:8px;z-index:10000;transform:translateY(-160%);background:var(--surface-1);color:var(--text-primary);border:2px solid var(--accent);border-radius:6px;padding:8px 12px;font-weight:650;text-decoration:none;box-shadow:var(--shadow-menu)}.skip-link:focus{transform:translateY(0)}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
-.app{height:100%;display:flex;flex-direction:column;background:var(--app-bg)}
+.app{display:flex;flex-direction:column;background:var(--app-bg)}
 .appbar{height:var(--appbar-h);flex:0 0 var(--appbar-h);display:flex;align-items:center;gap:10px;padding:0 12px;background:var(--surface-1);border-bottom:1px solid var(--border-default);z-index:30}
 .brand{display:flex;align-items:center;gap:9px;min-width:0}.brand-mark{width:28px;height:28px;border:1.5px solid var(--accent);border-radius:4px;display:grid;place-items:center;color:var(--accent);font-family:var(--serif);font-weight:700;font-size:17px}.brand-name{font-family:var(--serif);font-size:20px;font-weight:650;letter-spacing:-.015em}.brand-sub{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.07em;white-space:nowrap}
 .appbar-spacer{flex:1}.doc-title-wrap{display:flex;align-items:center;gap:8px;min-width:0}.doc-title{border:0;background:transparent;font-weight:600;font-size:14px;width:min(300px,30vw);padding:5px 7px;border-radius:5px}.doc-title:hover,.doc-title:focus{background:var(--surface-2)}.save-state{font-size:11px;color:var(--text-muted);white-space:nowrap}.save-state.warn{color:var(--warning)}.save-state.error{color:var(--danger)}
@@ -67,7 +67,7 @@ button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}bu
 .main-stage{min-width:0;min-height:0;display:flex;flex-direction:column}.editor-preview{flex:1;min-height:0;display:grid;grid-template-columns:minmax(320px,1fr) 5px minmax(420px,1.2fr)}.editor-preview.editor-only{grid-template-columns:1fr}.editor-preview.preview-only{grid-template-columns:1fr}.splitter{background:var(--border-default);cursor:col-resize;position:relative}.splitter:hover,.splitter.dragging{background:var(--accent)}
 .editor-pane,.preview-pane{min-width:0;min-height:0;position:relative;display:flex;flex-direction:column;background:var(--surface-1)}.editor-pane{border-right:1px solid var(--border-default)}.pane-head{height:34px;flex:0 0 34px;display:flex;align-items:center;padding:0 10px;border-bottom:1px solid var(--divider);background:var(--surface-2);font-size:11px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.05em}.pane-head-spacer{flex:1}.pane-head button{height:26px}
 .editor-shell{position:relative;flex:1;min-height:0;background:var(--surface-1)}.editor-highlight,.markdown-editor{position:absolute;inset:0;margin:0;padding:26px 24px 70px;border:0;overflow:auto;white-space:pre-wrap;word-break:break-word;font-family:var(--mono);font-size:15px;line-height:24px;tab-size:2}.editor-highlight{pointer-events:none;color:var(--text-primary);background:var(--surface-1);z-index:1}.markdown-editor{resize:none;background:transparent;color:transparent;caret-color:var(--text-primary);z-index:2;outline:0}.markdown-editor::selection{background:var(--selection);color:transparent}.markdown-editor::placeholder{color:var(--text-muted)}
-.syn-heading{color:var(--accent);font-weight:650}.syn-mark{color:var(--text-muted)}.syn-code{color:#7b4f74}.syn-link{color:#426f91}.syn-quote{color:#61764a}.syn-comment{color:var(--text-muted);font-style:italic}html[data-theme="dark"] .syn-code{color:#c49abb}html[data-theme="dark"] .syn-link{color:#8eb9d4}html[data-theme="dark"] .syn-quote{color:#a5bd84}
+.syn-heading{color:var(--accent);font-weight:650}.syn-mark{color:var(--text-muted)}.syn-code{color:#7b4f74}.syn-link{color:#426f91}.syn-quote{color:#61764a}.syn-comment{color:var(--text-muted);font-style:italic}html[data-theme-mode="dark"] .syn-code{color:#c49abb}html[data-theme-mode="dark"] .syn-link{color:#8eb9d4}html[data-theme-mode="dark"] .syn-quote{color:#a5bd84}
 .preview-toolbar{height:34px;flex:0 0 34px;display:flex;align-items:center;gap:5px;padding:0 8px;background:var(--surface-2);border-bottom:1px solid var(--divider)}.segmented{display:inline-flex;border:1px solid var(--border-default);border-radius:5px;overflow:hidden}.segmented button{height:26px;border:0;border-right:1px solid var(--border-default);background:var(--surface-1);padding:0 9px;font-size:11px;color:var(--text-secondary)}.segmented button:last-child{border-right:0}.segmented button.active{background:var(--accent-soft);color:var(--accent);font-weight:650}.zoom-label{font-size:11px;color:var(--text-secondary);min-width:38px;text-align:center}
 .preview-scroll{flex:1;min-height:0;overflow:auto;background:var(--workspace-bg);position:relative}.flow-wrap{max-width:850px;margin:24px auto;padding:0 24px 80px}.flow-document{background:var(--paper);color:#222;padding:58px 64px;min-height:600px;border:1px solid rgba(0,0,0,.08);box-shadow:var(--shadow-page)}
 .pages-wrap{display:flex;flex-direction:column;align-items:center;gap:24px;padding:28px 40px 90px;transform-origin:top center}.page{position:relative;background:var(--doc-paper,#fffefb);color:var(--doc-text,#222);width:var(--page-w,210mm);height:var(--page-h,297mm);border:1px solid rgba(0,0,0,.08);box-shadow:var(--shadow-page);overflow:hidden;flex:0 0 auto}.page-inner{position:absolute;top:var(--margin-top,20mm);right:var(--margin-right,20mm);bottom:var(--margin-bottom,20mm);left:var(--margin-left,20mm);overflow:hidden}.page-content{height:100%;overflow:hidden}.page-header,.page-footer{position:absolute;left:var(--margin-left,20mm);right:var(--margin-right,20mm);font-family:var(--doc-sans,Arial,sans-serif);font-size:8.5pt;color:#666;display:grid;grid-template-columns:1fr 1fr 1fr;align-items:center}.page-header{top:7mm}.page-footer{bottom:7mm}.page-header span:nth-child(2),.page-footer span:nth-child(2){text-align:center}.page-header span:nth-child(3),.page-footer span:nth-child(3){text-align:right}.page-num-label{font-size:11px;color:var(--text-muted);text-align:center;margin-top:-16px}.page.warning{outline:1px solid var(--warning)}
@@ -91,7 +91,7 @@ button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}bu
 html[data-doc-theme="dark"] .doc{color:#e9ebe7}.doc-dark{background:#191b1a!important;color:#e9ebe7!important}.doc-dark .doc h1,.doc-dark .doc h2,.doc-dark .doc h3,.doc-dark .doc h4,.doc-dark .doc h5,.doc-dark .doc h6{color:#f3f5f0}.doc-dark .doc code,.doc-dark .doc pre{background:#222522;color:#e9ebe7;border-color:#414541}.doc-dark .doc th{background:#252825}.doc-dark .doc th,.doc-dark .doc td{border-color:#4a4f4a}
 @media (max-width:1199px){:root{--inspector-w:280px}.brand-sub{display:none}.doc-title{width:220px}.workspace.left-open{grid-template-columns:var(--rail-w) minmax(0,1fr) var(--inspector-w)}.left-panel{position:fixed;left:var(--rail-w);top:calc(var(--appbar-h) + var(--toolbar-h));bottom:var(--status-h);width:var(--leftpanel-w);z-index:50;box-shadow:var(--shadow-menu)}.feature-grid{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:900px){body{overflow:hidden}.appbar{padding:0 7px}.brand-name{display:none}.doc-title{width:min(210px,36vw)}.workspace,.workspace.left-open{grid-template-columns:var(--rail-w) minmax(0,1fr)}.inspector{position:fixed;right:0;top:calc(var(--appbar-h) + var(--toolbar-h));bottom:var(--status-h);width:min(360px,92vw);z-index:55;box-shadow:var(--shadow-menu)}.inspector.mobile-hidden{display:none}.editor-preview{grid-template-columns:1fr}.editor-pane.mobile-hidden,.preview-pane.mobile-hidden,.splitter{display:none}.hero{grid-template-columns:1fr;padding-top:48px}.hero h1{font-size:42px}.hero-mock{min-height:330px}.mock-body{height:292px}.landing-nav .nav-links .nav-link{display:none}}
-@media (max-width:767px){:root{--appbar-h:48px;--toolbar-h:42px;--status-h:0px}.appbar{gap:4px}.brand-mark{width:28px}.doc-title{width:38vw}.save-state,.appbar .desktop-only{display:none}.toolbar{padding:0 5px}.toolbar .optional{display:none}.workspace,.workspace.left-open{display:block}.activity-rail{display:none}.main-stage{height:calc(100vh - var(--appbar-h) - var(--toolbar-h) - 56px)}.statusbar{display:none}.left-panel,.inspector{top:var(--appbar-h);bottom:56px;left:0;right:0;width:100%;max-width:none}.left-panel{z-index:70}.inspector{z-index:70}.mobile-panel-back{display:inline-grid}.pane-head{height:32px}.editor-highlight,.markdown-editor{padding:18px 16px 84px;font-size:14px;line-height:22px}.preview-scroll{padding-bottom:24px}.flow-wrap{padding:0 10px 60px;margin:12px auto}.flow-document{padding:38px 26px;box-shadow:none}.pages-wrap{padding:14px 10px 70px;gap:16px;align-items:flex-start}.page{transform-origin:top left}.mobile-bottom-nav{position:fixed;display:grid;grid-template-columns:repeat(5,1fr);left:0;right:0;bottom:0;height:56px;background:var(--surface-1);border-top:1px solid var(--border-default);z-index:80}.mobile-nav-btn{border:0;background:transparent;color:var(--text-secondary);font-size:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;position:relative}.mobile-nav-btn.active{color:var(--accent)}.mobile-nav-btn.active:before{content:"";position:absolute;top:-1px;width:28px;height:2px;background:var(--accent)}.mobile-nav-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8}.toast-stack{bottom:68px;right:8px}.hero{padding:36px 20px 56px}.hero h1{font-size:35px}.hero p{font-size:16px}.hero-actions{flex-direction:column;align-items:stretch}.hero-mock{display:none}.landing-nav{padding:0 18px}.landing-section{padding:50px 20px}.feature-grid{grid-template-columns:1fr}.home-content{padding:26px 16px 80px}.quick-actions{flex-direction:column}.recent-grid,.template-grid,.preset-grid{grid-template-columns:1fr 1fr}.template-thumb,.recent-thumb{height:170px}.modal-layer{padding:0;align-items:end}.modal,.modal.wide{width:100%;max-height:92vh;border-radius:10px 10px 0 0}.modal-body{padding:16px}.command-palette{align-self:start;margin-top:5vh;width:96vw;border-radius:10px}.appbar .btn.primary{height:32px;padding:0 10px}.appbar .btn.primary .btn-label{display:none}}
+@media (max-width:767px){:root{--appbar-h:48px;--toolbar-h:42px;--status-h:0px}.appbar{gap:4px}.brand-mark{width:28px}.doc-title{width:38vw}.save-state,.appbar .desktop-only{display:none}.toolbar{padding:0 5px}.toolbar .optional{display:none}.workspace,.workspace.left-open{display:block}.activity-rail{display:none}.main-stage{min-height:0;}.statusbar{display:none}.left-panel,.inspector{top:var(--appbar-h);bottom:56px;left:0;right:0;width:100%;max-width:none}.left-panel{z-index:70}.inspector{z-index:70}.mobile-panel-back{display:inline-grid}.pane-head{height:32px}.editor-highlight,.markdown-editor{padding:18px 16px 84px;font-size:14px;line-height:22px}.preview-scroll{padding-bottom:24px}.flow-wrap{padding:0 10px 60px;margin:12px auto}.flow-document{padding:38px 26px;box-shadow:none}.pages-wrap{padding:14px 10px 70px;gap:16px;align-items:flex-start}.page{transform-origin:top left}.mobile-bottom-nav{position:fixed;display:grid;grid-template-columns:repeat(5,1fr);left:0;right:0;bottom:0;height:56px;background:var(--surface-1);border-top:1px solid var(--border-default);z-index:80}.mobile-nav-btn{border:0;background:transparent;color:var(--text-secondary);font-size:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;position:relative}.mobile-nav-btn.active{color:var(--accent)}.mobile-nav-btn.active:before{content:"";position:absolute;top:-1px;width:28px;height:2px;background:var(--accent)}.mobile-nav-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8}.toast-stack{bottom:68px;right:8px}.hero{padding:36px 20px 56px}.hero h1{font-size:35px}.hero p{font-size:16px}.hero-actions{flex-direction:column;align-items:stretch}.hero-mock{display:none}.landing-nav{padding:0 18px}.landing-section{padding:50px 20px}.feature-grid{grid-template-columns:1fr}.home-content{padding:26px 16px 80px}.quick-actions{flex-direction:column}.recent-grid,.template-grid,.preset-grid{grid-template-columns:1fr 1fr}.template-thumb,.recent-thumb{height:170px}.modal-layer{padding:0;align-items:end}.modal,.modal.wide{width:100%;max-height:92vh;border-radius:10px 10px 0 0}.modal-body{padding:16px}.command-palette{align-self:start;margin-top:5vh;width:96vw;border-radius:10px}.appbar .btn.primary{height:32px;padding:0 10px}.appbar .btn.primary .btn-label{display:none}}
 @media (max-width:480px){.recent-grid,.template-grid,.preset-grid{grid-template-columns:1fr}.doc-title{width:42vw}.toolbar .tool-select{min-width:95px}.brand-mark{display:none}}
 /* ========================================================================== 
    MANUSCRIPT — MODULAR TYPESCRIPT EDITION
@@ -159,20 +159,11 @@ html[data-doc-theme="dark"] .doc{color:#e9ebe7}.doc-dark{background:#191b1a!impo
   --serif:"Source Serif 4","Iowan Old Style","Palatino Linotype",Georgia,"Times New Roman",serif;
   --mono:"JetBrains Mono","SFMono-Regular","Cascadia Code",Consolas,"Liberation Mono",monospace;
 
-  --radius-xs:5px;
-  --radius-sm:8px;
-  --radius-md:12px;
-  --radius-lg:18px;
-  --radius-xl:26px;
-  --appbar-h:58px;
-  --toolbar-h:50px;
-  --status-h:30px;
-  --rail-w:58px;
-  --inspector-w:320px;
-  --leftpanel-w:280px;
+  --radius-xs:3px;--radius-sm:5px;--radius-md:6px;--radius-lg:8px;--radius-xl:10px;
+  --appbar-h:48px;--toolbar-h:42px;--status-h:24px;--rail-w:46px;--inspector-w:292px;--leftpanel-w:264px;
 }
 
-html[data-theme="dark"] {
+html[data-theme-mode="dark"] {
   --app-bg:#111715;
   --workspace-bg:#0a100e;
   --surface-1:#18201d;
@@ -299,7 +290,7 @@ button { -webkit-tap-highlight-color:transparent; }
   border-bottom:1px solid color-mix(in srgb,var(--border-default) 82%,transparent);
   box-shadow:0 1px 0 rgba(255,255,255,.32),0 7px 24px rgba(23,32,29,.055);
 }
-html[data-theme="dark"] .appbar { box-shadow:0 1px 0 rgba(255,255,255,.025),0 12px 30px rgba(0,0,0,.22); }
+html[data-theme-mode="dark"] .appbar { box-shadow:0 1px 0 rgba(255,255,255,.025),0 12px 30px rgba(0,0,0,.22); }
 .doc-title-wrap {
   min-width:0;
   padding:3px 5px;
@@ -352,7 +343,7 @@ html[data-theme="dark"] .appbar { box-shadow:0 1px 0 rgba(255,255,255,.025),0 12
   box-shadow:var(--shadow-xs),inset 0 1px 0 rgba(255,255,255,.52);
   font-weight:650;
 }
-html[data-theme="dark"] .btn { box-shadow:var(--shadow-xs),inset 0 1px 0 rgba(255,255,255,.045); }
+html[data-theme-mode="dark"] .btn { box-shadow:var(--shadow-xs),inset 0 1px 0 rgba(255,255,255,.045); }
 .btn:hover:not(:disabled) { transform:translateY(-1px);background:var(--surface-hover);border-color:var(--border-strong);box-shadow:var(--shadow-sm); }
 .btn:active:not(:disabled) { transform:translateY(0) scale(.985);box-shadow:var(--shadow-xs); }
 .btn.primary {
@@ -388,7 +379,7 @@ html[data-theme="dark"] .btn { box-shadow:var(--shadow-xs),inset 0 1px 0 rgba(25
   color:var(--text-secondary);
 }
 .icon-btn:hover:not(:disabled) { transform:translateY(-1px);background:var(--surface-hover);color:var(--text-primary);box-shadow:var(--shadow-xs); }
-.icon-btn:active:not(:disabled) { transform:scale(.94); }
+.icon-btn:active:not(:disabled) { transform:none; }
 .icon-btn.active { color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent-border) 55%,transparent); }
 .icon-btn svg,.btn svg { width:17px;height:17px;stroke-width:1.85; }
 
@@ -398,7 +389,7 @@ html[data-theme="dark"] .btn { box-shadow:var(--shadow-xs),inset 0 1px 0 rgba(25
   padding:7px 12px;
   gap:3px;
   background:color-mix(in srgb,var(--surface-2) 88%,transparent);
-  backdrop-filter:blur(12px);
+  backdrop-filter:none;
   border-bottom:1px solid var(--border-default);
   box-shadow:0 3px 14px rgba(23,32,29,.035);
 }
@@ -408,60 +399,45 @@ html[data-theme="dark"] .btn { box-shadow:var(--shadow-xs),inset 0 1px 0 rgba(25
   border-radius:8px;
 }
 .toolbar .icon-btn:hover { color:var(--accent); }
-.tool-sep { height:24px;margin:0 6px;background:linear-gradient(transparent,var(--divider),transparent); }
+.tool-sep { height:24px;margin:0 6px;background:var(--divider); }
 .tool-select {
   height:34px;
   border-radius:8px;
   border-color:var(--border-default);
   background:var(--surface-1);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.55);
+  box-shadow:none;
   font-weight:600;
 }
 
 /* Workspace composition */
-.workspace {
-  position:relative;
-  background:
-    radial-gradient(circle at 86% 14%,rgba(var(--accent-rgb),.09),transparent 29%),
-    linear-gradient(135deg,rgba(255,255,255,.18),transparent 32%),
-    var(--workspace-bg);
-}
-.workspace::before {
-  content:"";
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  opacity:.22;
-  background-image:radial-gradient(circle,var(--border-strong) .55px,transparent .7px);
-  background-size:18px 18px;
-  mask-image:linear-gradient(to right,transparent 35%,#000 72%);
-}
+.workspace { position:relative; background:var(--workspace-bg); }
+.workspace::before { content:none; display:none; }
 .activity-rail,.left-panel,.inspector,.main-stage { position:relative;z-index:1; }
 .activity-rail {
   padding:8px 0;
   gap:4px;
   background:color-mix(in srgb,var(--surface-1) 88%,transparent);
-  backdrop-filter:blur(18px);
+  backdrop-filter:none;
   border-right:1px solid var(--border-default);
-  box-shadow:4px 0 18px rgba(23,32,29,.045);
+  box-shadow:none;
 }
 .rail-btn {
   width:44px;
   height:44px;
   border-radius:11px;
 }
-.rail-btn:hover { transform:translateX(2px); }
+.rail-btn:hover { transform:none; }
 .rail-btn.active {
   background:linear-gradient(135deg,var(--accent-soft),color-mix(in srgb,var(--accent-soft) 75%,var(--surface-1)));
   box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent-border) 58%,transparent),0 6px 16px rgba(var(--accent-rgb),.12);
 }
-.rail-btn.active::before { left:-7px;top:9px;bottom:9px;width:3px;border-radius:0 3px 3px 0;box-shadow:0 0 12px rgba(var(--accent-rgb),.5); }
+.rail-btn.active::before { left:-7px;top:9px;bottom:9px;width:3px;border-radius:0 3px 3px 0;box-shadow:none; }
 .left-panel,.inspector {
   background:color-mix(in srgb,var(--surface-1) 96%,transparent);
-  backdrop-filter:blur(18px);
+  backdrop-filter:none;
 }
-.left-panel { box-shadow:7px 0 24px rgba(23,32,29,.045); }
-.inspector { box-shadow:-7px 0 24px rgba(23,32,29,.045); }
+.left-panel { box-shadow:none; }
+.inspector { box-shadow:none; }
 .panel-head {
   height:48px;
   padding:0 14px 0 18px;
@@ -513,9 +489,9 @@ html[data-theme="dark"] .btn { box-shadow:var(--shadow-xs),inset 0 1px 0 rgba(25
 .syn-code { color:#875773; }
 .syn-link { color:#39708a; }
 .syn-quote { color:#557a52; }
-html[data-theme="dark"] .syn-code { color:#d6a7c4; }
-html[data-theme="dark"] .syn-link { color:#9ccbdc; }
-html[data-theme="dark"] .syn-quote { color:#a9c995; }
+html[data-theme-mode="dark"] .syn-code { color:#d6a7c4; }
+html[data-theme-mode="dark"] .syn-link { color:#9ccbdc; }
+html[data-theme-mode="dark"] .syn-quote { color:#a9c995; }
 .preview-toolbar { gap:7px; }
 .segmented {
   border:1px solid var(--border-default);
@@ -1057,7 +1033,7 @@ html[data-theme="dark"] .syn-quote { color:#a9c995; }
   .doc-title { height:34px;font-size:13px;width:42vw; }
   .toolbar { padding:7px 6px; }
   .toolbar .icon-btn { width:34px;min-width:34px; }
-  .main-stage { height:calc(100dvh - var(--appbar-h) - var(--toolbar-h) - 62px); }
+  .main-stage {min-height:0;}
   .left-panel,.inspector { top:var(--appbar-h);bottom:62px;border-radius:0; }
   .editor-highlight,.markdown-editor { padding:24px 18px 100px 28px;font-size:14px;line-height:23px; }
   .editor-shell { background:var(--surface-1); }
@@ -1120,7 +1096,7 @@ html[data-theme="dark"] .syn-quote { color:#a9c995; }
 /* High-contrast preferences and motion safety */
 @media (prefers-contrast:more) {
   :root { --border-default:#98a9a2;--border-strong:#657a71; }
-  html[data-theme="dark"] { --border-default:#60776d;--border-strong:#8da39a; }
+  html[data-theme-mode="dark"] { --border-default:#60776d;--border-strong:#8da39a; }
   .btn,.input,.select,.number,.color-input,.feature,.recent-card,.template-card,.preset-card { border-width:1.5px; }
   .text-secondary,.search-context { color:var(--text-secondary); }
 }
@@ -1204,7 +1180,7 @@ html[data-theme="dark"] .syn-quote { color:#a9c995; }
 .phase6-help-card{padding:13px 14px;border:1px solid var(--accent-border);border-radius:10px;background:var(--accent-soft);margin-bottom:15px}.phase6-help-card strong{display:block;margin-bottom:4px}.phase6-help-card p{margin:0;font-size:11px;line-height:1.5;color:var(--text-secondary)}
 .inspector-section:not([open]) .section-body{display:none}.section-head{list-style:none}.section-head::-webkit-details-marker{display:none}
 @media(min-width:901px) and (max-width:1280px){.workflow-nav{display:flex;margin-left:4px}.workflow-nav button{padding-inline:7px;font-size:10.5px}.appbar .brand.desktop-only{display:none}.appbar [data-command="undo"],.appbar [data-command="redo"],.appbar [data-action="history"],.appbar [data-action="command"]{display:none}.doc-title{width:min(220px,24vw)}}@media(max-width:900px){.workflow-nav{display:none}}
-@media(max-width:767px){.onboarding-steps{grid-template-columns:1fr 1fr}.critical-alert-button{height:34px;padding-inline:8px}.main-stage{height:calc(var(--app-visual-height,100dvh) - var(--appbar-h) - var(--toolbar-h) - 62px)}.input,.select,.number,.doc-title{font-size:16px}}
+@media(max-width:767px){.onboarding-steps{grid-template-columns:1fr 1fr}.critical-alert-button{height:34px;padding-inline:8px}.main-stage{min-height:0;}.input,.select,.number,.doc-title{font-size:16px}}
 @media(max-width:480px){.onboarding-steps{grid-template-columns:1fr}.shortcut-row{grid-template-columns:1fr}.shortcut-row kbd{justify-self:start}}
 @media(pointer:coarse){.btn:not(.small),.icon-btn,.rail-btn,.inspector-tab,.segmented button,.status-action,.workflow-nav button{min-height:44px}.icon-btn{min-width:44px}.toolbar .icon-btn{min-width:42px;min-height:42px}.mobile-nav-btn{min-height:48px}.list-item{min-height:46px}.check-row{min-height:44px}.command-item{min-height:46px}.cm-manuscript-completion-item{min-height:44px}}
 @media(min-resolution:2dppx) and (max-width:900px){.input,.select,.number{font-size:16px}}
@@ -1409,14 +1385,14 @@ html,body,#app{width:100%;max-width:100%;overflow-x:hidden}
 @media(max-width:767px){
   html,body,#app{width:100%!important;max-width:100%!important;overflow-x:hidden!important;overscroll-behavior-x:none}
   body{position:relative}
-  .app{width:100%;max-width:100%;height:var(--app-visual-height,100dvh);overflow:hidden}
+  .app{width:100%;max-width:100%;min-height:0;overflow:hidden}
   .appbar,.toolbar,.workspace,.main-stage,.editor-preview,.editor-pane,.preview-pane,.preview-toolbar,.preview-scroll,.flow-wrap,.flow-document{box-sizing:border-box;min-width:0;max-width:100%;width:100%}
   .appbar{overflow:hidden}
   .appbar .doc-title-wrap{flex:1 1 0;min-width:0;max-width:none}
   .appbar .doc-title{width:100%!important;min-width:0;max-width:none}
   .appbar .appbar-spacer{flex:0 0 0}
   .appbar>.icon-btn,.appbar>.btn,.appbar>.critical-alert-button{flex:0 0 auto}
-  .main-stage{height:calc(var(--app-visual-height,100dvh) - var(--appbar-h) - var(--toolbar-h) - 62px)!important;overflow:hidden}
+  .main-stage{min-height:0;overflow:hidden}
   .editor-preview,.editor-pane,.preview-pane{overflow:hidden}
   .preview-toolbar{overflow-x:hidden;overflow-y:hidden;scrollbar-width:none}
   .preview-toolbar::-webkit-scrollbar{display:none}
@@ -1467,9 +1443,7 @@ html,body,#app{width:100%;max-width:100%;overflow-x:hidden}
     padding-left:max(6px,env(safe-area-inset-left,0px))!important;
     padding-right:max(6px,env(safe-area-inset-right,0px))!important;
   }
-  .main-stage{
-    height:calc(var(--app-visual-height,100dvh) - var(--appbar-h) - var(--toolbar-h) - var(--mobile-nav-h))!important;
-  }
+  .main-stage{min-height:0!important;}
   .left-panel,.inspector{bottom:var(--mobile-nav-h)!important}
   .mobile-bottom-nav{
     height:var(--mobile-nav-h)!important;
@@ -1498,85 +1472,482 @@ html,body,#app{width:100%;max-width:100%;overflow-x:hidden}
 }
 </style>
 
-<style id="rc6-scroll-ownership-fixes">
-/* Manuscript v4.0.0 RC6 — explicit vertical scroll ownership.
-   The document body stays locked to prevent viewport drift; every screen that
-   needs to move owns a real, height-constrained vertical scroller. */
-html,body{
-  height:100%;
+<style id="v401-scroll-architecture">
+/* Manuscript v4.0.1 — screen-scoped scroll ownership.
+   Non-editor screens use ordinary browser/document scrolling.
+   The editor alone owns a bounded viewport and explicit nested scroll surfaces. */
+
+html{
   min-height:100%;
-  overflow:hidden;
+  overflow-x:hidden;
+}
+body{
+  min-height:100dvh;
+  overflow-x:hidden;
+  overflow-y:auto;
+  overscroll-behavior-y:auto;
 }
 #app{
   display:block;
   width:100%;
+  min-width:0;
+  min-height:100dvh;
+  max-width:100%;
+  overflow:visible;
+}
+
+/* Landing, Home/Library, and other full-page screens scroll naturally. */
+html:not([data-screen="editor"]) body{
+  height:auto;
+  min-height:100dvh;
+  overflow-x:hidden;
+  overflow-y:auto;
+}
+html:not([data-screen="editor"]) #app,
+html:not([data-screen="editor"]) .home-screen,
+html:not([data-screen="editor"]) .landing-screen,
+html:not([data-screen="editor"]) .settings-screen{
+  width:100%;
+  height:auto;
+  max-height:none;
+  min-height:100dvh;
+  overflow:visible;
+}
+
+/* The editor is the only viewport-locked application surface. */
+html[data-screen="editor"],
+html[data-screen="editor"] body{
+  width:100%;
   height:100%;
+  min-height:0;
+  overflow:hidden;
+  overscroll-behavior:none;
+}
+html[data-screen="editor"] #app{
+  width:100%;
+  height:100dvh;
   min-width:0;
   min-height:0;
   max-width:100%;
   overflow:hidden;
 }
-.home-screen,.landing-screen,.settings-screen{
+html[data-screen="editor"] .app{
   width:100%;
-  height:100%;
-  max-height:100%;
-  min-height:0;
-  overflow-x:hidden;
-  overflow-y:auto;
-  overscroll-behavior-x:none;
-  overscroll-behavior-y:auto;
-  -webkit-overflow-scrolling:touch;
-  touch-action:pan-y pinch-zoom;
-}
-.app{
-  width:100%;
-  height:100%;
+  height:var(--editor-visual-height,100dvh);
   min-width:0;
   min-height:0;
+  max-width:100%;
   overflow:hidden;
+  display:flex;
+  flex-direction:column;
 }
-.workspace,.main-stage,.editor-preview,.editor-pane,.preview-pane,
-.left-panel,.inspector{
+
+/* Every ancestor above an editor scroll surface must be shrinkable. */
+html[data-screen="editor"] .workspace,
+html[data-screen="editor"] .main-stage,
+html[data-screen="editor"] .editor-preview,
+html[data-screen="editor"] .editor-pane,
+html[data-screen="editor"] .preview-pane,
+html[data-screen="editor"] .left-panel,
+html[data-screen="editor"] .inspector,
+html[data-screen="editor"] .native-editor-host,
+html[data-screen="editor"] .codemirror-editor,
+html[data-screen="editor"] .codemirror-editor-mount,
+.modal,
+.modal-body{
   min-height:0;
 }
-.preview-scroll,.panel-body,.inspector-content,.modal-body,
-.codemirror-editor .cm-scroller{
+
+/* Exactly defined editor/modal vertical scroll owners. */
+html[data-screen="editor"] .preview-scroll,
+html[data-screen="editor"] .panel-body,
+html[data-screen="editor"] .inspector-content,
+html[data-screen="editor"] .codemirror-editor .cm-scroller,
+.modal-body{
   min-height:0;
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
-  touch-action:pan-y pinch-zoom;
 }
-.preview-scroll,.panel-body,.inspector-content{
-  overscroll-behavior-y:contain;
-}
+html[data-screen="editor"] .preview-scroll,
+html[data-screen="editor"] .panel-body,
+html[data-screen="editor"] .inspector-content,
 .modal-body{
   overscroll-behavior-y:contain;
+  touch-action:pan-y pinch-zoom;
 }
-@media(max-width:767px){
-  #app{
-    height:var(--app-visual-height,100dvh);
-    max-height:var(--app-visual-height,100dvh);
-  }
-  .home-screen,.landing-screen,.settings-screen{
-    height:var(--app-visual-height,100dvh);
-    max-height:var(--app-visual-height,100dvh);
-  }
-  .app{
-    height:var(--app-visual-height,100dvh)!important;
-    max-height:var(--app-visual-height,100dvh);
-  }
-  .preview-scroll,.panel-body,.inspector-content,.modal-body{
-    touch-action:pan-y pinch-zoom;
-  }
-}
-/* Do not let a full-screen overlay inherit screen scrolling. */
+
+/* Full-screen overlays stay fixed; their body is the scroll owner. */
 .modal-layer{
   overflow:hidden;
 }
-.modal-body{
-  touch-action:pan-y pinch-zoom;
+
+/* Do not reintroduce hand-computed editor heights on mobile. */
+@media(max-width:767px){
+  html[data-screen="editor"] #app{
+    height:100dvh;
+    max-height:100dvh;
+  }
+  html[data-screen="editor"] .app{
+    height:var(--editor-visual-height,100dvh)!important;
+    max-height:var(--editor-visual-height,100dvh);
+  }
+  html[data-screen="editor"] .main-stage{
+    min-height:0!important;
+  }
 }
 </style>
+
+<style id="v411-theme-system">
+/* Manuscript v4.1.1 — certified curated interface themes.
+   The project/document style model remains independent. Paper stays neutral so
+   switching application chrome does not restyle authored document content. */
+html[data-theme="light"]{
+  color-scheme:light;--app-bg:#ecebe6;--workspace-bg:#e1e0da;
+  --surface-1:#fffdf8;--surface-2:#f8f7f2;--surface-3:#f0efe9;--surface-4:#e8e7e0;
+  --surface-hover:#efeee8;--surface-active:#e5e8e5;--surface-glass:rgba(255,253,248,.92);
+  --paper:#fffefa;--paper-muted:#f8f5ec;
+  --text-primary:#222320;--text-secondary:#666861;--text-muted:#74766f;--text-disabled:#aaa9a2;--text-on-accent:#fff;
+  --border-subtle:#e3e1da;--border-default:#d1d0c9;--border-strong:#b7b7af;--divider:#dddbd4;
+  --accent:#315c63;--accent-hover:#294f55;--accent-pressed:#234449;--accent-soft:#e2eceb;--accent-border:#9fb9b8;--accent-rgb:49,92,99;
+  --accent-2:#9a6646;--accent-2-soft:#f1e5dc;
+  --selection:rgba(49,92,99,.20);--focus-ring:rgba(49,92,99,.32);--overlay:rgba(27,29,26,.56);
+  --shadow-xs:0 1px 2px rgba(34,35,32,.05);--shadow-sm:0 5px 18px rgba(34,35,32,.07);--shadow-md:0 14px 38px rgba(34,35,32,.10);--shadow-lg:0 28px 70px rgba(34,35,32,.14);
+  --shadow-page:0 2px 5px rgba(25,27,24,.08),0 18px 52px rgba(25,27,24,.14);--shadow-menu:0 15px 42px rgba(25,27,24,.15);
+}
+html[data-theme="dark"]{
+  color-scheme:dark;--app-bg:#101311;--workspace-bg:#0c0f0d;
+  --surface-1:#171b18;--surface-2:#1e231f;--surface-3:#252b26;--surface-4:#2d342e;
+  --surface-hover:#29302b;--surface-active:#303a33;--surface-glass:rgba(23,27,24,.92);
+  --paper:#fffefa;--paper-muted:#f8f5ec;
+  --text-primary:#ecefea;--text-secondary:#abb1aa;--text-muted:#7d857e;--text-disabled:#565d57;--text-on-accent:#081312;
+  --border-subtle:#242a25;--border-default:#303631;--border-strong:#505951;--divider:#29302b;
+  --accent:#82b6ba;--accent-hover:#9ac8cb;--accent-pressed:#6da2a7;--accent-soft:#20383a;--accent-border:#51787a;--accent-rgb:130,182,186;
+  --accent-2:#d09a69;--accent-2-soft:#3d2e22;
+  --selection:rgba(130,182,186,.24);--focus-ring:rgba(130,182,186,.38);--overlay:rgba(0,3,2,.78);
+  --shadow-xs:0 1px 2px rgba(0,0,0,.24);--shadow-sm:0 7px 20px rgba(0,0,0,.30);--shadow-md:0 18px 45px rgba(0,0,0,.38);--shadow-lg:0 34px 84px rgba(0,0,0,.50);
+  --shadow-page:0 4px 8px rgba(0,0,0,.36),0 24px 70px rgba(0,0,0,.54);--shadow-menu:0 18px 48px rgba(0,0,0,.50);
+}
+html[data-theme="oxford"]{
+  color-scheme:light;--app-bg:#eceff2;--workspace-bg:#dfe4e9;
+  --surface-1:#fbfcfd;--surface-2:#f5f7f9;--surface-3:#e9edf1;--surface-4:#e0e5ea;
+  --surface-hover:#e9edf2;--surface-active:#dde5ec;--surface-glass:rgba(251,252,253,.93);
+  --paper:#fffefa;--paper-muted:#f8f5ec;
+  --text-primary:#17212d;--text-secondary:#5c6570;--text-muted:#6c7680;--text-disabled:#a5acb3;--text-on-accent:#fff;
+  --border-subtle:#dde2e6;--border-default:#ccd2d8;--border-strong:#aeb8c2;--divider:#d7dde2;
+  --accent:#304e70;--accent-hover:#294461;--accent-pressed:#233a52;--accent-soft:#e0e8f0;--accent-border:#9fb0c2;--accent-rgb:48,78,112;
+  --accent-2:#794550;--accent-2-soft:#efe1e4;
+  --selection:rgba(48,78,112,.19);--focus-ring:rgba(48,78,112,.32);--overlay:rgba(19,29,40,.57);
+  --shadow-xs:0 1px 2px rgba(23,33,45,.05);--shadow-sm:0 5px 18px rgba(23,33,45,.07);--shadow-md:0 14px 38px rgba(23,33,45,.10);--shadow-lg:0 28px 70px rgba(23,33,45,.14);
+  --shadow-page:0 2px 5px rgba(23,33,45,.08),0 18px 52px rgba(23,33,45,.14);--shadow-menu:0 15px 42px rgba(23,33,45,.15);
+}
+html[data-theme="typesetter"]{
+  color-scheme:light;--app-bg:#eae3d8;--workspace-bg:#ddd3c4;
+  --surface-1:#faf5ed;--surface-2:#f3ece2;--surface-3:#e9dfd2;--surface-4:#dfd3c3;
+  --surface-hover:#eee5da;--surface-active:#e4d7c8;--surface-glass:rgba(250,245,237,.93);
+  --paper:#fffefa;--paper-muted:#f8f5ec;
+  --text-primary:#302a24;--text-secondary:#73695f;--text-muted:#796f64;--text-disabled:#b1a79c;--text-on-accent:#fffaf5;
+  --border-subtle:#e3d9cc;--border-default:#cec2b2;--border-strong:#b2a28f;--divider:#d9cdbc;
+  --accent:#735640;--accent-hover:#644a37;--accent-pressed:#563f2f;--accent-soft:#eadfd4;--accent-border:#bda792;--accent-rgb:115,86,64;
+  --accent-2:#a45f3c;--accent-2-soft:#f2dfd4;
+  --selection:rgba(115,86,64,.20);--focus-ring:rgba(115,86,64,.32);--overlay:rgba(45,36,28,.57);
+  --shadow-xs:0 1px 2px rgba(48,42,36,.05);--shadow-sm:0 5px 18px rgba(48,42,36,.07);--shadow-md:0 14px 38px rgba(48,42,36,.11);--shadow-lg:0 28px 70px rgba(48,42,36,.15);
+  --shadow-page:0 2px 5px rgba(48,42,36,.09),0 18px 52px rgba(48,42,36,.15);--shadow-menu:0 15px 42px rgba(48,42,36,.16);
+}
+html[data-theme="blueprint"]{
+  color-scheme:light;--app-bg:#e8edf0;--workspace-bg:#dce4e8;
+  --surface-1:#f8fafb;--surface-2:#f2f6f7;--surface-3:#e6edef;--surface-4:#dce6e9;
+  --surface-hover:#e6eef1;--surface-active:#d9e6eb;--surface-glass:rgba(248,250,251,.93);
+  --paper:#fffefa;--paper-muted:#f8f5ec;
+  --text-primary:#17242b;--text-secondary:#5f6e75;--text-muted:#67757b;--text-disabled:#a5afb4;--text-on-accent:#fff;
+  --border-subtle:#dbe3e6;--border-default:#c7d1d6;--border-strong:#a9b8bf;--divider:#d4dde1;
+  --accent:#28627a;--accent-hover:#22546a;--accent-pressed:#1d485b;--accent-soft:#dcecf2;--accent-border:#95b8c6;--accent-rgb:40,98,122;
+  --accent-2:#697e87;--accent-2-soft:#e4eaed;
+  --selection:rgba(40,98,122,.20);--focus-ring:rgba(40,98,122,.33);--overlay:rgba(19,33,40,.57);
+  --shadow-xs:0 1px 2px rgba(23,36,43,.05);--shadow-sm:0 5px 18px rgba(23,36,43,.07);--shadow-md:0 14px 38px rgba(23,36,43,.10);--shadow-lg:0 28px 70px rgba(23,36,43,.14);
+  --shadow-page:0 2px 5px rgba(23,36,43,.08),0 18px 52px rgba(23,36,43,.14);--shadow-menu:0 15px 42px rgba(23,36,43,.15);
+}
+html[data-theme="ink"]{
+  color-scheme:light;--app-bg:#eeeeec;--workspace-bg:#e2e2df;
+  --surface-1:#fbfbf9;--surface-2:#f6f6f3;--surface-3:#ebebe7;--surface-4:#e2e2de;
+  --surface-hover:#eaeae6;--surface-active:#dfdfda;--surface-glass:rgba(251,251,249,.95);
+  --paper:#fffefa;--paper-muted:#f8f5ec;
+  --text-primary:#161716;--text-secondary:#636561;--text-muted:#727471;--text-disabled:#adaeaa;--text-on-accent:#fff;
+  --border-subtle:#e2e2dd;--border-default:#cecfca;--border-strong:#b2b4ae;--divider:#dadad5;
+  --accent:#333634;--accent-hover:#292c2a;--accent-pressed:#202220;--accent-soft:#e3e5e2;--accent-border:#a7aaa5;--accent-rgb:51,54,52;
+  --accent-2:#6e706c;--accent-2-soft:#ececea;
+  --selection:rgba(51,54,52,.18);--focus-ring:rgba(51,54,52,.30);--overlay:rgba(18,19,18,.56);
+  --shadow-xs:0 1px 2px rgba(22,23,22,.04);--shadow-sm:0 4px 14px rgba(22,23,22,.06);--shadow-md:0 12px 32px rgba(22,23,22,.08);--shadow-lg:0 24px 58px rgba(22,23,22,.12);
+  --shadow-page:0 2px 4px rgba(22,23,22,.07),0 16px 44px rgba(22,23,22,.12);--shadow-menu:0 12px 34px rgba(22,23,22,.13);
+}
+.theme-picker-copy{margin:0 0 14px;color:var(--text-secondary);line-height:1.55}
+.theme-picker-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.theme-choice{appearance:none;width:100%;min-width:0;display:grid;grid-template-columns:76px minmax(0,1fr);align-items:center;gap:12px;padding:11px;border:1px solid var(--border-default);border-radius:8px;background:var(--surface-1);color:var(--text-primary);font:inherit;text-align:left;cursor:pointer;transition:border-color .14s ease,background .14s ease,box-shadow .14s ease,transform .14s ease}
+.theme-choice:hover{border-color:var(--accent-border);background:var(--surface-2);transform:translateY(-1px)}
+.theme-choice.selected{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+.theme-choice:focus-visible{outline:3px solid var(--focus-ring);outline-offset:2px}
+.theme-choice-copy{min-width:0;display:grid;gap:3px}.theme-choice-copy strong{font-size:13px;line-height:1.25}.theme-choice-copy small{color:var(--text-secondary);font-size:11px;line-height:1.35}
+.theme-swatch{height:48px;border:1px solid rgba(0,0,0,.10);border-radius:8px;overflow:hidden;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.theme-swatch span:nth-child(1){grid-row:1/3}.theme-swatch span:nth-child(4){display:none}
+.theme-swatch-light span:nth-child(1){background:#ecebe6}.theme-swatch-light span:nth-child(2){background:#fffdf8}.theme-swatch-light span:nth-child(3){background:#315c63}
+.theme-swatch-dark span:nth-child(1){background:#101311}.theme-swatch-dark span:nth-child(2){background:#1e231f}.theme-swatch-dark span:nth-child(3){background:#82b6ba}
+.theme-swatch-oxford span:nth-child(1){background:#eceff2}.theme-swatch-oxford span:nth-child(2){background:#f7f8f9}.theme-swatch-oxford span:nth-child(3){background:#304e70}
+.theme-swatch-typesetter span:nth-child(1){background:#eae3d8}.theme-swatch-typesetter span:nth-child(2){background:#f6f0e6}.theme-swatch-typesetter span:nth-child(3){background:#735640}
+.theme-swatch-blueprint span:nth-child(1){background:#e8edf0}.theme-swatch-blueprint span:nth-child(2){background:#f5f8f9}.theme-swatch-blueprint span:nth-child(3){background:#28627a}
+.theme-swatch-ink span:nth-child(1){background:#eeeeec}.theme-swatch-ink span:nth-child(2){background:#fbfbf9}.theme-swatch-ink span:nth-child(3){background:#333634}
+@media(max-width:640px){.theme-picker-grid{grid-template-columns:1fr}.theme-choice{grid-template-columns:68px minmax(0,1fr)}}
+@media(prefers-reduced-motion:reduce){.theme-choice{transition:none}.theme-choice:hover{transform:none}}
+</style>
+
+<meta name="manuscript-theme-contract" content="curated-interface-themes-v2">
+
+<style id="v421-visual-architecture">
+/* Manuscript v4.2.1 — certified editorial interface contract.
+   Principles: document first; borders before shadows; typography before decoration;
+   compact professional chrome; restrained geometry; theme-independent document styling. */
+
+:root{
+  --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:20px;
+  --space-6:24px;--space-8:32px;--space-10:40px;--space-12:48px;--space-16:64px;--space-20:80px;
+  --radius-xs:3px;--radius-sm:5px;--radius-md:6px;--radius-lg:8px;--radius-xl:10px;
+  --appbar-h:48px;--toolbar-h:42px;--status-h:24px;--rail-w:46px;--inspector-w:292px;--leftpanel-w:264px;
+}
+html[data-theme-mode="light"]{
+  --shadow-xs:0 1px 2px rgba(24,28,25,.035);
+  --shadow-sm:0 3px 10px rgba(24,28,25,.055);
+  --shadow-md:0 8px 22px rgba(24,28,25,.08);
+  --shadow-lg:0 18px 44px rgba(24,28,25,.11);
+  --shadow-menu:0 12px 32px rgba(24,28,25,.14);
+  --shadow-page:0 1px 2px rgba(20,24,21,.07),0 12px 34px rgba(20,24,21,.12);
+}
+html[data-theme-mode="dark"]{
+  --shadow-xs:0 1px 2px rgba(0,0,0,.18);
+  --shadow-sm:0 3px 12px rgba(0,0,0,.22);
+  --shadow-md:0 9px 24px rgba(0,0,0,.28);
+  --shadow-lg:0 20px 48px rgba(0,0,0,.34);
+  --shadow-menu:0 14px 36px rgba(0,0,0,.40);
+  --shadow-page:0 2px 5px rgba(0,0,0,.30),0 18px 48px rgba(0,0,0,.44);
+}
+
+/* Application frame */
+.appbar{
+  height:var(--appbar-h);flex-basis:var(--appbar-h);padding:0 10px;gap:8px;
+  background:var(--surface-1);border-bottom:1px solid var(--border-default);box-shadow:none;
+}
+.brand{gap:8px}
+.brand-mark{
+  width:26px;height:26px;border:1px solid var(--accent);border-radius:3px;
+  background:transparent;color:var(--accent);box-shadow:none;overflow:hidden;
+}
+.brand-mark::before,.brand-mark::after{animation:none!important;box-shadow:none!important}
+.brand-name{font-size:18px;font-weight:650;letter-spacing:-.012em}
+.brand-sub{font-size:9px;letter-spacing:.075em}
+.doc-title{height:30px;padding:4px 6px;border-radius:4px}
+.save-state{font-size:10px}
+
+/* Controls */
+.btn{
+  min-height:0;height:32px;padding:0 11px;border-radius:6px;box-shadow:none;
+  transition:background-color .12s ease,border-color .12s ease,color .12s ease;
+}
+.btn:hover:not(:disabled),.btn:active:not(:disabled){transform:none;box-shadow:none}
+.btn.primary{
+  height:34px;padding:0 14px;background:var(--accent);border-color:var(--accent);
+  color:var(--text-on-accent);box-shadow:none;
+}
+.btn.primary::before,.btn.primary::after{display:none!important;content:none!important}
+.btn.primary:hover:not(:disabled){background:var(--accent-hover);border-color:var(--accent-hover);box-shadow:none}
+.btn.primary:active:not(:disabled){background:var(--accent-pressed);border-color:var(--accent-pressed)}
+.btn.danger,.btn.danger:hover:not(:disabled){
+  background:var(--danger);border-color:var(--danger);box-shadow:none;
+}
+.btn.small{height:28px;border-radius:5px;padding-inline:9px}
+.icon-btn{
+  width:30px;height:30px;border-radius:5px;box-shadow:none;
+  transition:background-color .12s ease,color .12s ease,border-color .12s ease;
+}
+.icon-btn:hover:not(:disabled),.icon-btn:active:not(:disabled){transform:none;box-shadow:none}
+.icon-btn.active{background:var(--accent-soft);color:var(--accent);box-shadow:none}
+
+/* Formatting strip */
+.toolbar{
+  height:var(--toolbar-h);flex-basis:var(--toolbar-h);padding:4px 8px;gap:2px;
+  background:var(--surface-2);backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  border-bottom:1px solid var(--border-default);box-shadow:none;
+}
+.toolbar .icon-btn{width:30px;height:30px;border-radius:5px}
+.tool-sep{width:1px;height:20px;margin:0 4px;background:var(--divider)}
+.tool-select{height:30px;min-width:112px;border-radius:6px;background:var(--surface-1);box-shadow:none;font-weight:550}
+
+/* Workspace: intentionally architectural and visually quiet */
+.workspace{background:var(--workspace-bg)!important;background-image:none!important}
+.workspace::before,.workspace::after{content:none!important;display:none!important;background:none!important}
+.activity-rail{
+  padding:3px 0;gap:1px;background:var(--surface-2);
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  border-right:1px solid var(--border-default);box-shadow:none;
+}
+.rail-btn{width:38px;height:38px;border-radius:5px;transition:background-color .12s ease,color .12s ease}
+.rail-btn:hover{transform:none}
+.rail-btn.active{background:var(--accent-soft);color:var(--accent);box-shadow:none}
+.rail-btn.active::before{
+  left:-4px;top:6px;bottom:6px;width:2px;border-radius:0 2px 2px 0;
+  background:var(--accent);box-shadow:none;
+}
+.left-panel,.inspector{
+  background:var(--surface-1);backdrop-filter:none!important;-webkit-backdrop-filter:none!important;box-shadow:none;
+}
+.panel-head{height:40px;flex-basis:40px;padding:0 10px 0 12px}
+.panel-title{font-size:12px;letter-spacing:.035em}
+.pane-head,.preview-toolbar{height:32px;flex-basis:32px;background:var(--surface-2);box-shadow:none}
+.preview-toolbar{padding-inline:7px}
+.segmented{border-radius:5px}
+.segmented button{height:25px}
+.splitter{background:var(--border-default)}
+.splitter:hover,.splitter.dragging{background:var(--accent)}
+
+/* Inspector: properties panel rather than cards within cards */
+.inspector-tabs{height:38px}
+.inspector-tab{font-size:11px}
+.inspector-tab.active::after{height:2px;left:8px;right:8px}
+.inspector-intro{padding:10px 12px;background:var(--surface-2)!important;background-image:none!important;border-bottom:1px solid var(--divider)}
+.inspector-section{border-bottom:1px solid var(--divider)}
+.section-head{height:36px;padding:0 12px}
+.section-head:hover{background:var(--surface-2)}
+.section-head h3{font-size:10px;letter-spacing:.07em}
+.section-body{padding:0 12px 12px;gap:8px}
+.field{gap:4px}
+.field label,.field-label{font-size:10px}
+.input,.select,.number{height:32px;border-radius:6px;background:var(--surface-1);box-shadow:none}
+.input:focus,.select:focus,.number:focus{box-shadow:0 0 0 2px var(--focus-ring)}
+.color-input{width:32px;height:32px;border-radius:6px}
+.left-list{padding:6px}
+.list-item{min-height:34px;padding:6px 8px;border-radius:5px}
+.search-box{padding:10px}
+.insert-grid{gap:6px;padding:10px}
+.insert-card,.asset-card,.diag-item{border-radius:6px;box-shadow:none}
+
+/* Editor and document stage */
+.preview-scroll{background:var(--workspace-bg)}
+.flow-wrap{margin-top:20px}
+.flow-document{
+  border-radius:2px;border:1px solid color-mix(in srgb,var(--border-strong) 58%,transparent);
+  box-shadow:var(--shadow-page);
+}
+.pages-wrap{gap:20px;padding-top:24px}
+.page{
+  border-radius:2px;border:1px solid color-mix(in srgb,var(--border-strong) 58%,transparent);
+  box-shadow:var(--shadow-page);
+}
+.page.warning{outline-width:1px}
+.statusbar{
+  height:var(--status-h);flex-basis:var(--status-h);padding:0 8px;gap:12px;
+  background:var(--surface-2);font-size:10px;
+}
+
+/* Overlays */
+.modal{border-radius:10px;border-color:var(--border-strong);box-shadow:var(--shadow-menu);animation-duration:.12s}
+.modal-head{padding:14px 16px}
+.modal-head h2{font-size:18px}
+.modal-body{padding:16px}
+.modal-foot{padding:10px 16px}
+.command-palette{box-shadow:var(--shadow-menu)}
+.toast{border-radius:6px;box-shadow:var(--shadow-sm)}
+.theme-choice{border-radius:6px;box-shadow:none;transition:border-color .12s ease,background-color .12s ease}
+.theme-choice:hover{transform:none;box-shadow:none}
+.theme-choice.selected{box-shadow:inset 3px 0 0 var(--accent);background:var(--surface-2)}
+.theme-swatch{border-radius:4px;box-shadow:none}
+
+/* Home / library: catalogue-like rather than dashboard-like */
+.home-nav,.landing-nav{height:58px;max-width:1120px;padding-inline:24px;border-bottom:0}
+.home-content{max-width:1040px;padding:38px 28px 80px}
+.home-title{font-size:32px;letter-spacing:-.022em}
+.home-sub{font-size:14px;max-width:640px}
+.quick-actions{
+  display:grid;grid-template-columns:minmax(200px,1.3fr) repeat(4,minmax(120px,1fr));
+  gap:8px;margin:20px 0 38px;
+}
+.quick-actions .btn,.quick-actions .btn.primary{height:42px;min-width:0;justify-content:flex-start;padding-inline:12px;box-shadow:none}
+.section-title-row{margin:26px 0 10px;padding-bottom:8px;border-bottom:1px solid var(--divider)}
+.section-title-row h2{font-family:var(--serif);font-size:17px;font-weight:650}
+.recent-grid,.template-grid,.preset-grid{gap:10px}
+.recent-card,.template-card,.preset-card{border-radius:8px;box-shadow:none;transition:border-color .12s ease,background-color .12s ease}
+.recent-card:hover,.template-card:hover,.preset-card:hover{
+  transform:none;box-shadow:none;border-color:var(--accent-border);background:var(--surface-2);
+}
+.template-thumb,.recent-thumb{height:190px}
+.mini-page{box-shadow:0 2px 8px rgba(0,0,0,.10)}
+.card-body{padding:10px 11px}
+.card-actions{padding:0 11px 11px}
+.storage-card{margin-top:32px;padding:14px;border-radius:8px;background:var(--surface-2);box-shadow:none}
+.storage-meter{height:5px;border-radius:2px}
+.storage-meter span{border-radius:0}
+
+/* Landing: retain editorial marketing hierarchy, remove ambient SaaS motion */
+.hero{max-width:1120px;padding-top:58px;gap:52px}
+.hero h1{font-size:50px}
+.hero-mock{border-radius:8px;box-shadow:var(--shadow-md);transform:none!important;animation:none!important}
+.feature{
+  border-radius:0!important;box-shadow:none!important;transform:none!important;
+  background:transparent!important;border:0!important;border-top:1px solid var(--border-default)!important;
+}
+.feature:hover{transform:none!important;box-shadow:none!important}
+.landing-section#privacy{border-radius:8px!important;box-shadow:none!important}
+.mock-page{box-shadow:var(--shadow-page)}
+
+/* Only true semantic/status elements remain pills. */
+.badge,.status-action,.media-badge{border-radius:999px}
+
+/* Compact density is now a true professional-density variant. */
+html[data-density="compact"]{
+  --appbar-h:44px;--toolbar-h:38px;--status-h:22px;--rail-w:42px;
+  --inspector-w:276px;--leftpanel-w:248px;
+}
+html[data-density="compact"] .rail-btn{width:34px;height:34px}
+html[data-density="compact"] .panel-head{height:36px;flex-basis:36px}
+html[data-density="compact"] .toolbar{padding-block:3px}
+html[data-density="compact"] .toolbar .icon-btn{width:28px;height:28px}
+
+/* Mobile keeps safe-area ownership from the v4.0.1 viewport architecture,
+   but uses the same quiet visual language. */
+@media(max-width:900px){
+  .quick-actions{grid-template-columns:1fr 1fr}
+  .quick-actions .btn.primary{grid-column:1/-1}
+}
+@media(max-width:767px){
+  :root{
+    --appbar-h:calc(54px + env(safe-area-inset-top,0px));
+    --toolbar-h:44px;--status-h:0px;
+  }
+  .appbar{box-shadow:none}
+  .appbar .brand-mark{width:29px;height:29px;border-radius:4px}
+  .toolbar{padding:5px 6px}
+  .toolbar .icon-btn{width:32px;min-width:32px;height:32px}
+  .left-panel,.inspector{border-radius:0;box-shadow:none}
+  .mobile-bottom-nav{
+    background:var(--surface-1)!important;
+    backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+    border-top:1px solid var(--border-default);box-shadow:none!important;
+  }
+  .mobile-nav-btn.active::before{width:28px;height:2px;box-shadow:none;border-radius:0}
+  .modal,.modal.wide{border-radius:10px 10px 0 0}
+  .home-nav,.landing-nav{height:58px;padding-inline:16px}
+  .home-content{padding:30px 16px 84px}
+  .home-title{font-size:34px}
+  .quick-actions{grid-template-columns:1fr;margin:20px 0 34px}
+  .quick-actions .btn,.quick-actions .btn.primary{grid-column:auto;height:42px}
+  .recent-card,.template-card,.preset-card{border-radius:8px}
+  .landing-section#privacy{margin-inline:12px;border-radius:8px!important}
+}
+@media(max-width:480px){
+  .recent-grid,.template-grid,.preset-grid{grid-template-columns:1fr}
+}
+</style>
+
+<meta name="manuscript-visual-contract" content="editorial-interface-v1.1">
+
+<meta name="manuscript-stable-contract" content="production-stable-v1">
+
+<meta name="manuscript-certification-contract" content="scroll-v2+themes-v2+visual-v1.1">
 
 </head>
 <body>
@@ -3290,8 +3661,8 @@ function installBootstrapState(state) {
         concurrencyContract: 'lock-and-conflict-guard-v1',
         releaseGateContract: 'rc-audit-suite-v1',
         navigationContract: 'clear-workflow-navigation-v2',
-        mobileViewportContract: 'fit-width-safe-area-pinch-v2',
-        scrollContract: 'explicit-scroll-ownership-v1'
+        mobileViewportContract: 'dvh-keyboard-safe-v3',
+        scrollContract: 'screen-scoped-scroll-ownership-v2'
     });
     document.documentElement.dataset.architecture = state.architecture;
     document.documentElement.dataset.manuscriptVersion = state.appVersion;
@@ -3305,10 +3676,10 @@ function installBootstrapState(state) {
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FEATURE_FREEZE = exports.RELEASE_PHASE = exports.RELEASE_CHANNEL = exports.PROJECT_SCHEMA_VERSION = exports.RELEASE_NAME = exports.APP_VERSION = void 0;
-exports.APP_VERSION = '4.0.0-rc.6';
-exports.RELEASE_NAME = 'Manuscript v4.0.0 RC6 — Scroll Ownership Fixes';
+exports.APP_VERSION = '4.2.1';
+exports.RELEASE_NAME = 'Manuscript v4.2.1 Stable';
 exports.PROJECT_SCHEMA_VERSION = 6;
-exports.RELEASE_CHANNEL = 'release-candidate';
+exports.RELEASE_CHANNEL = 'stable';
 exports.RELEASE_PHASE = 'Phase 9 — Release Candidate Audit';
 exports.FEATURE_FREEZE = true;
 
@@ -11568,7 +11939,7 @@ self.onmessage=async event=>{
     function loadPreferences() {
         const p = readPreferenceEnvelope(), prefs = p.preferences && typeof p.preferences === 'object' && !Array.isArray(p.preferences) ? p.preferences : {};
         const systemDark = typeof matchMedia === 'function' && matchMedia('(prefers-color-scheme: dark)').matches;
-        state.theme = p.theme === 'dark' ? 'dark' : p.theme === 'light' ? 'light' : systemDark ? 'dark' : 'light';
+        state.theme = MANUSCRIPT_THEMES.some(theme => theme.id === p.theme) ? p.theme : systemDark ? 'dark' : 'light';
         state.interfaceDensity = p.interfaceDensity === 'compact' ? 'compact' : 'comfortable';
         state.zoom = clamp(Number.isFinite(Number(p.zoom)) ? Number(p.zoom) : .82, .35, 1.6);
         state.preferences.showLanding = prefs.showLanding !== false;
@@ -11579,7 +11950,7 @@ self.onmessage=async event=>{
         state.preferences.onboardingComplete = prefs.onboardingComplete === true;
         const requestedProfile = typeof prefs.exportProfile === 'string' ? prefs.exportProfile : '';
         state.preferences.exportProfile = nativeExportEngine.profiles.some(profile => profile.id === requestedProfile) ? requestedProfile : 'high-quality';
-        document.documentElement.dataset.theme = state.theme;
+        applyInterfaceTheme();
         document.documentElement.dataset.density = state.interfaceDensity;
     }
     function savePreferences() {
@@ -12852,16 +13223,38 @@ self.onmessage=async event=>{
         editorAdapter?.destroy();
     }
     catch { } editorAdapter = null; }
+const MANUSCRIPT_THEMES = Object.freeze([
+    Object.freeze({ id: 'light', label: 'Editorial Ivory', description: 'Quiet editorial default', themeColor: '#ECEBE6', dark: false }),
+    Object.freeze({ id: 'dark', label: 'Graphite Studio', description: 'Focused dark publishing studio', themeColor: '#101311', dark: true }),
+    Object.freeze({ id: 'oxford', label: 'Oxford', description: 'Academic navy and restrained burgundy', themeColor: '#ECEFF2', dark: false }),
+    Object.freeze({ id: 'typesetter', label: 'Typesetter', description: 'Warm print-shop neutrals and walnut', themeColor: '#EAE3D8', dark: false }),
+    Object.freeze({ id: 'blueprint', label: 'Blueprint', description: 'Cool technical documentation workspace', themeColor: '#E8EDF0', dark: false }),
+    Object.freeze({ id: 'ink', label: 'Ink', description: 'Near-monochrome distraction-free interface', themeColor: '#EEEEEC', dark: false }),
+]);
+function normalizeInterfaceTheme(value) { return MANUSCRIPT_THEMES.some(theme => theme.id === value) ? value : 'light'; }
+function currentInterfaceTheme() { const id = normalizeInterfaceTheme(state.theme); return MANUSCRIPT_THEMES.find(theme => theme.id === id) || MANUSCRIPT_THEMES[0]; }
+function applyInterfaceTheme() {
+    state.theme = normalizeInterfaceTheme(state.theme);
+    const theme = currentInterfaceTheme();
+    document.documentElement.dataset.theme = theme.id;
+    document.documentElement.dataset.themeMode = theme.dark ? 'dark' : 'light';
+    document.documentElement.style.colorScheme = theme.dark ? 'dark' : 'light';
+    const themeMeta = document.querySelector('meta[name="theme-color"]');
+    if (themeMeta) themeMeta.setAttribute('content', theme.themeColor);
+}
+function themeSelectOptions() { return MANUSCRIPT_THEMES.map(theme => `<option value="${theme.id}" ${normalizeInterfaceTheme(state.theme) === theme.id ? 'selected' : ''}>${theme.label}</option>`).join(''); }
+function themePickerHtml() {
+    const active = normalizeInterfaceTheme(state.theme);
+    return `<p class="theme-picker-copy">Choose the Manuscript workspace appearance. This changes application chrome only; document design and export styling remain independent.</p><div class="theme-picker-grid">${MANUSCRIPT_THEMES.map(theme => `<button type="button" class="theme-choice ${active === theme.id ? 'selected' : ''}" data-action="set-theme" data-theme-id="${theme.id}" aria-pressed="${active === theme.id ? 'true' : 'false'}"><span class="theme-swatch theme-swatch-${theme.id}" aria-hidden="true"><span></span><span></span><span></span><span></span></span><span class="theme-choice-copy"><strong>${theme.label}</strong><small>${theme.description}</small></span></button>`).join('')}</div>`;
+}
     function renderApp() {
         disposeEditor();
         state.shellRevision++;
         nativeAppShell.store.touch('screen-render');
-        document.documentElement.dataset.theme = state.theme;
+        applyInterfaceTheme();
         document.documentElement.dataset.density = state.interfaceDensity;
         document.documentElement.dataset.screen = state.screen;
-        const themeMeta = document.querySelector('meta[name="theme-color"]');
-        if (themeMeta)
-            themeMeta.setAttribute('content', state.theme === 'dark' ? '#111715' : '#edf0ef');
+        requestAnimationFrame(() => globalThis.__MANUSCRIPT_VISUAL_VIEWPORT_HANDLER__?.());
         const app = $('#app');
         if (state.screen === 'landing')
             app.innerHTML = renderLanding();
@@ -12879,7 +13272,7 @@ self.onmessage=async event=>{
         renderToasts();
         applyGeneratedLabels(app);
     }
-    function renderLanding() { return `<main class="landing-screen"><nav class="landing-nav"><div class="brand"><span class="brand-mark">M</span><div><div class="brand-name">Manuscript</div><div class="brand-sub">Markdown Publishing Studio</div></div></div><div class="nav-links"><button class="nav-link" data-scroll="features">Features</button><button class="nav-link" data-action="templates">Templates</button><button class="nav-link" data-scroll="privacy">Privacy</button><button class="icon-btn" data-action="theme" aria-label="Toggle theme">${icon(state.theme === 'dark' ? 'sun' : 'moon')}</button><button class="btn" data-action="home">Open App</button></div></nav><section class="hero"><div><div class="eyebrow">Markdown Publishing Studio</div><h1>Turn Markdown into polished documents.</h1><p>Write in a focused source editor, format professional pages clearly, inspect pagination, and export through your browser—without uploading your document.</p><div class="hero-actions"><button class="btn primary" data-action="new">Start Writing</button><button class="btn" data-action="open-file">Open Document</button><button class="btn ghost" data-action="templates">Explore Templates</button></div></div><div class="hero-mock" aria-hidden="true"><div class="mock-top"></div><div class="mock-body"><div class="mock-editor"><span class="syn-heading"># Research Report</span><br><br>## Introduction<br><br>Write in **Markdown** and see the final page update beside it.<br><br><span class="syn-code">$ E = mc^2 $</span></div><div class="mock-preview"><div class="mock-page"><h2>Research Report</h2><p>This document preview preserves page geometry, typography, headings, tables, figures, code, mathematics, and running content.</p><div class="mini-line"></div><div class="mini-line"></div><div class="mini-line short"></div></div></div></div></div></section><section class="landing-section" id="features"><h2>From source to finished publication.</h2><div class="feature-grid"><div class="feature"><h3>Focused Markdown editing</h3><p>Formatting commands, search, outline navigation, keyboard shortcuts, and local autosave.</p></div><div class="feature"><h3>Clear formatting controls</h3><p>Setup handles document rules, Style handles appearance, and Layout handles page geometry—without mixing the three.</p></div><div class="feature"><h3>Paginated inspection</h3><p>See actual pages, manual breaks, running content, overflow warnings, and print guides.</p></div><div class="feature"><h3>Private local publishing</h3><p>No account, no server, no analytics. Publish single documents or assemble multi-document books from the same local library.</p></div></div></section><section class="landing-section" id="privacy"><h2>Your document remains yours.</h2><div class="feature-grid"><div class="feature"><h3>Local processing</h3><p>Markdown parsing, page construction, diagnostics, and export happen in your browser.</p></div><div class="feature"><h3>Recoverable work</h3><p>Autosave and snapshots reduce accidental loss; project downloads provide durable backups.</p></div><div class="feature"><h3>No hidden conversion</h3><p>Markdown remains the canonical source. Visual settings remain explicit and exportable.</p></div><div class="feature"><h3>Offline-capable artifact</h3><p>This generated build contains its runtime code and styles in one HTML file.</p></div></div></section><footer class="landing-footer">Manuscript ${APP_VERSION} · RC6 scroll ownership repair · Phase 9 release candidate · Local documents and books · Browser Save as PDF</footer></main>`; }
+    function renderLanding() { return `<main class="landing-screen"><nav class="landing-nav"><div class="brand"><span class="brand-mark">M</span><div><div class="brand-name">Manuscript</div><div class="brand-sub">Markdown Publishing Studio</div></div></div><div class="nav-links"><button class="nav-link" data-scroll="features">Features</button><button class="nav-link" data-action="templates">Templates</button><button class="nav-link" data-scroll="privacy">Privacy</button><button class="icon-btn" data-action="theme" aria-label="Choose interface theme" aria-haspopup="dialog">${icon(currentInterfaceTheme().dark ? 'sun' : 'moon')}</button><button class="btn" data-action="home">Open App</button></div></nav><section class="hero"><div><div class="eyebrow">Markdown Publishing Studio</div><h1>Turn Markdown into polished documents.</h1><p>Write in a focused source editor, format professional pages clearly, inspect pagination, and export through your browser—without uploading your document.</p><div class="hero-actions"><button class="btn primary" data-action="new">Start Writing</button><button class="btn" data-action="open-file">Open Document</button><button class="btn ghost" data-action="templates">Explore Templates</button></div></div><div class="hero-mock" aria-hidden="true"><div class="mock-top"></div><div class="mock-body"><div class="mock-editor"><span class="syn-heading"># Research Report</span><br><br>## Introduction<br><br>Write in **Markdown** and see the final page update beside it.<br><br><span class="syn-code">$ E = mc^2 $</span></div><div class="mock-preview"><div class="mock-page"><h2>Research Report</h2><p>This document preview preserves page geometry, typography, headings, tables, figures, code, mathematics, and running content.</p><div class="mini-line"></div><div class="mini-line"></div><div class="mini-line short"></div></div></div></div></div></section><section class="landing-section" id="features"><h2>From source to finished publication.</h2><div class="feature-grid"><div class="feature"><h3>Focused Markdown editing</h3><p>Formatting commands, search, outline navigation, keyboard shortcuts, and local autosave.</p></div><div class="feature"><h3>Clear formatting controls</h3><p>Setup handles document rules, Style handles appearance, and Layout handles page geometry—without mixing the three.</p></div><div class="feature"><h3>Paginated inspection</h3><p>See actual pages, manual breaks, running content, overflow warnings, and print guides.</p></div><div class="feature"><h3>Private local publishing</h3><p>No account, no server, no analytics. Publish single documents or assemble multi-document books from the same local library.</p></div></div></section><section class="landing-section" id="privacy"><h2>Your document remains yours.</h2><div class="feature-grid"><div class="feature"><h3>Local processing</h3><p>Markdown parsing, page construction, diagnostics, and export happen in your browser.</p></div><div class="feature"><h3>Recoverable work</h3><p>Autosave and snapshots reduce accidental loss; project downloads provide durable backups.</p></div><div class="feature"><h3>No hidden conversion</h3><p>Markdown remains the canonical source. Visual settings remain explicit and exportable.</p></div><div class="feature"><h3>Offline-capable artifact</h3><p>This generated build contains its runtime code and styles in one HTML file.</p></div></div></section><footer class="landing-footer">Manuscript ${APP_VERSION} · RC6 scroll ownership repair · Phase 9 release candidate · Local documents and books · Browser Save as PDF</footer></main>`; }
     function renderHome() {
         const libraryBytes = state.projects.reduce((sum, p) => sum + bytes(JSON.stringify(p)), 0), health = state.storageHealth;
         const usage = health?.usage ?? libraryBytes, quota = health?.quota ?? 50 * 1024 * 1024, storagePct = Math.min(100, quota > 0 ? usage / quota * 100 : 0);
@@ -12890,10 +13283,10 @@ self.onmessage=async event=>{
         const driver = health?.driver === 'indexeddb' ? 'IndexedDB · split storage' : health?.driver === 'localstorage' ? 'Limited localStorage fallback' : 'Session-only memory';
         const persistent = health?.sessionOnly ? 'Backup required' : health?.persistent === true ? 'Persistent' : health?.persistent === false ? 'Best effort' : health?.durable === true ? 'Durable this browser' : 'Persistence unknown';
         const issue = health?.issues?.[0] ? `<div class="search-context" style="color:var(--warning)">${escapeHtml(health.issues[0])}</div>` : '';
-        return `<main class="home-screen"><nav class="home-nav"><div class="brand"><span class="brand-mark">M</span><div><div class="brand-name">Manuscript</div><div class="brand-sub">Markdown Publishing Studio</div></div></div><div class="appbar-spacer"></div><button class="icon-btn" data-action="theme" aria-label="Toggle theme">${icon(state.theme === 'dark' ? 'sun' : 'moon')}</button><button class="icon-btn" data-action="help" aria-label="Help">${icon('help')}</button></nav><div class="home-content"><h1 class="home-title">What would you like to publish?</h1><p class="home-sub">Create, learn, open, and recover private browser-based publishing projects.</p><div class="quick-actions"><button class="btn primary" data-action="new">${icon('plus')} New Blank Document</button><button class="btn" data-action="open-file">${icon('upload')} Open File</button><button class="btn" data-action="templates">${icon('template')} Choose Template</button><button class="btn" data-action="onboarding-sample">${icon('help')} Learn with sample</button><button class="btn" data-action="books">${icon('pages')} Book Projects${bookLibrary.books.length ? ` (${bookLibrary.books.length})` : ``}</button></div><div class="section-title-row"><h2>Recent documents</h2><span class="spacer"></span><button class="btn small ghost" data-action="refresh-projects">Refresh</button></div><div class="recent-grid">${cards}</div><div class="storage-card"><div>${icon('save')}</div><div><strong>${driver} · ${persistent}</strong><div class="search-context">${health?.projectCount ?? (libraryUnavailable ? '—' : state.projects.length)} project(s) · ${fmtBytes(libraryBytes)} hydrated project data</div>${issue}</div><div class="storage-meter" title="Browser usage: ${fmtBytes(usage)}${health?.quota ? ` of ${fmtBytes(quota)}` : ''}"><span style="width:${Math.max(2, storagePct)}%"></span></div><span class="search-context">${health?.quota ? `${Math.round(storagePct)}% used` : fmtBytes(libraryBytes)}</span><button class="btn small" data-action="storage-status">Storage health</button><button class="btn small" data-action="backup-library">Export library</button></div></div></main>`;
+        return `<main class="home-screen"><nav class="home-nav"><div class="brand"><span class="brand-mark">M</span><div><div class="brand-name">Manuscript</div><div class="brand-sub">Markdown Publishing Studio</div></div></div><div class="appbar-spacer"></div><button class="icon-btn" data-action="theme" aria-label="Choose interface theme" aria-haspopup="dialog">${icon(currentInterfaceTheme().dark ? 'sun' : 'moon')}</button><button class="icon-btn" data-action="help" aria-label="Help">${icon('help')}</button></nav><div class="home-content"><h1 class="home-title">What would you like to publish?</h1><p class="home-sub">Create, learn, open, and recover private browser-based publishing projects.</p><div class="quick-actions"><button class="btn primary" data-action="new">${icon('plus')} New Blank Document</button><button class="btn" data-action="open-file">${icon('upload')} Open File</button><button class="btn" data-action="templates">${icon('template')} Choose Template</button><button class="btn" data-action="onboarding-sample">${icon('help')} Learn with sample</button><button class="btn" data-action="books">${icon('pages')} Book Projects${bookLibrary.books.length ? ` (${bookLibrary.books.length})` : ``}</button></div><div class="section-title-row"><h2>Recent documents</h2><span class="spacer"></span><button class="btn small ghost" data-action="refresh-projects">Refresh</button></div><div class="recent-grid">${cards}</div><div class="storage-card"><div>${icon('save')}</div><div><strong>${driver} · ${persistent}</strong><div class="search-context">${health?.projectCount ?? (libraryUnavailable ? '—' : state.projects.length)} project(s) · ${fmtBytes(libraryBytes)} hydrated project data</div>${issue}</div><div class="storage-meter" title="Browser usage: ${fmtBytes(usage)}${health?.quota ? ` of ${fmtBytes(quota)}` : ''}"><span style="width:${Math.max(2, storagePct)}%"></span></div><span class="search-context">${health?.quota ? `${Math.round(storagePct)}% used` : fmtBytes(libraryBytes)}</span><button class="btn small" data-action="storage-status">Storage health</button><button class="btn small" data-action="backup-library">Export library</button></div></div></main>`;
     }
     function recentCard(p) { return `<article class="recent-card"><div class="recent-thumb"><div class="mini-page"><h1>${escapeHtml(p.title)}</h1>${'<div class="mini-line"></div>'.repeat(7)}<div class="mini-line short"></div></div></div><div class="card-body"><h3>${escapeHtml(p.title)}</h3><p>${humanDate(p.updatedAt)} · ${wordCount(p.markdown)} words</p></div><div class="card-actions"><button class="btn small primary" data-action="open-project" data-id="${p.id}">Open</button><button class="btn small ghost" data-action="duplicate-project" data-id="${p.id}">Duplicate</button><button class="icon-btn" data-action="delete-project" data-id="${p.id}" aria-label="Delete">${icon('trash')}</button></div></article>`; }
-    function renderEditor() { const left = state.activePanel ? renderLeftPanel() : ''; return `<main class="app"><header class="appbar"><button class="icon-btn" data-action="home" aria-label="Home">${icon('home')}</button><div class="brand desktop-only"><span class="brand-mark">M</span><span class="brand-name">Manuscript</span></div><div class="doc-title-wrap"><input class="doc-title" aria-label="Document title" value="${escapeAttr(state.project.title)}"><span class="save-state" role="status" aria-live="polite">${escapeHtml(state.saveState)}</span></div>${renderWorkflowNav()}${criticalAlertButton()}<div class="appbar-spacer"></div><button class="icon-btn desktop-only" data-command="undo" aria-label="Undo">${icon('undo')}</button><button class="icon-btn desktop-only" data-command="redo" aria-label="Redo">${icon('redo')}</button><button class="icon-btn desktop-only" data-action="history" aria-label="History">${icon('history')}</button><button class="icon-btn desktop-only" data-action="command" aria-label="Command palette">${icon('search')}</button><button class="icon-btn desktop-only ${state.inspectorOpen ? 'active' : ''}" data-action="toggle-inspector" aria-label="Toggle inspector">${icon('settings')}</button><button class="icon-btn" data-action="theme" aria-label="Toggle theme">${icon(state.theme === 'dark' ? 'sun' : 'moon')}</button><button class="btn primary" data-action="export"><span class="btn-label">Export</span>${icon('export')}</button><button class="icon-btn" data-action="more" aria-label="More options">${icon('menu')}</button></header>${renderToolbar()}<div class="workspace ${state.activePanel ? 'left-open' : ''} ${state.inspectorOpen ? '' : 'inspector-closed'}">${renderRail()}${left}<section class="main-stage"><div class="editor-preview ${state.workspaceMode === 'editor' ? 'editor-only' : state.workspaceMode === 'preview' || state.workspaceMode === 'pages' ? 'preview-only' : ''}"><section class="editor-pane ${['preview', 'pages'].includes(state.workspaceMode) || state.mobileView !== 'write' ? 'mobile-hidden' : ''}"><div class="pane-head">Markdown source<span class="pane-head-spacer"></span><span>${wordCount(state.project.markdown)} words</span></div><div class="editor-shell"><div id="native-editor-host" class="native-editor-host" aria-label="Professional Markdown editor"></div></div></section>${state.workspaceMode === 'split' ? '<div class="splitter" role="separator" aria-label="Resize editor and preview"></div>' : ''}<section class="preview-pane ${state.workspaceMode === 'editor' || state.mobileView === 'write' ? 'mobile-hidden' : ''}">${renderPreviewToolbar()}<aside id="page-navigator" class="page-navigator ${state.previewMode === 'pages' && state.pageNavigatorOpen ? '' : 'hidden'}" aria-label="Page navigator"></aside><div class="preview-scroll" id="preview-scroll"><div id="flow-wrap" class="flow-wrap ${state.previewMode === 'flow' ? '' : 'hidden'}"><div id="flow-document" class="flow-document"></div></div><div id="pages-wrap" class="pages-wrap ${state.previewMode === 'pages' ? '' : 'hidden'}"></div></div></section></div>${renderStatus()}</section>${renderInspector()}${renderMobileNav()}</div></main>`; }
+    function renderEditor() { const left = state.activePanel ? renderLeftPanel() : ''; return `<main class="app"><header class="appbar"><button class="icon-btn" data-action="home" aria-label="Home">${icon('home')}</button><div class="brand desktop-only"><span class="brand-mark">M</span><span class="brand-name">Manuscript</span></div><div class="doc-title-wrap"><input class="doc-title" aria-label="Document title" value="${escapeAttr(state.project.title)}"><span class="save-state" role="status" aria-live="polite">${escapeHtml(state.saveState)}</span></div>${renderWorkflowNav()}${criticalAlertButton()}<div class="appbar-spacer"></div><button class="icon-btn desktop-only" data-command="undo" aria-label="Undo">${icon('undo')}</button><button class="icon-btn desktop-only" data-command="redo" aria-label="Redo">${icon('redo')}</button><button class="icon-btn desktop-only" data-action="history" aria-label="History">${icon('history')}</button><button class="icon-btn desktop-only" data-action="command" aria-label="Command palette">${icon('search')}</button><button class="icon-btn desktop-only ${state.inspectorOpen ? 'active' : ''}" data-action="toggle-inspector" aria-label="Toggle inspector">${icon('settings')}</button><button class="icon-btn" data-action="theme" aria-label="Choose interface theme" aria-haspopup="dialog">${icon(currentInterfaceTheme().dark ? 'sun' : 'moon')}</button><button class="btn primary" data-action="export"><span class="btn-label">Export</span>${icon('export')}</button><button class="icon-btn" data-action="more" aria-label="More options">${icon('menu')}</button></header>${renderToolbar()}<div class="workspace ${state.activePanel ? 'left-open' : ''} ${state.inspectorOpen ? '' : 'inspector-closed'}">${renderRail()}${left}<section class="main-stage"><div class="editor-preview ${state.workspaceMode === 'editor' ? 'editor-only' : state.workspaceMode === 'preview' || state.workspaceMode === 'pages' ? 'preview-only' : ''}"><section class="editor-pane ${['preview', 'pages'].includes(state.workspaceMode) || state.mobileView !== 'write' ? 'mobile-hidden' : ''}"><div class="pane-head">Markdown source<span class="pane-head-spacer"></span><span>${wordCount(state.project.markdown)} words</span></div><div class="editor-shell"><div id="native-editor-host" class="native-editor-host" aria-label="Professional Markdown editor"></div></div></section>${state.workspaceMode === 'split' ? '<div class="splitter" role="separator" aria-label="Resize editor and preview"></div>' : ''}<section class="preview-pane ${state.workspaceMode === 'editor' || state.mobileView === 'write' ? 'mobile-hidden' : ''}">${renderPreviewToolbar()}<aside id="page-navigator" class="page-navigator ${state.previewMode === 'pages' && state.pageNavigatorOpen ? '' : 'hidden'}" aria-label="Page navigator"></aside><div class="preview-scroll" id="preview-scroll"><div id="flow-wrap" class="flow-wrap ${state.previewMode === 'flow' ? '' : 'hidden'}"><div id="flow-document" class="flow-document"></div></div><div id="pages-wrap" class="pages-wrap ${state.previewMode === 'pages' ? '' : 'hidden'}"></div></div></section></div>${renderStatus()}</section>${renderInspector()}${renderMobileNav()}</div></main>`; }
     function renderToolbar() { return `<div class="toolbar" role="toolbar" aria-label="Formatting and workspace"><select class="tool-select" data-command="paragraph" aria-label="Paragraph style"><option value="0">Paragraph</option><option value="1">Heading 1</option><option value="2">Heading 2</option><option value="3">Heading 3</option><option value="4">Heading 4</option><option value="5">Heading 5</option><option value="6">Heading 6</option></select><span class="tool-sep"></span>${toolButton('bold', 'bold', 'Bold · Ctrl/Cmd+B')} ${toolButton('italic', 'italic', 'Italic · Ctrl/Cmd+I')} ${toolButton('link', 'link', 'Link')}<span class="tool-sep"></span>${toolButton('list', 'list', 'List')} ${toolButton('table', 'table', 'Table')} ${toolButton('image', 'image', 'Image')}<span class="tool-sep"></span>${toolButton('plus', 'insert-menu', 'More insert options')}<span class="toolbar-spacer"></span><div class="workspace-switcher segmented" aria-label="Workspace view"><button data-workspace="editor" class="${state.workspaceMode === 'editor' ? 'active' : ''}">Write</button><button data-workspace="split" class="${state.workspaceMode === 'split' ? 'active' : ''}">Split</button><button data-workspace="preview" class="${state.workspaceMode === 'preview' ? 'active' : ''}">Preview</button></div></div>`; }
     function toolButton(iconName, command, label) { return `<button class="icon-btn" data-command="${command}" title="${label}" aria-label="${label}">${icon(iconName)}</button>`; }
     function renderRail() { const items = [['files', 'file', 'Files'], ['outline', 'outline', 'Outline'], ['search', 'search', 'Search'], ['insert', 'plus', 'Insert'], ['assets', 'image', 'Media'], ['references', 'refs', 'References'], ['diagnostics', 'warning', 'Checks']]; const bottom = [['history', 'history', 'History'], ['templates', 'template', 'Templates'], ['settings', 'settings', 'Settings'], ['help', 'help', 'Help']]; return `<nav class="activity-rail" aria-label="Workspace tools">${items.map(([id, ic, l]) => railBtn(id, ic, l)).join('')}<div class="rail-spacer"></div>${bottom.map(([id, ic, l]) => railBtn(id, ic, l)).join('')}</nav>`; }
@@ -13177,10 +13570,12 @@ Try changing the page size, adding a figure, or inserting a citation. Nothing in
             const passed = report.passedChecks.map(item => `<li>${escapeHtml(item)}</li>`).join('');
             return modalFrame('Runtime Audit Center', `<div class="preflight-card ${report.status === 'blocked' ? 'blocked' : report.status === 'review' ? 'needs-review' : 'ready'}"><div class="preflight-score" style="--score:${report.score}"><strong>${report.score}</strong><span>/ 100</span></div><div class="preflight-copy"><h3>Manuscript ${escapeHtml(APP_VERSION)}</h3><p>${escapeHtml(qualityStatusLabel(report.status))} · ${counts.error} error(s) · ${counts.warning} warning(s) · ${counts.info} notice(s)</p></div></div><div class="settings-subhead">Production architecture</div><div class="diag-item success"><div class="diag-title">Frozen feature baseline + publishing hardening</div><div class="diag-desc">Project core · explicit v1→v6 migration chain · validated sequential imports · split transactional storage · SHA-256 project/library backups · restore preview · recovery checkpoints · quarantine export · renderer · CodeMirror 6 editor · application shell · pagination · export · media · academic engine · workflow · books · runtime auditing. Phase 9 consolidates the frozen feature set into a release candidate with a reproducible core regression suite and an evidence-based final release gate. No product feature expansion is introduced.</div></div>${releaseBaselineHtml()}${phase9ReleaseGateSummaryHtml()}${browserCompatibilityHtml()}${phase8SecuritySummaryHtml()}${phase8DeploymentSummaryHtml()}${phase7PerformanceSummaryHtml()}<div class="settings-subhead">Runtime metrics</div><div class="media-audit-summary"><div><strong>${report.metrics.elementCount}</strong><span>DOM elements</span></div><div><strong>${report.metrics.interactiveCount}</strong><span>controls</span></div><div><strong>${report.metrics.formControlCount}</strong><span>form controls</span></div><div><strong>${report.metrics.dialogCount}</strong><span>dialogs</span></div><div><strong>${report.metrics.imageCount}</strong><span>images</span></div><div><strong>${report.metrics.duplicateIdCount}</strong><span>duplicate IDs</span></div></div><div class="settings-subhead">Quality findings</div>${findings}<details class="passed-checks"><summary>${report.passedChecks.length} passed application-quality checks</summary><div><article><ul>${passed}</ul></article></div></details><div class="diag-item info"><div class="diag-title">Reduced motion</div><div class="diag-desc">${report.metrics.reducedMotionRequested ? 'Your operating system requests reduced motion. Manuscript suppresses non-essential animation and transitions.' : 'Normal motion preference detected. The interface still honors reduced motion automatically if your system setting changes.'}</div></div>`, `<button class="btn" data-action="run-quality-audit">Run audit again</button><button class="btn" data-action="run-phase9-release-gate">Run RC release gate</button><button class="btn" data-action="download-quality-report">Download report</button><button class="btn primary" data-action="modal-close">Close</button>`, 'wide');
         }
+        if (type === 'themes')
+            return modalFrame('Interface Theme', themePickerHtml(), `<button class="btn" data-action="settings">Appearance settings</button><button class="btn primary" data-action="modal-close">Close</button>`, 'wide');
         if (type === 'settings' || type === 'storage-status') {
             const h = state.storageHealth, v = state.storageVerification, driver = h?.driver === 'indexeddb' ? 'IndexedDB split storage' : h?.driver === 'localstorage' ? 'limited localStorage fallback' : 'session-only memory', persist = h?.sessionOnly ? 'Backup required' : h?.persistent === true ? 'Persistent storage granted' : h?.persistent === false ? 'Best-effort browser storage' : h?.durable === true ? 'Durable browser storage' : 'Persistence status unavailable';
             const verification = v ? `<div class="diag-item ${v.valid ? 'success' : 'warning'}"><div class="diag-title">Library verification ${v.valid ? 'passed' : 'found issues'}</div><div class="diag-desc">${v.projectCount} project(s) checked · ${fmtBytes(v.approximateBytes)} · ${escapeHtml(v.checkedAt ? humanDate(v.checkedAt) : '')}</div>${v.issues?.length ? `<div class="diag-desc">${v.issues.map(escapeHtml).join('<br>')}</div>` : ''}</div>` : '';
-            return modalFrame(type === 'storage-status' ? 'Storage Health' : 'Application Settings', `<div class="field"><label>Interface theme</label><select class="select" id="setting-theme"><option value="light" ${state.theme === 'light' ? 'selected' : ''}>Light</option><option value="dark" ${state.theme === 'dark' ? 'selected' : ''}>Dark</option></select></div><div class="field"><label>Interface density</label><select class="select" id="setting-density"><option value="comfortable" ${state.interfaceDensity === 'comfortable' ? 'selected' : ''}>Comfortable</option><option value="compact" ${state.interfaceDensity === 'compact' ? 'selected' : ''}>Compact</option></select></div><label class="check-row"><input id="setting-remote" type="checkbox" ${state.preferences.remoteImages ? 'checked' : ''}> Allow remote images in preview</label><label class="check-row"><input id="setting-landing" type="checkbox" ${state.preferences.showLanding ? 'checked' : ''}> Show landing page at startup</label><div class="field-row"><button class="btn" data-action="keyboard-shortcuts">Keyboard shortcuts</button><button class="btn" data-action="restart-onboarding">Restart first-run guide</button></div><div class="settings-subhead">Architecture</div><div class="diag-item success"><div class="diag-title">Manuscript 4.0.0 RC6 release-candidate runtime</div><div class="diag-desc">Typed application shell · explicit schema migrations · validated imports · split IndexedDB persistence · atomic project commits · SHA-256 verified backups · recovery previews · page navigation · keep-aware pagination · export resource readiness · adversarial sanitizer · export-time re-sanitization · cross-tab conflict guard · relative service-worker deployment · runtime auditing. Feature set remains frozen. Project schema is version ${SCHEMA_VERSION}; persistence format is split-v2.</div></div><div class="quick-actions"><button class="btn" data-action="release-center">Open Runtime Audit Center</button></div><div class="settings-subhead">Professional editor</div><div class="diag-item success"><div class="diag-title">CodeMirror 6</div><div class="diag-desc">Native document state, Markdown language parsing, history, search, folding, bracket matching, line numbers, and Manuscript-aware publishing completions.</div></div><label class="check-row"><input id="setting-editor-lines" type="checkbox" ${state.preferences.editorLineNumbers !== false ? 'checked' : ''}> Show line numbers</label><label class="check-row"><input id="setting-editor-wrap" type="checkbox" ${state.preferences.editorWordWrap !== false ? 'checked' : ''}> Wrap long lines</label><label class="check-row"><input id="setting-editor-spellcheck" type="checkbox" ${state.preferences.editorSpellcheck !== false ? 'checked' : ''}> Browser spellcheck</label><div class="diag-item info"><div class="diag-title">${driver} · ${persist}</div><div class="diag-desc">${h ? `${h.projectCount ?? '—'} project(s) · ${fmtBytes(h.approximateProjectBytes)} hydrated project data · ${escapeHtml(h.storageFormat || 'unknown format')}${h.quota ? ` · ${fmtBytes(h.usage || 0)} of ${fmtBytes(h.quota)} browser storage used` : ''}` : 'Storage status is loading.'}</div></div>${h?.issues?.map(issue => `<div class="diag-item warning"><div class="diag-title">Storage notice</div><div class="diag-desc">${escapeHtml(issue)}</div></div>`).join('') || ''}${verification}<div class="quick-actions"><button class="btn" data-action="refresh-storage-health">Refresh status</button><button class="btn" data-action="verify-library">Verify library</button><button class="btn" data-action="request-persistence" ${h?.persistent === true ? 'disabled' : ''}>Request persistence</button><button class="btn" data-action="backup-library">Export SHA-256 library backup</button><button class="btn" data-action="backup-restore-file">Restore backup…</button><button class="btn" data-action="recovery-center">Recovery Center</button>${h?.quarantineCount ? `<button class="btn" data-action="download-quarantine">Download preserved raw data (${h.quarantineCount})</button>` : ``}</div><div class="settings-subhead">Workflow & offline</div><div class="diag-item info"><div class="diag-title">Direct file access · ${directFileAccess.supported ? 'available' : 'fallback mode'}</div><div class="diag-desc">${directFileAccess.supported ? 'Open and save Markdown through browser file handles. Handles remain session-only and are never embedded in projects.' : 'This browser/context uses normal upload and download workflows.'}</div></div><div class="diag-item ${offlineManager.status === 'update-available' ? 'warning' : 'info'}"><div class="diag-title">Offline web app · ${escapeHtml(offlineManager.status)}</div><div class="diag-desc">The modular edition can cache its application shell for offline startup. Updates never auto-reload over unsaved work. The portable edition is already self-contained.</div></div><div class="quick-actions"><button class="btn" data-action="check-offline-update">Check app update</button><button class="btn" data-action="activate-offline-update" ${offlineManager.status === 'update-available' ? '' : 'disabled'}>Activate update</button></div><div class="diag-item warning"><div class="diag-title">Browser persistence is not a permanent backup</div><div class="diag-desc">Browser data may still be cleared. Download project backups regularly.</div></div><button class="btn danger" data-action="clear-local-data">Clear all local projects</button>`, `<button class="btn" data-action="modal-close">Cancel</button><button class="btn primary" data-action="save-settings">Save settings</button>`);
+            return modalFrame(type === 'storage-status' ? 'Storage Health' : 'Application Settings', `<div class="field"><label>Interface theme</label><select class="select" id="setting-theme">${themeSelectOptions()}</select></div><div class="field"><label>Interface density</label><select class="select" id="setting-density"><option value="comfortable" ${state.interfaceDensity === 'comfortable' ? 'selected' : ''}>Comfortable</option><option value="compact" ${state.interfaceDensity === 'compact' ? 'selected' : ''}>Compact</option></select></div><label class="check-row"><input id="setting-remote" type="checkbox" ${state.preferences.remoteImages ? 'checked' : ''}> Allow remote images in preview</label><label class="check-row"><input id="setting-landing" type="checkbox" ${state.preferences.showLanding ? 'checked' : ''}> Show landing page at startup</label><div class="field-row"><button class="btn" data-action="keyboard-shortcuts">Keyboard shortcuts</button><button class="btn" data-action="restart-onboarding">Restart first-run guide</button></div><div class="settings-subhead">Architecture</div><div class="diag-item success"><div class="diag-title">Manuscript 4.0.0 RC6 release-candidate runtime</div><div class="diag-desc">Typed application shell · explicit schema migrations · validated imports · split IndexedDB persistence · atomic project commits · SHA-256 verified backups · recovery previews · page navigation · keep-aware pagination · export resource readiness · adversarial sanitizer · export-time re-sanitization · cross-tab conflict guard · relative service-worker deployment · runtime auditing. Feature set remains frozen. Project schema is version ${SCHEMA_VERSION}; persistence format is split-v2.</div></div><div class="quick-actions"><button class="btn" data-action="release-center">Open Runtime Audit Center</button></div><div class="settings-subhead">Professional editor</div><div class="diag-item success"><div class="diag-title">CodeMirror 6</div><div class="diag-desc">Native document state, Markdown language parsing, history, search, folding, bracket matching, line numbers, and Manuscript-aware publishing completions.</div></div><label class="check-row"><input id="setting-editor-lines" type="checkbox" ${state.preferences.editorLineNumbers !== false ? 'checked' : ''}> Show line numbers</label><label class="check-row"><input id="setting-editor-wrap" type="checkbox" ${state.preferences.editorWordWrap !== false ? 'checked' : ''}> Wrap long lines</label><label class="check-row"><input id="setting-editor-spellcheck" type="checkbox" ${state.preferences.editorSpellcheck !== false ? 'checked' : ''}> Browser spellcheck</label><div class="diag-item info"><div class="diag-title">${driver} · ${persist}</div><div class="diag-desc">${h ? `${h.projectCount ?? '—'} project(s) · ${fmtBytes(h.approximateProjectBytes)} hydrated project data · ${escapeHtml(h.storageFormat || 'unknown format')}${h.quota ? ` · ${fmtBytes(h.usage || 0)} of ${fmtBytes(h.quota)} browser storage used` : ''}` : 'Storage status is loading.'}</div></div>${h?.issues?.map(issue => `<div class="diag-item warning"><div class="diag-title">Storage notice</div><div class="diag-desc">${escapeHtml(issue)}</div></div>`).join('') || ''}${verification}<div class="quick-actions"><button class="btn" data-action="refresh-storage-health">Refresh status</button><button class="btn" data-action="verify-library">Verify library</button><button class="btn" data-action="request-persistence" ${h?.persistent === true ? 'disabled' : ''}>Request persistence</button><button class="btn" data-action="backup-library">Export SHA-256 library backup</button><button class="btn" data-action="backup-restore-file">Restore backup…</button><button class="btn" data-action="recovery-center">Recovery Center</button>${h?.quarantineCount ? `<button class="btn" data-action="download-quarantine">Download preserved raw data (${h.quarantineCount})</button>` : ``}</div><div class="settings-subhead">Workflow & offline</div><div class="diag-item info"><div class="diag-title">Direct file access · ${directFileAccess.supported ? 'available' : 'fallback mode'}</div><div class="diag-desc">${directFileAccess.supported ? 'Open and save Markdown through browser file handles. Handles remain session-only and are never embedded in projects.' : 'This browser/context uses normal upload and download workflows.'}</div></div><div class="diag-item ${offlineManager.status === 'update-available' ? 'warning' : 'info'}"><div class="diag-title">Offline web app · ${escapeHtml(offlineManager.status)}</div><div class="diag-desc">The modular edition can cache its application shell for offline startup. Updates never auto-reload over unsaved work. The portable edition is already self-contained.</div></div><div class="quick-actions"><button class="btn" data-action="check-offline-update">Check app update</button><button class="btn" data-action="activate-offline-update" ${offlineManager.status === 'update-available' ? '' : 'disabled'}>Activate update</button></div><div class="diag-item warning"><div class="diag-title">Browser persistence is not a permanent backup</div><div class="diag-desc">Browser data may still be cleared. Download project backups regularly.</div></div><button class="btn danger" data-action="clear-local-data">Clear all local projects</button>`, `<button class="btn" data-action="modal-close">Cancel</button><button class="btn primary" data-action="save-settings">Save settings</button>`);
         }
         if (type === 'help')
             return modalFrame('Manuscript Help', `<h3>Core workflow</h3><ol><li>Write or import Markdown.</li><li>Use Format, then choose Setup for document rules, Style for appearance, or Layout for page geometry.</li><li>Inspect pages and diagnostics.</li><li>Download a project backup.</li><li>Use Print / Save as PDF.</li></ol><h3>Useful syntax</h3><pre><code># Heading\n\n**Bold** and *italic*\n\n<!-- manuscript:pagebreak -->\n\n::: theorem {title="Theorem"}\nStatement\n:::\n\nCitation: [@smith2026]\n\n[[bibliography]]\n\n$x^2$ and display math:
@@ -13663,15 +14058,14 @@ $$</code></pre><h3>Technical publishing</h3><p>Inline math uses <code>$...$</cod
                 }
                 break;
             case 'theme':
-                state.theme = state.theme === 'dark' ? 'light' : 'dark';
-                document.documentElement.dataset.theme = state.theme;
-                {
-                    const themeMeta = document.querySelector('meta[name="theme-color"]');
-                    if (themeMeta)
-                        themeMeta.setAttribute('content', state.theme === 'dark' ? '#111715' : '#edf0ef');
-                    $$('[data-action="theme"]').forEach(btn => btn.innerHTML = icon(state.theme === 'dark' ? 'sun' : 'moon'));
-                }
+                showModal('themes');
+                break;
+            case 'set-theme':
+                state.theme = normalizeInterfaceTheme(el.dataset.themeId);
+                applyInterfaceTheme();
                 savePreferences();
+                showModal('themes');
+                toast('Interface theme changed', currentInterfaceTheme().label, 'success');
                 break;
             case 'help':
                 showModal('help');
@@ -14274,7 +14668,7 @@ $$</code></pre><h3>Technical publishing</h3><p>Inline math uses <code>$...$</cod
                 }
                 break;
             case 'save-settings':
-                state.theme = $('#setting-theme').value;
+                state.theme = normalizeInterfaceTheme($('#setting-theme').value);
                 state.interfaceDensity = $('#setting-density').value === 'compact' ? 'compact' : 'comfortable';
                 document.documentElement.dataset.density = state.interfaceDensity;
                 state.preferences.remoteImages = $('#setting-remote').checked;
@@ -14757,8 +15151,8 @@ $$</code></pre><h3>Technical publishing</h3><p>Inline math uses <code>$...$</cod
         check(manifest?.concurrencyContract === 'lock-and-conflict-guard-v1', 'CONCURRENCY_CONTRACT_MISSING', 'Cross-tab lock/conflict guard contract is active.');
         check(manifest?.releaseGateContract === 'rc-audit-suite-v1', 'RELEASE_GATE_CONTRACT_MISSING', 'Phase 9 release-gate contract is active.');
         check(manifest?.navigationContract === 'clear-workflow-navigation-v2', 'NAVIGATION_CONTRACT_MISSING', 'RC6 navigation contract is active: Write / Preview / Format / Add / Publish with Setup / Style / Layout formatting controls.');
-        check(manifest?.mobileViewportContract === 'fit-width-safe-area-pinch-v2', 'MOBILE_VIEWPORT_CONTRACT_MISSING', 'RC6 mobile preview uses layout-viewport fit scaling, safe-area containment, and pinch-zoom isolation.');
-        check(manifest?.scrollContract === 'explicit-scroll-ownership-v1', 'SCROLL_CONTRACT_MISSING', 'RC6 assigns vertical scrolling to explicit screen and workspace scroll containers while keeping the document body horizontally contained.');
+        check(manifest?.mobileViewportContract === 'dvh-keyboard-safe-v3', 'MOBILE_VIEWPORT_CONTRACT_MISSING', 'RC6 mobile preview uses layout-viewport fit scaling, safe-area containment, and pinch-zoom isolation.');
+        check(manifest?.scrollContract === 'screen-scoped-scroll-ownership-v2', 'SCROLL_CONTRACT_MISSING', 'RC6 assigns vertical scrolling to explicit screen and workspace scroll containers while keeping the document body horizontally contained.');
         const phase9Core = runPhase9CoreFixture();
         check(phase9Core.passed, 'PHASE9_CORE_FIXTURE_FAILED', `Phase 9 core regression fixture passes ${phase9Core.passedCount}/${phase9Core.total} checks.`);
         const phase8Security = runPhase8SecurityFixture();
@@ -15034,20 +15428,34 @@ ${phase9ReleaseGateMarkdown()}`;
         const syncVisualViewport = () => {
             const visualViewport = window.visualViewport;
             const layoutWidth = Number(document.documentElement?.clientWidth || innerWidth || 360);
+            const layoutHeight = Number(innerHeight || document.documentElement?.clientHeight || 720);
             const browserScale = Number(visualViewport?.scale || 1);
-            // A reduced visualViewport height at scale=1 generally represents the software
-            // keyboard or browser chrome. During pinch-zoom, keep the layout height stable so
-            // browser zoom remains under the user's control instead of reflowing the app.
-            const height = visualViewport && Math.abs(browserScale - 1) < .01 ? Number(visualViewport.height || innerHeight) : Number(innerHeight || visualViewport?.height || 720);
-            document.documentElement.style.setProperty('--app-visual-height', `${Math.round(height)}px`);
+            const visualHeight = Number(visualViewport?.height || layoutHeight);
+            const editorActive = state.screen === 'editor';
+            const unscaled = Math.abs(browserScale - 1) < .01;
+            const occluded = Math.max(0, layoutHeight - visualHeight);
+
+            /* v4.0.1: 100dvh owns normal editor sizing. Only a substantial,
+               unscaled visual-viewport occlusion is treated as a software
+               keyboard. Browser chrome and pinch zoom do not rewrite app height. */
+            if (editorActive && visualViewport && unscaled && occluded > 120) {
+                document.documentElement.style.setProperty('--editor-visual-height', `${Math.round(visualHeight)}px`);
+            } else {
+                document.documentElement.style.removeProperty('--editor-visual-height');
+            }
+
+            /* Width remains useful for paginated-preview fitting and does not
+               participate in vertical scroll ownership. */
             document.documentElement.style.setProperty('--app-visual-width', `${Math.round(layoutWidth)}px`);
             const widthChanged = Math.abs(layoutWidth - lastLayoutViewportWidth) > 1;
             lastLayoutViewportWidth = layoutWidth;
-            if (widthChanged && state.screen === 'editor' && state.previewMode === 'pages') requestAnimationFrame(() => applyPagePreviewScale());
+            if (widthChanged && editorActive && state.previewMode === 'pages')
+                requestAnimationFrame(() => applyPagePreviewScale());
         };
         syncVisualViewport();
         globalThis.__MANUSCRIPT_VISUAL_VIEWPORT_HANDLER__ = syncVisualViewport;
-        if (window.visualViewport) window.visualViewport.addEventListener('resize', syncVisualViewport, { passive: true });
+        if (window.visualViewport)
+            window.visualViewport.addEventListener('resize', syncVisualViewport, { passive: true });
         window.addEventListener('resize', syncVisualViewport, { passive: true });
         window.addEventListener('orientationchange', () => requestAnimationFrame(syncVisualViewport), { passive: true });
         if (state.libraryStatus?.available === false) addCriticalAlert('Project library unavailable', state.libraryStatus.error || 'Manuscript could not read browser storage.');
