@@ -1,0 +1,139 @@
+{
+  "schema": "manuscript-release-manifest-v1",
+  "product": "Manuscript",
+  "version": "4.2.1",
+  "channel": "stable",
+  "release_name": "Manuscript v4.2.1 Stable",
+  "generated_at_utc": "2026-08-21T19:33:07.165519+00:00",
+  "source": {
+    "filename": "index.html",
+    "bytes": 3454648,
+    "sha256": "cd3308a16148d8aabd4d04da5c513b2b796aa97d09bcd46afc8c2510e7bce8f5",
+    "git_blob_sha1": "3dede116014ae19de2f23f6deabefae139ffa18f"
+  },
+  "artifact": {
+    "filename": "Manuscript_v4.2.1_Stable.html",
+    "bytes": 3479248,
+    "sha256": "6d3900a2c973dc2d36099fc596b77b21268c11fdc1cff46bba7e66f08d83aba6"
+  },
+  "contracts": {
+    "scroll": "screen-scoped-scroll-ownership-v2",
+    "mobile_viewport": "dvh-keyboard-safe-v3",
+    "themes": "curated-interface-themes-v2",
+    "visual": "editorial-interface-v1.1",
+    "stable": "production-stable-v1",
+    "certification": "scroll-v2+themes-v2+visual-v1.1"
+  },
+  "checks": [
+    {
+      "label": "Stable title",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "label": "manuscript-release-channel",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "label": "manuscript-stable-contract",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "label": "manuscript-certification-contract",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "label": "manuscript-scroll-contract",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "label": "manuscript-mobile-viewport-contract",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "label": "manuscript-theme-contract",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "label": "manuscript-visual-contract",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "label": "v401 exactly once",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "label": "v411 exactly once",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "label": "v421 exactly once",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "label": "v420 absent",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "label": "RC6 scroll override absent",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "label": "legacy app visual height absent",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "label": "legacy scroll contract absent",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "label": "legacy viewport contract absent",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "label": "manual main-stage arithmetic absent",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "label": "six neutral paper themes",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "label": "all curated themes persist",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "label": "HTML doctype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "label": "APP_VERSION",
+      "passed": true,
+      "detail": ""
+    }
+  ],
+  "summary": {
+    "passed": 21,
+    "total": 21,
+    "stable_promotion_passed": true
+  }
+}
