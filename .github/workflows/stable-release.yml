@@ -1,0 +1,133 @@
+name: Manuscript v4.2.1 Stable Certification & Release
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: manuscript-v4.2.1-stable-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  EXPECTED_RC6_GIT_BLOB: 3dede116014ae19de2f23f6deabefae139ffa18f
+  EXPECTED_STABLE_SHA256: 5896562604d4985624ad260fbca9e8cf6f76819c8975837c96be1200a92e31db
+  STABLE_FILE: Manuscript_v4.2.1_Stable.html
+  STABLE_MANIFEST: Manuscript_v4.2.1_Stable_RELEASE_MANIFEST.json
+
+jobs:
+  certify-pr:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Verify exact RC6 source on first generation
+        shell: bash
+        run: |
+          if ! grep -q 'Manuscript v4.2.1 Stable' index.html; then
+            actual=$(git hash-object index.html)
+            test "$actual" = "$EXPECTED_RC6_GIT_BLOB" || { echo "RC6 blob mismatch: $actual"; exit 1; }
+          fi
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install certification dependencies
+        run: |
+          python -m pip install --disable-pip-version-check tinycss2 playwright
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium firefox webkit
+
+      - name: Generate Stable artifact
+        run: |
+          python tools/manuscript_v4_2_1_final_production_integration_stable_promotion.py index.html --no-browser-smoke
+          echo "$EXPECTED_STABLE_SHA256  $STABLE_FILE" | sha256sum --check --strict
+
+      - name: Serve Stable artifact
+        run: |
+          python -m http.server 4173 --bind 127.0.0.1 > /tmp/manuscript-http.log 2>&1 &
+          echo $! > /tmp/manuscript-http.pid
+          for i in {1..30}; do curl -fsS "http://127.0.0.1:4173/$STABLE_FILE" >/dev/null && exit 0; sleep 1; done
+          cat /tmp/manuscript-http.log
+          exit 1
+
+      - name: Chromium + Firefox + WebKit + mobile/touch certification
+        env:
+          MANUSCRIPT_URL: http://127.0.0.1:4173/Manuscript_v4.2.1_Stable.html
+        run: node scripts/certify-v421.mjs
+
+      - name: Promote certified bytes on release branch
+        shell: bash
+        run: |
+          cp "$STABLE_FILE" index.html
+          echo "$EXPECTED_STABLE_SHA256  index.html" | sha256sum --check --strict
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html "$STABLE_MANIFEST"
+          if git diff --cached --quiet; then
+            echo "Stable bytes already committed."
+          else
+            git commit -m "release: Manuscript v4.2.1 Stable [stable-generated]"
+            git push origin "HEAD:${{ github.head_ref }}"
+          fi
+
+      - name: Upload certification artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: manuscript-v4.2.1-stable-certified
+          path: |
+            Manuscript_v4.2.1_Stable.html
+            Manuscript_v4.2.1_Stable_RELEASE_MANIFEST.json
+
+  publish-release:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify merged Stable bytes
+        run: |
+          echo "$EXPECTED_STABLE_SHA256  index.html" | sha256sum --check --strict
+          grep -q '<title>Manuscript v4.2.1 Stable</title>' index.html
+
+      - name: Regenerate release manifest from merged bytes
+        run: |
+          python -m pip install --disable-pip-version-check tinycss2 playwright
+          python tools/manuscript_v4_2_1_final_production_integration_stable_promotion.py index.html --no-browser-smoke -o "$STABLE_FILE"
+          echo "$EXPECTED_STABLE_SHA256  $STABLE_FILE" | sha256sum --check --strict
+
+      - name: Create GitHub Stable release and tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          if gh release view v4.2.1 >/dev/null 2>&1; then
+            echo "Release v4.2.1 already exists; replacing assets."
+            gh release upload v4.2.1 "$STABLE_FILE" "$STABLE_MANIFEST" --clobber
+          else
+            gh release create v4.2.1 "$STABLE_FILE" "$STABLE_MANIFEST" \
+              --target "$GITHUB_SHA" \
+              --title "Manuscript v4.2.1 Stable" \
+              --notes-file RELEASE_NOTES_v4.2.1.md
+          fi
