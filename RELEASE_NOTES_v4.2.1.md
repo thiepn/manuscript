@@ -7,6 +7,7 @@ This release promotes the certified Manuscript v4.2.1 production build.
 - Reconstructed screen-scoped scroll ownership: ordinary document scrolling on Landing/Home; viewport locking only in the editor.
 - Explicit editor scroll owners for CodeMirror, preview, left-panel content, Inspector content, and modal bodies.
 - Six persistent interface themes: Editorial Ivory, Graphite Studio, Oxford, Typesetter, Blueprint, and Ink.
+- Fixed persistence for all curated themes so Oxford, Typesetter, Blueprint, and Ink survive reloads just like light/dark.
 - WCAG-AA-hardened theme text/accent contrast and semantic dark-mode behavior.
 - Consolidated editorial visual architecture with quieter chrome, compact geometry, flatter panels, and stronger document focus.
 - Production integration against the exact RC6 source with deterministic SHA-256 verification.
@@ -17,7 +18,7 @@ This release promotes the certified Manuscript v4.2.1 production build.
 
 SHA-256:
 
-`5896562604d4985624ad260fbca9e8cf6f76819c8975837c96be1200a92e31db`
+`6d3900a2c973dc2d36099fc596b77b21268c11fdc1cff46bba7e66f08d83aba6`
 
 ## Browser certification
 
