@@ -50,13 +50,19 @@ def validate(text:str)->list[dict]:
  add('APP_VERSION', 'exports.APP_VERSION' not in text or re.search(r'exports\.APP_VERSION\s*=\s*["\']4\.2\.1["\']',text) is not None)
  return checks
 
+def patch_bytes(patch_file:Path)->bytes:
+ if patch_file.is_file(): return patch_file.read_bytes()
+ parts=sorted(patch_file.parent.glob(patch_file.name+'.part*'))
+ if not parts: raise SystemExit(f'Release patch not found: {patch_file}')
+ return b''.join(part.read_bytes() for part in parts)
+
 def promote(source:Path,output:Path,manifest:Path,patch_file:Path):
  original=source.read_bytes(); source_sha=sha256(original); source_blob=git_blob(original)
  if source_sha==STABLE_SHA256:
   stable=original
  elif source_blob==RC6_BLOB:
   if not shutil.which('git'):raise SystemExit('git is required')
-  raw=gzip.decompress(base64.b64decode(patch_file.read_bytes()))
+  raw=gzip.decompress(base64.b64decode(patch_bytes(patch_file)))
   with tempfile.TemporaryDirectory(prefix='manuscript-v421-') as td:
    work=Path(td); (work/'index.html').write_bytes(original); (work/'release.patch').write_bytes(raw)
    subprocess.run(['git','init','-q'],cwd=work,check=True)
