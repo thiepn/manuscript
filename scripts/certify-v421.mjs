@@ -60,11 +60,20 @@ async function chooseTheme(page, theme) {
 
 async function openEditor(page) {
   await openHome(page);
-  const newButton = page.locator('[data-action="new"]').first();
-  await newButton.click();
-  const blank = page.locator('[data-action="onboarding-blank"],[data-action="new-blank"],[data-action="blank"]');
-  if (await blank.count()) {
-    try { await blank.first().click({timeout:1500}); } catch {}
+
+  const onboardingBlank = page.locator('.modal-layer [data-action="onboarding-blank"]').first();
+  if (await onboardingBlank.count() && await onboardingBlank.isVisible().catch(() => false)) {
+    await onboardingBlank.click({ timeout: 5000 });
+    await page.waitForFunction(() => document.documentElement.dataset.screen === 'editor', null, {timeout:15000});
+    return;
+  }
+
+  await closeModalIfOpen(page);
+  await page.locator('[data-action="new"]').first().click({ timeout: 5000 });
+
+  const postNewOnboarding = page.locator('.modal-layer [data-action="onboarding-blank"]').first();
+  if (await postNewOnboarding.count() && await postNewOnboarding.isVisible().catch(() => false)) {
+    await postNewOnboarding.click({ timeout: 5000 });
   }
   await page.waitForFunction(() => document.documentElement.dataset.screen === 'editor', null, {timeout:15000});
 }
