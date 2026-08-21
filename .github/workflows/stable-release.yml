@@ -12,7 +12,7 @@ permissions:
 
 concurrency:
   group: manuscript-v4.2.1-stable-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 env:
   EXPECTED_RC6_GIT_BLOB: 3dede116014ae19de2f23f6deabefae139ffa18f
@@ -24,6 +24,7 @@ jobs:
   certify-pr:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
         with:
@@ -64,6 +65,7 @@ jobs:
           exit 1
 
       - name: Chromium + Firefox + WebKit + mobile/touch certification
+        timeout-minutes: 12
         env:
           MANUSCRIPT_URL: http://127.0.0.1:4173/Manuscript_v4.2.1_Stable.html
         run: node scripts/certify-v421.mjs
@@ -94,6 +96,7 @@ jobs:
   publish-release:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
