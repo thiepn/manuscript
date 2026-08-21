@@ -10,8 +10,8 @@ const profiles = [
   { name:'webkit-desktop', browser:webkit, viewport:{width:1440,height:900} },
   { name:'chromium-mobile-portrait', browser:chromium, viewport:{width:390,height:844}, isMobile:true, hasTouch:true },
   { name:'webkit-mobile-portrait', browser:webkit, viewport:{width:390,height:844}, isMobile:true, hasTouch:true },
-  { name:'chromium-mobile-landscape', browser:chromium, viewport:{width:844,height:390}, isMobile:true, hasTouch:true },
-  { name:'webkit-mobile-landscape', browser:webkit, viewport:{width:844,height:390}, isMobile:true, hasTouch:true },
+  { name:'chromium-mobile-landscape', browser:chromium, viewport:{width:740,height:390}, isMobile:true, hasTouch:true },
+  { name:'webkit-mobile-landscape', browser:webkit, viewport:{width:740,height:390}, isMobile:true, hasTouch:true },
 ];
 
 function check(ok, message) { assert.ok(ok, message); }
@@ -36,6 +36,7 @@ async function chooseTheme(page, theme) {
   await page.locator('[data-action="theme"]').first().click();
   await page.locator(`.theme-choice[data-theme-id="${theme}"]`).click();
   await page.waitForFunction(t => document.documentElement.dataset.theme === t, theme);
+  // picker intentionally stays open for rapid comparison; close by clicking modal close.
   const close = page.locator('.modal-close,[data-action="close-modal"],[aria-label="Close"]');
   if (await close.count()) await close.first().click();
   else await page.keyboard.press('Escape');
@@ -45,6 +46,7 @@ async function openEditor(page) {
   await openHome(page);
   const newButton = page.locator('[data-action="new"]').first();
   await newButton.click();
+  // First run may show onboarding or template choice; prefer the explicit blank path when present.
   const blank = page.locator('[data-action="onboarding-blank"],[data-action="new-blank"],[data-action="blank"]');
   if (await blank.count()) {
     try { await blank.first().click({timeout:1500}); } catch {}
@@ -94,6 +96,7 @@ async function certifyProfile(profile) {
     check(await rootFits(page), `${profile.name}: ${theme} horizontal overflow`);
   }
 
+  // Persistence across reload.
   await chooseTheme(page, 'oxford');
   await page.reload({waitUntil:'load'});
   await page.waitForTimeout(250);
@@ -127,6 +130,7 @@ async function certifyProfile(profile) {
     check(navDisplay !== 'none', `${profile.name}: mobile nav hidden`);
   }
 
+  // Open the theme modal from the editor and verify long modal body owns scrolling.
   await page.locator('[data-action="theme"]').first().click();
   const modalBody = page.locator('.modal-body');
   check(await modalBody.count() > 0, `${profile.name}: theme modal missing`);
@@ -135,6 +139,7 @@ async function certifyProfile(profile) {
   check(await rootFits(page), `${profile.name}: modal caused horizontal root overflow`);
 
   check(pageErrors.length === 0, `${profile.name}: page errors: ${pageErrors.join(' | ')}`);
+  // Ignore browser-originated favicon/unsupported-policy noise; app JS errors are captured by pageerror.
   const seriousConsole = consoleErrors.filter(x => !/favicon|source map|deprecated/i.test(x));
   check(seriousConsole.length === 0, `${profile.name}: console errors: ${seriousConsole.join(' | ')}`);
 
