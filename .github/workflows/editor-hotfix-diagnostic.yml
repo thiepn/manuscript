@@ -1,0 +1,83 @@
+name: Manuscript editor hotfix diagnostics
+
+on:
+  push:
+    branches: [fix/editor-mobile-v422]
+
+permissions:
+  contents: write
+
+jobs:
+  diagnose:
+    if: ${{ !contains(github.event.head_commit.message, '[diagnostic-generated]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract editor and mobile layout contexts
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          source = Path('index.html').read_text(encoding='utf-8')
+          patterns = [
+              '.workspace',
+              'codemirror-editor',
+              'preview-scroll',
+              'mobile-bottom-nav',
+              'viewMode',
+              'view-mode',
+              'editorMode',
+              'editor-mode',
+              'data-view',
+              'data-mode',
+              'mode-write',
+              'mode-preview',
+              'mode-split',
+              "'write'",
+              '"write"',
+              "'preview'",
+              '"preview"',
+              "'split'",
+              '"split"',
+          ]
+
+          out = []
+          out.append(f'bytes={len(source.encode("utf-8"))} chars={len(source)} lines={source.count(chr(10))+1}')
+          out.append('')
+          seen = set()
+          for pattern in patterns:
+              matches = list(re.finditer(re.escape(pattern), source, flags=re.I))
+              out.append(f'===== {pattern} :: {len(matches)} matches =====')
+              for n, match in enumerate(matches[:30], 1):
+                  start = max(0, match.start() - 1200)
+                  end = min(len(source), match.end() + 1800)
+                  key = (start // 200, end // 200)
+                  if key in seen:
+                      continue
+                  seen.add(key)
+                  snippet = source[start:end]
+                  line = source.count('\n', 0, match.start()) + 1
+                  out.append(f'--- match {n} line {line} char {match.start()} ---')
+                  out.append(snippet)
+                  out.append('')
+              out.append('')
+
+          Path('diagnostics').mkdir(exist_ok=True)
+          Path('diagnostics/editor-hotfix.txt').write_text('\n'.join(out), encoding='utf-8')
+
+      - name: Commit diagnostics
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add diagnostics/editor-hotfix.txt
+          if git diff --cached --quiet; then
+            echo "Diagnostics unchanged."
+          else
+            git commit -m "chore: capture editor hotfix diagnostics [diagnostic-generated]"
+            git push origin HEAD:fix/editor-mobile-v422
+          fi
