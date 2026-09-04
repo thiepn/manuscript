@@ -61,9 +61,36 @@ jobs:
         run: node scripts/certify-v423.mjs
 
       - name: Run broad Chromium UI sweep
+        id: sweep
+        continue-on-error: true
         env:
           MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
         run: node scripts/ui-sweep-v423.mjs
+
+      - name: Print broad UI sweep report
+        if: always()
+        shell: bash
+        run: |
+          if test -f diagnostics/ui-sweep-v423.md; then
+            cat diagnostics/ui-sweep-v423.md
+          else
+            echo "UI sweep report was not generated."
+          fi
+
+      - name: Upload broad UI sweep evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: manuscript-v4.2.3-ui-sweep-evidence
+          path: |
+            diagnostics/ui-sweep-v423.json
+            diagnostics/ui-sweep-v423.md
+
+      - name: Enforce broad UI sweep gate
+        if: steps.sweep.outcome != 'success'
+        run: |
+          echo "Broad UI sweep found unresolved UI findings; production bytes will not be promoted."
+          exit 1
 
       - name: Record certified production hash
         shell: bash
