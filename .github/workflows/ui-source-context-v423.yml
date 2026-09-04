@@ -1,0 +1,35 @@
+name: Manuscript v4.2.3 UI source context
+
+on:
+  push:
+    branches: [fix/ui-v423]
+    paths:
+      - tools/extract-ui-context-v423.py
+      - .github/workflows/ui-source-context-v423.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  extract:
+    if: ${{ !contains(github.event.head_commit.message, '[ui-source-generated]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Extract UI source context
+        run: python tools/extract-ui-context-v423.py
+      - name: Commit source context
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add diagnostics/ui-source-context-v423.txt
+          if git diff --cached --quiet; then
+            echo "Source context unchanged."
+          else
+            git commit -m "chore: capture v4.2.3 UI source context [ui-source-generated]"
+            git push origin HEAD:fix/ui-v423
+          fi
