@@ -128,6 +128,21 @@ HOTFIX_STYLE = r'''\n<style id="v423-ui-hardening">
 }
 
 @media (max-width:767px){
+  /* Mobile Add/Style/inspector surfaces are full-screen overlays above the editor. */
+  html[data-screen="editor"] .left-panel,
+  html[data-screen="editor"] .inspector{
+    position:fixed!important;
+    left:0!important;
+    right:0!important;
+    top:var(--appbar-h)!important;
+    bottom:56px!important;
+    width:100%!important;
+    max-width:none!important;
+    height:auto!important;
+    max-height:none!important;
+    z-index:70!important;
+  }
+
   .modal-foot > [data-action="onboarding-blank"]{
     flex:1 1 100%;
     width:100%;
@@ -178,6 +193,7 @@ def validate_html(text: str) -> None:
         "modal footer wrapping": '.modal-foot{' in text and 'flex-wrap:wrap' in text,
         "utility actions wrap globally": '.btn[data-action="backup-library"]' in text and 'display:block!important' in text and 'overflow-wrap:anywhere!important' in text,
         "tablet export protected": 'min-width:76px' in text,
+        "mobile panels fixed": 'html[data-screen="editor"] .inspector{' in text and 'bottom:56px!important' in text and 'z-index:70!important' in text,
         "landscape modal fit": 'max-height:calc(100dvh - 8px)!important' in text,
         "mobile onboarding primary": '[data-action="onboarding-blank"]' in text,
         "v422 retained": 'id="v422-editor-layout-hotfix"' in text,
