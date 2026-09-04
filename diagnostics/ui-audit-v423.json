@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-04T22:14:17.872Z",
+  "generatedAt": "2026-09-04T22:16:55.597Z",
   "baseURL": "http://127.0.0.1:4173/index.html",
   "profiles": [
     {
@@ -8,9 +8,201 @@
         "width": 1440,
         "height": 900
       },
-      "fatal": "locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('[data-panel=\"templates\"]').first()\n    - locator resolved to <button class=\"rail-btn \" title=\"Templates\" data-panel=\"templates\" aria-label=\"Templates\">…</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"modal-layer\">…</div> intercepts pointer events\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"modal-layer\">…</div> intercepts pointer events\n    - retrying click action\n      - waiting 100ms\n    13 × waiting for element to be visible, enabled and stable\n       - element is visible, enabled and stable\n       - scrolling into view if needed\n       - done scrolling\n       - <div class=\"modal-layer\">…</div> intercepts pointer events\n     - retrying click action\n       - waiting 500ms\n\n    at runProfile (/home/runner/work/manuscript/manuscript/scripts/audit-ui-v423.mjs:156:21)\n    at async file:///home/runner/work/manuscript/manuscript/scripts/audit-ui-v423.mjs:187:17",
-      "stages": [],
-      "issues": []
+      "stages": [
+        {
+          "stage": "landing",
+          "screen": "landing",
+          "theme": "light",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "issues": []
+        },
+        {
+          "stage": "home",
+          "screen": "home",
+          "theme": "light",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "issues": []
+        },
+        {
+          "stage": "editor-default",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "issues": []
+        },
+        {
+          "stage": "workspace-editor",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "issues": []
+        },
+        {
+          "stage": "workspace-split",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "issues": []
+        },
+        {
+          "stage": "workspace-preview",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "issues": []
+        },
+        {
+          "stage": "panel-files",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "issues": []
+        },
+        {
+          "stage": "panel-outline",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "issues": []
+        },
+        {
+          "stage": "panel-search",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "issues": []
+        },
+        {
+          "stage": "panel-insert",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "issues": []
+        },
+        {
+          "stage": "panel-assets",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "issues": []
+        },
+        {
+          "stage": "panel-references",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "issues": []
+        },
+        {
+          "stage": "panel-diagnostics",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "issues": []
+        },
+        {
+          "stage": "panel-history",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "issues": []
+        },
+        {
+          "stage": "panel-templates",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "issues": []
+        },
+        {
+          "stage": "panel-settings",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "issues": []
+        },
+        {
+          "stage": "panel-help",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "issues": []
+        },
+        {
+          "stage": "modal-theme",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "issues": []
+        },
+        {
+          "stage": "modal-export",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "issues": []
+        }
+      ],
+      "issues": [],
+      "pageErrors": [],
+      "consoleErrors": []
     },
     {
       "name": "desktop-compact",
@@ -18,9 +210,322 @@
         "width": 1024,
         "height": 768
       },
-      "fatal": "locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('[data-panel=\"templates\"]').first()\n    - locator resolved to <button class=\"rail-btn \" title=\"Templates\" data-panel=\"templates\" aria-label=\"Templates\">…</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"modal-layer\">…</div> intercepts pointer events\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"modal-layer\">…</div> intercepts pointer events\n    - retrying click action\n      - waiting 100ms\n    13 × waiting for element to be visible, enabled and stable\n       - element is visible, enabled and stable\n       - scrolling into view if needed\n       - done scrolling\n       - <div class=\"modal-layer\">…</div> intercepts pointer events\n     - retrying click action\n       - waiting 500ms\n\n    at runProfile (/home/runner/work/manuscript/manuscript/scripts/audit-ui-v423.mjs:156:21)\n    at async file:///home/runner/work/manuscript/manuscript/scripts/audit-ui-v423.mjs:187:17",
-      "stages": [],
-      "issues": []
+      "stages": [
+        {
+          "stage": "landing",
+          "screen": "landing",
+          "theme": "light",
+          "viewport": {
+            "width": 1024,
+            "height": 768
+          },
+          "issues": []
+        },
+        {
+          "stage": "home",
+          "screen": "home",
+          "theme": "light",
+          "viewport": {
+            "width": 1024,
+            "height": 768
+          },
+          "issues": []
+        },
+        {
+          "stage": "editor-default",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 1024,
+            "height": 768
+          },
+          "issues": []
+        },
+        {
+          "stage": "workspace-editor",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 1024,
+            "height": 768
+          },
+          "issues": []
+        },
+        {
+          "stage": "workspace-split",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 1024,
+            "height": 768
+          },
+          "issues": []
+        },
+        {
+          "stage": "workspace-preview",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 1024,
+            "height": 768
+          },
+          "issues": []
+        },
+        {
+          "stage": "panel-files",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 1024,
+            "height": 768
+          },
+          "issues": [
+            {
+              "severity": "high",
+              "code": "CONTROL_OFFSCREEN",
+              "message": "Interactive control extends outside viewport",
+              "selector": "button.icon-btn[data-action=\"margin-guides\"]",
+              "data": {
+                "rect": {
+                  "left": 1025.625,
+                  "right": 1050,
+                  "width": 24.375
+                },
+                "vw": 1024
+              }
+            }
+          ]
+        },
+        {
+          "stage": "panel-outline",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 1024,
+            "height": 768
+          },
+          "issues": [
+            {
+              "severity": "high",
+              "code": "CONTROL_OFFSCREEN",
+              "message": "Interactive control extends outside viewport",
+              "selector": "button.icon-btn[data-action=\"margin-guides\"]",
+              "data": {
+                "rect": {
+                  "left": 1025.625,
+                  "right": 1050,
+                  "width": 24.375
+                },
+                "vw": 1024
+              }
+            }
+          ]
+        },
+        {
+          "stage": "panel-search",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 1024,
+            "height": 768
+          },
+          "issues": [
+            {
+              "severity": "high",
+              "code": "CONTROL_OFFSCREEN",
+              "message": "Interactive control extends outside viewport",
+              "selector": "button.icon-btn[data-action=\"margin-guides\"]",
+              "data": {
+                "rect": {
+                  "left": 1025.625,
+                  "right": 1050,
+                  "width": 24.375
+                },
+                "vw": 1024
+              }
+            }
+          ]
+        },
+        {
+          "stage": "panel-insert",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 1024,
+            "height": 768
+          },
+          "issues": [
+            {
+              "severity": "high",
+              "code": "CONTROL_OFFSCREEN",
+              "message": "Interactive control extends outside viewport",
+              "selector": "button.icon-btn[data-action=\"margin-guides\"]",
+              "data": {
+                "rect": {
+                  "left": 1025.625,
+                  "right": 1050,
+                  "width": 24.375
+                },
+                "vw": 1024
+              }
+            }
+          ]
+        },
+        {
+          "stage": "panel-assets",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 1024,
+            "height": 768
+          },
+          "issues": [
+            {
+              "severity": "high",
+              "code": "CONTROL_OFFSCREEN",
+              "message": "Interactive control extends outside viewport",
+              "selector": "button.icon-btn[data-action=\"margin-guides\"]",
+              "data": {
+                "rect": {
+                  "left": 1025.625,
+                  "right": 1050,
+                  "width": 24.375
+                },
+                "vw": 1024
+              }
+            }
+          ]
+        },
+        {
+          "stage": "panel-references",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 1024,
+            "height": 768
+          },
+          "issues": [
+            {
+              "severity": "high",
+              "code": "CONTROL_OFFSCREEN",
+              "message": "Interactive control extends outside viewport",
+              "selector": "button.icon-btn[data-action=\"margin-guides\"]",
+              "data": {
+                "rect": {
+                  "left": 1025.625,
+                  "right": 1050,
+                  "width": 24.375
+                },
+                "vw": 1024
+              }
+            }
+          ]
+        },
+        {
+          "stage": "panel-diagnostics",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 1024,
+            "height": 768
+          },
+          "issues": [
+            {
+              "severity": "high",
+              "code": "CONTROL_OFFSCREEN",
+              "message": "Interactive control extends outside viewport",
+              "selector": "button.icon-btn[data-action=\"margin-guides\"]",
+              "data": {
+                "rect": {
+                  "left": 1025.625,
+                  "right": 1050,
+                  "width": 24.375
+                },
+                "vw": 1024
+              }
+            }
+          ]
+        },
+        {
+          "stage": "panel-history",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 1024,
+            "height": 768
+          },
+          "issues": []
+        },
+        {
+          "stage": "panel-templates",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 1024,
+            "height": 768
+          },
+          "issues": []
+        },
+        {
+          "stage": "panel-settings",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 1024,
+            "height": 768
+          },
+          "issues": []
+        },
+        {
+          "stage": "panel-help",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 1024,
+            "height": 768
+          },
+          "issues": []
+        },
+        {
+          "stage": "modal-theme",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 1024,
+            "height": 768
+          },
+          "issues": []
+        },
+        {
+          "stage": "modal-export",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 1024,
+            "height": 768
+          },
+          "issues": []
+        }
+      ],
+      "issues": [
+        {
+          "severity": "high",
+          "code": "CONTROL_OFFSCREEN",
+          "message": "Interactive control extends outside viewport",
+          "selector": "button.icon-btn[data-action=\"margin-guides\"]",
+          "data": {
+            "rect": {
+              "left": 1025.625,
+              "right": 1050,
+              "width": 24.375
+            },
+            "vw": 1024
+          },
+          "stage": "panel-diagnostics"
+        }
+      ],
+      "pageErrors": [],
+      "consoleErrors": []
     },
     {
       "name": "tablet-edge",
@@ -30,9 +535,446 @@
       },
       "isMobile": true,
       "hasTouch": true,
-      "fatal": "locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('[data-panel=\"templates\"]').first()\n    - locator resolved to <button class=\"rail-btn \" title=\"Templates\" data-panel=\"templates\" aria-label=\"Templates\">…</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"modal-layer\">…</div> intercepts pointer events\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"modal-layer\">…</div> intercepts pointer events\n    - retrying click action\n      - waiting 100ms\n    13 × waiting for element to be visible, enabled and stable\n       - element is visible, enabled and stable\n       - scrolling into view if needed\n       - done scrolling\n       - <div class=\"modal-layer\">…</div> intercepts pointer events\n     - retrying click action\n       - waiting 500ms\n\n    at runProfile (/home/runner/work/manuscript/manuscript/scripts/audit-ui-v423.mjs:156:21)\n    at async file:///home/runner/work/manuscript/manuscript/scripts/audit-ui-v423.mjs:187:17",
-      "stages": [],
-      "issues": []
+      "stages": [
+        {
+          "stage": "landing",
+          "screen": "landing",
+          "theme": "light",
+          "viewport": {
+            "width": 768,
+            "height": 1024
+          },
+          "issues": []
+        },
+        {
+          "stage": "home",
+          "screen": "home",
+          "theme": "light",
+          "viewport": {
+            "width": 768,
+            "height": 1024
+          },
+          "issues": []
+        },
+        {
+          "stage": "editor-default",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 768,
+            "height": 1024
+          },
+          "issues": [
+            {
+              "severity": "medium",
+              "code": "CONTROL_TEXT_CLIPPED",
+              "message": "Control content is horizontally clipped",
+              "selector": "button.btn.primary[data-action=\"export\"]",
+              "data": {
+                "clientWidth": 69,
+                "scrollWidth": 73
+              }
+            },
+            {
+              "severity": "high",
+              "code": "MOBILE_NAV_MISSING",
+              "message": "Mobile editor navigation is not visible",
+              "selector": "",
+              "data": {}
+            }
+          ]
+        },
+        {
+          "stage": "workspace-editor",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 768,
+            "height": 1024
+          },
+          "issues": [
+            {
+              "severity": "medium",
+              "code": "CONTROL_TEXT_CLIPPED",
+              "message": "Control content is horizontally clipped",
+              "selector": "button.btn.primary[data-action=\"export\"]",
+              "data": {
+                "clientWidth": 69,
+                "scrollWidth": 73
+              }
+            }
+          ]
+        },
+        {
+          "stage": "workspace-split",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 768,
+            "height": 1024
+          },
+          "issues": [
+            {
+              "severity": "medium",
+              "code": "CONTROL_TEXT_CLIPPED",
+              "message": "Control content is horizontally clipped",
+              "selector": "button.btn.primary[data-action=\"export\"]",
+              "data": {
+                "clientWidth": 69,
+                "scrollWidth": 73
+              }
+            }
+          ]
+        },
+        {
+          "stage": "workspace-preview",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 768,
+            "height": 1024
+          },
+          "issues": [
+            {
+              "severity": "medium",
+              "code": "CONTROL_TEXT_CLIPPED",
+              "message": "Control content is horizontally clipped",
+              "selector": "button.btn.primary[data-action=\"export\"]",
+              "data": {
+                "clientWidth": 69,
+                "scrollWidth": 73
+              }
+            }
+          ]
+        },
+        {
+          "stage": "panel-files",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 768,
+            "height": 1024
+          },
+          "issues": [
+            {
+              "severity": "medium",
+              "code": "CONTROL_TEXT_CLIPPED",
+              "message": "Control content is horizontally clipped",
+              "selector": "button.btn.primary[data-action=\"export\"]",
+              "data": {
+                "clientWidth": 69,
+                "scrollWidth": 73
+              }
+            },
+            {
+              "severity": "high",
+              "code": "COLLAPSED_EDITOR_SURFACE",
+              "message": "Editor/preview surface has unusably small height",
+              "selector": "section.editor-pane",
+              "data": {
+                "height": 32,
+                "width": 46
+              }
+            }
+          ]
+        },
+        {
+          "stage": "panel-outline",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 768,
+            "height": 1024
+          },
+          "issues": [
+            {
+              "severity": "medium",
+              "code": "CONTROL_TEXT_CLIPPED",
+              "message": "Control content is horizontally clipped",
+              "selector": "button.btn.primary[data-action=\"export\"]",
+              "data": {
+                "clientWidth": 69,
+                "scrollWidth": 73
+              }
+            }
+          ]
+        },
+        {
+          "stage": "panel-search",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 768,
+            "height": 1024
+          },
+          "issues": [
+            {
+              "severity": "medium",
+              "code": "CONTROL_TEXT_CLIPPED",
+              "message": "Control content is horizontally clipped",
+              "selector": "button.btn.primary[data-action=\"export\"]",
+              "data": {
+                "clientWidth": 69,
+                "scrollWidth": 73
+              }
+            }
+          ]
+        },
+        {
+          "stage": "panel-insert",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 768,
+            "height": 1024
+          },
+          "issues": [
+            {
+              "severity": "medium",
+              "code": "CONTROL_TEXT_CLIPPED",
+              "message": "Control content is horizontally clipped",
+              "selector": "button.btn.primary[data-action=\"export\"]",
+              "data": {
+                "clientWidth": 69,
+                "scrollWidth": 73
+              }
+            },
+            {
+              "severity": "high",
+              "code": "COLLAPSED_EDITOR_SURFACE",
+              "message": "Editor/preview surface has unusably small height",
+              "selector": "section.editor-pane",
+              "data": {
+                "height": 32,
+                "width": 46
+              }
+            }
+          ]
+        },
+        {
+          "stage": "panel-assets",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 768,
+            "height": 1024
+          },
+          "issues": [
+            {
+              "severity": "medium",
+              "code": "CONTROL_TEXT_CLIPPED",
+              "message": "Control content is horizontally clipped",
+              "selector": "button.btn.primary[data-action=\"export\"]",
+              "data": {
+                "clientWidth": 69,
+                "scrollWidth": 73
+              }
+            }
+          ]
+        },
+        {
+          "stage": "panel-references",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 768,
+            "height": 1024
+          },
+          "issues": [
+            {
+              "severity": "medium",
+              "code": "CONTROL_TEXT_CLIPPED",
+              "message": "Control content is horizontally clipped",
+              "selector": "button.btn.primary[data-action=\"export\"]",
+              "data": {
+                "clientWidth": 69,
+                "scrollWidth": 73
+              }
+            }
+          ]
+        },
+        {
+          "stage": "panel-diagnostics",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 768,
+            "height": 1024
+          },
+          "issues": [
+            {
+              "severity": "medium",
+              "code": "CONTROL_TEXT_CLIPPED",
+              "message": "Control content is horizontally clipped",
+              "selector": "button.btn.primary[data-action=\"export\"]",
+              "data": {
+                "clientWidth": 69,
+                "scrollWidth": 73
+              }
+            }
+          ]
+        },
+        {
+          "stage": "panel-history",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 768,
+            "height": 1024
+          },
+          "issues": [
+            {
+              "severity": "medium",
+              "code": "CONTROL_TEXT_CLIPPED",
+              "message": "Control content is horizontally clipped",
+              "selector": "button.btn.primary[data-action=\"export\"]",
+              "data": {
+                "clientWidth": 69,
+                "scrollWidth": 73
+              }
+            }
+          ]
+        },
+        {
+          "stage": "panel-templates",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 768,
+            "height": 1024
+          },
+          "issues": [
+            {
+              "severity": "medium",
+              "code": "CONTROL_TEXT_CLIPPED",
+              "message": "Control content is horizontally clipped",
+              "selector": "button.btn.primary[data-action=\"export\"]",
+              "data": {
+                "clientWidth": 69,
+                "scrollWidth": 73
+              }
+            }
+          ]
+        },
+        {
+          "stage": "panel-settings",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 768,
+            "height": 1024
+          },
+          "issues": [
+            {
+              "severity": "medium",
+              "code": "CONTROL_TEXT_CLIPPED",
+              "message": "Control content is horizontally clipped",
+              "selector": "button.btn.primary[data-action=\"export\"]",
+              "data": {
+                "clientWidth": 69,
+                "scrollWidth": 73
+              }
+            }
+          ]
+        },
+        {
+          "stage": "panel-help",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 768,
+            "height": 1024
+          },
+          "issues": [
+            {
+              "severity": "medium",
+              "code": "CONTROL_TEXT_CLIPPED",
+              "message": "Control content is horizontally clipped",
+              "selector": "button.btn.primary[data-action=\"export\"]",
+              "data": {
+                "clientWidth": 69,
+                "scrollWidth": 73
+              }
+            }
+          ]
+        },
+        {
+          "stage": "modal-theme",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 768,
+            "height": 1024
+          },
+          "issues": [
+            {
+              "severity": "medium",
+              "code": "CONTROL_TEXT_CLIPPED",
+              "message": "Control content is horizontally clipped",
+              "selector": "button.btn.primary[data-action=\"export\"]",
+              "data": {
+                "clientWidth": 69,
+                "scrollWidth": 73
+              }
+            }
+          ]
+        },
+        {
+          "stage": "modal-export",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 768,
+            "height": 1024
+          },
+          "issues": [
+            {
+              "severity": "medium",
+              "code": "CONTROL_TEXT_CLIPPED",
+              "message": "Control content is horizontally clipped",
+              "selector": "button.btn.primary[data-action=\"export\"]",
+              "data": {
+                "clientWidth": 69,
+                "scrollWidth": 73
+              }
+            }
+          ]
+        }
+      ],
+      "issues": [
+        {
+          "severity": "medium",
+          "code": "CONTROL_TEXT_CLIPPED",
+          "message": "Control content is horizontally clipped",
+          "selector": "button.btn.primary[data-action=\"export\"]",
+          "data": {
+            "clientWidth": 69,
+            "scrollWidth": 73
+          },
+          "stage": "modal-export"
+        },
+        {
+          "severity": "high",
+          "code": "MOBILE_NAV_MISSING",
+          "message": "Mobile editor navigation is not visible",
+          "selector": "",
+          "data": {},
+          "stage": "editor-default"
+        },
+        {
+          "severity": "high",
+          "code": "COLLAPSED_EDITOR_SURFACE",
+          "message": "Editor/preview surface has unusably small height",
+          "selector": "section.editor-pane",
+          "data": {
+            "height": 32,
+            "width": 46
+          },
+          "stage": "panel-insert"
+        }
+      ],
+      "pageErrors": [],
+      "consoleErrors": []
     },
     {
       "name": "mobile-portrait",
@@ -42,9 +984,178 @@
       },
       "isMobile": true,
       "hasTouch": true,
-      "fatal": "locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('[data-action=\"workflow-content\"]').first()\n    - locator resolved to <button class=\"\" data-action=\"workflow-content\">Add</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n      - waiting 100ms\n    13 × waiting for element to be visible, enabled and stable\n       - element is not visible\n     - retrying click action\n       - waiting 500ms\n\n    at runProfile (/home/runner/work/manuscript/manuscript/scripts/audit-ui-v423.mjs:172:39)\n    at async file:///home/runner/work/manuscript/manuscript/scripts/audit-ui-v423.mjs:187:17",
-      "stages": [],
-      "issues": []
+      "stages": [
+        {
+          "stage": "landing",
+          "screen": "landing",
+          "theme": "light",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "issues": []
+        },
+        {
+          "stage": "home",
+          "screen": "home",
+          "theme": "light",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "issues": [
+            {
+              "severity": "medium",
+              "code": "CONTROL_TEXT_CLIPPED",
+              "message": "Control content is horizontally clipped",
+              "selector": "button.btn.primary[data-action=\"onboarding-blank\"]",
+              "data": {
+                "clientWidth": 98,
+                "scrollWidth": 129
+              }
+            }
+          ]
+        },
+        {
+          "stage": "editor-default",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "issues": []
+        },
+        {
+          "stage": "mobile-write",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "issues": []
+        },
+        {
+          "stage": "mobile-preview",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "issues": []
+        },
+        {
+          "stage": "mobile-write",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "issues": []
+        },
+        {
+          "stage": "mobile-format",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "issues": []
+        },
+        {
+          "stage": "mobile-add",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "issues": [
+            {
+              "severity": "high",
+              "code": "COLLAPSED_EDITOR_SURFACE",
+              "message": "Editor/preview surface has unusably small height",
+              "selector": "section.editor-pane",
+              "data": {
+                "height": 20.0625,
+                "width": 390
+              }
+            }
+          ]
+        },
+        {
+          "stage": "mobile-export-modal",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "issues": [
+            {
+              "severity": "high",
+              "code": "COLLAPSED_EDITOR_SURFACE",
+              "message": "Editor/preview surface has unusably small height",
+              "selector": "section.editor-pane",
+              "data": {
+                "height": 20.0625,
+                "width": 390
+              }
+            }
+          ]
+        },
+        {
+          "stage": "mobile-theme-modal",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "issues": [
+            {
+              "severity": "high",
+              "code": "COLLAPSED_EDITOR_SURFACE",
+              "message": "Editor/preview surface has unusably small height",
+              "selector": "section.editor-pane",
+              "data": {
+                "height": 20.0625,
+                "width": 390
+              }
+            }
+          ]
+        }
+      ],
+      "issues": [
+        {
+          "severity": "medium",
+          "code": "CONTROL_TEXT_CLIPPED",
+          "message": "Control content is horizontally clipped",
+          "selector": "button.btn.primary[data-action=\"onboarding-blank\"]",
+          "data": {
+            "clientWidth": 98,
+            "scrollWidth": 129
+          },
+          "stage": "home"
+        },
+        {
+          "severity": "high",
+          "code": "COLLAPSED_EDITOR_SURFACE",
+          "message": "Editor/preview surface has unusably small height",
+          "selector": "section.editor-pane",
+          "data": {
+            "height": 20.0625,
+            "width": 390
+          },
+          "stage": "mobile-theme-modal"
+        }
+      ],
+      "pageErrors": [],
+      "consoleErrors": []
     },
     {
       "name": "mobile-narrow",
@@ -54,9 +1165,178 @@
       },
       "isMobile": true,
       "hasTouch": true,
-      "fatal": "locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('[data-action=\"workflow-content\"]').first()\n    - locator resolved to <button class=\"\" data-action=\"workflow-content\">Add</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n      - waiting 100ms\n    13 × waiting for element to be visible, enabled and stable\n       - element is not visible\n     - retrying click action\n       - waiting 500ms\n\n    at runProfile (/home/runner/work/manuscript/manuscript/scripts/audit-ui-v423.mjs:172:39)\n    at async file:///home/runner/work/manuscript/manuscript/scripts/audit-ui-v423.mjs:187:17",
-      "stages": [],
-      "issues": []
+      "stages": [
+        {
+          "stage": "landing",
+          "screen": "landing",
+          "theme": "light",
+          "viewport": {
+            "width": 360,
+            "height": 800
+          },
+          "issues": []
+        },
+        {
+          "stage": "home",
+          "screen": "home",
+          "theme": "light",
+          "viewport": {
+            "width": 360,
+            "height": 800
+          },
+          "issues": [
+            {
+              "severity": "medium",
+              "code": "CONTROL_TEXT_CLIPPED",
+              "message": "Control content is horizontally clipped",
+              "selector": "button.btn.primary[data-action=\"onboarding-blank\"]",
+              "data": {
+                "clientWidth": 68,
+                "scrollWidth": 114
+              }
+            }
+          ]
+        },
+        {
+          "stage": "editor-default",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 360,
+            "height": 800
+          },
+          "issues": []
+        },
+        {
+          "stage": "mobile-write",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 360,
+            "height": 800
+          },
+          "issues": []
+        },
+        {
+          "stage": "mobile-preview",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 360,
+            "height": 800
+          },
+          "issues": []
+        },
+        {
+          "stage": "mobile-write",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 360,
+            "height": 800
+          },
+          "issues": []
+        },
+        {
+          "stage": "mobile-format",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 360,
+            "height": 800
+          },
+          "issues": []
+        },
+        {
+          "stage": "mobile-add",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 360,
+            "height": 800
+          },
+          "issues": [
+            {
+              "severity": "high",
+              "code": "COLLAPSED_EDITOR_SURFACE",
+              "message": "Editor/preview surface has unusably small height",
+              "selector": "section.editor-pane",
+              "data": {
+                "height": 18.875,
+                "width": 360
+              }
+            }
+          ]
+        },
+        {
+          "stage": "mobile-export-modal",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 360,
+            "height": 800
+          },
+          "issues": [
+            {
+              "severity": "high",
+              "code": "COLLAPSED_EDITOR_SURFACE",
+              "message": "Editor/preview surface has unusably small height",
+              "selector": "section.editor-pane",
+              "data": {
+                "height": 18.875,
+                "width": 360
+              }
+            }
+          ]
+        },
+        {
+          "stage": "mobile-theme-modal",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 360,
+            "height": 800
+          },
+          "issues": [
+            {
+              "severity": "high",
+              "code": "COLLAPSED_EDITOR_SURFACE",
+              "message": "Editor/preview surface has unusably small height",
+              "selector": "section.editor-pane",
+              "data": {
+                "height": 18.875,
+                "width": 360
+              }
+            }
+          ]
+        }
+      ],
+      "issues": [
+        {
+          "severity": "medium",
+          "code": "CONTROL_TEXT_CLIPPED",
+          "message": "Control content is horizontally clipped",
+          "selector": "button.btn.primary[data-action=\"onboarding-blank\"]",
+          "data": {
+            "clientWidth": 68,
+            "scrollWidth": 114
+          },
+          "stage": "home"
+        },
+        {
+          "severity": "high",
+          "code": "COLLAPSED_EDITOR_SURFACE",
+          "message": "Editor/preview surface has unusably small height",
+          "selector": "section.editor-pane",
+          "data": {
+            "height": 18.875,
+            "width": 360
+          },
+          "stage": "mobile-theme-modal"
+        }
+      ],
+      "pageErrors": [],
+      "consoleErrors": []
     },
     {
       "name": "mobile-small",
@@ -66,9 +1346,178 @@
       },
       "isMobile": true,
       "hasTouch": true,
-      "fatal": "locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('[data-action=\"workflow-content\"]').first()\n    - locator resolved to <button class=\"\" data-action=\"workflow-content\">Add</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n      - waiting 100ms\n    13 × waiting for element to be visible, enabled and stable\n       - element is not visible\n     - retrying click action\n       - waiting 500ms\n\n    at runProfile (/home/runner/work/manuscript/manuscript/scripts/audit-ui-v423.mjs:172:39)\n    at async file:///home/runner/work/manuscript/manuscript/scripts/audit-ui-v423.mjs:187:17",
-      "stages": [],
-      "issues": []
+      "stages": [
+        {
+          "stage": "landing",
+          "screen": "landing",
+          "theme": "light",
+          "viewport": {
+            "width": 320,
+            "height": 568
+          },
+          "issues": []
+        },
+        {
+          "stage": "home",
+          "screen": "home",
+          "theme": "light",
+          "viewport": {
+            "width": 320,
+            "height": 568
+          },
+          "issues": [
+            {
+              "severity": "medium",
+              "code": "CONTROL_TEXT_CLIPPED",
+              "message": "Control content is horizontally clipped",
+              "selector": "button.btn.primary[data-action=\"onboarding-blank\"]",
+              "data": {
+                "clientWidth": 28,
+                "scrollWidth": 94
+              }
+            }
+          ]
+        },
+        {
+          "stage": "editor-default",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 320,
+            "height": 568
+          },
+          "issues": []
+        },
+        {
+          "stage": "mobile-write",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 320,
+            "height": 568
+          },
+          "issues": []
+        },
+        {
+          "stage": "mobile-preview",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 320,
+            "height": 568
+          },
+          "issues": []
+        },
+        {
+          "stage": "mobile-write",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 320,
+            "height": 568
+          },
+          "issues": []
+        },
+        {
+          "stage": "mobile-format",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 320,
+            "height": 568
+          },
+          "issues": []
+        },
+        {
+          "stage": "mobile-add",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 320,
+            "height": 568
+          },
+          "issues": [
+            {
+              "severity": "high",
+              "code": "COLLAPSED_EDITOR_SURFACE",
+              "message": "Editor/preview surface has unusably small height",
+              "selector": "section.editor-pane",
+              "data": {
+                "height": 12.640625,
+                "width": 320
+              }
+            }
+          ]
+        },
+        {
+          "stage": "mobile-export-modal",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 320,
+            "height": 568
+          },
+          "issues": [
+            {
+              "severity": "high",
+              "code": "COLLAPSED_EDITOR_SURFACE",
+              "message": "Editor/preview surface has unusably small height",
+              "selector": "section.editor-pane",
+              "data": {
+                "height": 12.640625,
+                "width": 320
+              }
+            }
+          ]
+        },
+        {
+          "stage": "mobile-theme-modal",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 320,
+            "height": 568
+          },
+          "issues": [
+            {
+              "severity": "high",
+              "code": "COLLAPSED_EDITOR_SURFACE",
+              "message": "Editor/preview surface has unusably small height",
+              "selector": "section.editor-pane",
+              "data": {
+                "height": 12.640625,
+                "width": 320
+              }
+            }
+          ]
+        }
+      ],
+      "issues": [
+        {
+          "severity": "medium",
+          "code": "CONTROL_TEXT_CLIPPED",
+          "message": "Control content is horizontally clipped",
+          "selector": "button.btn.primary[data-action=\"onboarding-blank\"]",
+          "data": {
+            "clientWidth": 28,
+            "scrollWidth": 94
+          },
+          "stage": "home"
+        },
+        {
+          "severity": "high",
+          "code": "COLLAPSED_EDITOR_SURFACE",
+          "message": "Editor/preview surface has unusably small height",
+          "selector": "section.editor-pane",
+          "data": {
+            "height": 12.640625,
+            "width": 320
+          },
+          "stage": "mobile-theme-modal"
+        }
+      ],
+      "pageErrors": [],
+      "consoleErrors": []
     },
     {
       "name": "mobile-landscape",
@@ -78,15 +1527,162 @@
       },
       "isMobile": true,
       "hasTouch": true,
-      "fatal": "locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('[data-action=\"workflow-content\"]').first()\n    - locator resolved to <button class=\"\" data-action=\"workflow-content\">Add</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n      - waiting 100ms\n    13 × waiting for element to be visible, enabled and stable\n       - element is not visible\n     - retrying click action\n       - waiting 500ms\n\n    at runProfile (/home/runner/work/manuscript/manuscript/scripts/audit-ui-v423.mjs:172:39)\n    at async file:///home/runner/work/manuscript/manuscript/scripts/audit-ui-v423.mjs:187:17",
-      "stages": [],
-      "issues": []
+      "stages": [
+        {
+          "stage": "landing",
+          "screen": "landing",
+          "theme": "light",
+          "viewport": {
+            "width": 740,
+            "height": 390
+          },
+          "issues": []
+        },
+        {
+          "stage": "home",
+          "screen": "home",
+          "theme": "light",
+          "viewport": {
+            "width": 740,
+            "height": 390
+          },
+          "issues": []
+        },
+        {
+          "stage": "editor-default",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 740,
+            "height": 390
+          },
+          "issues": []
+        },
+        {
+          "stage": "mobile-write",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 740,
+            "height": 390
+          },
+          "issues": []
+        },
+        {
+          "stage": "mobile-preview",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 740,
+            "height": 390
+          },
+          "issues": []
+        },
+        {
+          "stage": "mobile-write",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 740,
+            "height": 390
+          },
+          "issues": []
+        },
+        {
+          "stage": "mobile-format",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 740,
+            "height": 390
+          },
+          "issues": []
+        },
+        {
+          "stage": "mobile-add",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 740,
+            "height": 390
+          },
+          "issues": [
+            {
+              "severity": "high",
+              "code": "COLLAPSED_EDITOR_SURFACE",
+              "message": "Editor/preview surface has unusably small height",
+              "selector": "section.editor-pane",
+              "data": {
+                "height": 7.859375,
+                "width": 740
+              }
+            }
+          ]
+        },
+        {
+          "stage": "mobile-export-modal",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 740,
+            "height": 390
+          },
+          "issues": [
+            {
+              "severity": "high",
+              "code": "COLLAPSED_EDITOR_SURFACE",
+              "message": "Editor/preview surface has unusably small height",
+              "selector": "section.editor-pane",
+              "data": {
+                "height": 7.859375,
+                "width": 740
+              }
+            }
+          ]
+        },
+        {
+          "stage": "mobile-theme-modal",
+          "screen": "editor",
+          "theme": "light",
+          "viewport": {
+            "width": 740,
+            "height": 390
+          },
+          "issues": [
+            {
+              "severity": "high",
+              "code": "COLLAPSED_EDITOR_SURFACE",
+              "message": "Editor/preview surface has unusably small height",
+              "selector": "section.editor-pane",
+              "data": {
+                "height": 7.859375,
+                "width": 740
+              }
+            }
+          ]
+        }
+      ],
+      "issues": [
+        {
+          "severity": "high",
+          "code": "COLLAPSED_EDITOR_SURFACE",
+          "message": "Editor/preview surface has unusably small height",
+          "selector": "section.editor-pane",
+          "data": {
+            "height": 7.859375,
+            "width": 740
+          },
+          "stage": "mobile-theme-modal"
+        }
+      ],
+      "pageErrors": [],
+      "consoleErrors": []
     }
   ],
   "summary": {
-    "total": 0,
-    "high": 0,
-    "medium": 0,
-    "fatal": 7
+    "total": 11,
+    "high": 7,
+    "medium": 4,
+    "fatal": 0
   }
 }
