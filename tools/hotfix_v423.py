@@ -166,6 +166,8 @@ HOTFIX_STYLE = r'''\n<style id="v423-ui-hardening">
   }
   .modal-layer .modal{
     max-height:calc(100dvh - 8px)!important;
+    animation:none!important;
+    transform:none!important;
   }
   .modal-layer .modal-body{
     min-height:0;
@@ -194,7 +196,7 @@ def validate_html(text: str) -> None:
         "utility actions wrap globally": '.btn[data-action="backup-library"]' in text and 'display:block!important' in text and 'overflow-wrap:anywhere!important' in text,
         "tablet export protected": 'min-width:76px' in text,
         "mobile panels fixed": 'html[data-screen="editor"] .inspector{' in text and 'bottom:56px!important' in text and 'z-index:70!important' in text,
-        "landscape modal fit": 'max-height:calc(100dvh - 8px)!important' in text,
+        "landscape modal fit": 'max-height:calc(100dvh - 8px)!important' in text and 'animation:none!important' in text and 'transform:none!important' in text,
         "mobile onboarding primary": '[data-action="onboarding-blank"]' in text,
         "v422 retained": 'id="v422-editor-layout-hotfix"' in text,
     }
