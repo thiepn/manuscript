@@ -27,6 +27,23 @@ jobs:
         run: |
           npm install --no-save playwright
           npx playwright install --with-deps chromium
+      - name: Correct audit traversal for intentional modal/duplicate controls
+        shell: python
+        run: |
+          from pathlib import Path
+          path = Path('scripts/audit-ui-v423.mjs')
+          text = path.read_text(encoding='utf-8')
+          old = "stages.push(await auditStage(page,`panel-${panel}`,false));\n        }"
+          new = "stages.push(await auditStage(page,`panel-${panel}`,false));\n          await closeModalIfOpen(page);\n        }"
+          if old not in text:
+              raise SystemExit('desktop panel traversal anchor not found')
+          text = text.replace(old, new, 1)
+          old = "const add=page.locator('[data-action=\"workflow-content\"]').first();"
+          new = "const add=page.locator('.mobile-bottom-nav [data-action=\"workflow-content\"]').first();"
+          if old not in text:
+              raise SystemExit('mobile Add traversal anchor not found')
+          text = text.replace(old, new, 1)
+          path.write_text(text, encoding='utf-8')
       - name: Serve current branch application
         run: |
           python -m http.server 4173 --bind 127.0.0.1 > /tmp/manuscript-ui-audit-http.log 2>&1 &
@@ -41,6 +58,7 @@ jobs:
       - name: Commit audit report
         shell: bash
         run: |
+          git checkout -- scripts/audit-ui-v423.mjs
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add diagnostics/ui-audit-v423.json diagnostics/ui-audit-v423.md
