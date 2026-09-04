@@ -46,7 +46,8 @@ jobs:
           git add diagnostics/ui-audit-v423.json diagnostics/ui-audit-v423.md
           if git diff --cached --quiet; then
             echo "Audit report unchanged."
-          else
-            git commit -m "chore: capture v4.2.3 UI audit [ui-audit-generated]"
-            git push origin HEAD:fix/ui-v423
+            exit 0
           fi
+          git commit -m "chore: capture v4.2.3 UI audit [ui-audit-generated]"
+          git pull --rebase origin fix/ui-v423
+          git push origin HEAD:fix/ui-v423
