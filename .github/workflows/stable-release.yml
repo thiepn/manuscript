@@ -1,4 +1,4 @@
-name: Manuscript v4.2.1 Stable Certification & Release
+name: Manuscript v4.2.2 Stable Certification & Release
 
 on:
   pull_request:
@@ -11,14 +11,13 @@ permissions:
   contents: write
 
 concurrency:
-  group: manuscript-v4.2.1-stable-${{ github.ref }}
+  group: manuscript-v4.2.2-stable-${{ github.ref }}
   cancel-in-progress: true
 
 env:
-  EXPECTED_RC6_GIT_BLOB: 3dede116014ae19de2f23f6deabefae139ffa18f
-  EXPECTED_STABLE_SHA256: 6d3900a2c973dc2d36099fc596b77b21268c11fdc1cff46bba7e66f08d83aba6
-  STABLE_FILE: Manuscript_v4.2.1_Stable.html
-  STABLE_MANIFEST: Manuscript_v4.2.1_Stable_RELEASE_MANIFEST.json
+  EXPECTED_STABLE_SHA256: deb838e5868c4f944fab92aa508170c1f046dd5faa66f2ce4bcf2951c5269606
+  STABLE_FILE: Manuscript_v4.2.2_Stable.html
+  STABLE_MANIFEST: Manuscript_v4.2.2_Stable_RELEASE_MANIFEST.json
 
 jobs:
   certify-pr:
@@ -31,107 +30,191 @@ jobs:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
 
-      - name: Verify exact RC6 source on first generation
-        shell: bash
-        run: |
-          if ! grep -q 'Manuscript v4.2.1 Stable' index.html; then
-            actual=$(git hash-object index.html)
-            test "$actual" = "$EXPECTED_RC6_GIT_BLOB" || { echo "RC6 blob mismatch: $actual"; exit 1; }
-          fi
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.13'
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
 
-      - name: Install certification dependencies
+      - name: Verify exact v4.2.2 Stable bytes and contracts
+        shell: bash
+        run: |
+          echo "$EXPECTED_STABLE_SHA256  index.html" | sha256sum --check --strict
+          test "$(tr -d '\r\n' < V422_SHA256.txt)" = "$EXPECTED_STABLE_SHA256"
+          grep -q '<title>Manuscript v4.2.2 Stable</title>' index.html
+          grep -q 'id="v422-editor-layout-hotfix"' index.html
+          grep -q 'manuscript-editor-layout-contract" content="exclusive-workspace-panes+mobile-flex-height-v1' index.html
+          grep -q 'v4.2.2' sw.js
+
+      - name: Install browser certification dependencies
         run: |
           npm install --no-save playwright
           npx playwright install --with-deps chromium firefox webkit
 
-      - name: Generate Stable artifact
+      - name: Serve certified application
         run: |
-          python tools/promote_v421.py index.html
-          echo "$EXPECTED_STABLE_SHA256  $STABLE_FILE" | sha256sum --check --strict
-
-      - name: Serve Stable artifact
-        run: |
-          python -m http.server 4173 --bind 127.0.0.1 > /tmp/manuscript-http.log 2>&1 &
-          echo $! > /tmp/manuscript-http.pid
-          for i in {1..30}; do curl -fsS "http://127.0.0.1:4173/$STABLE_FILE" >/dev/null && exit 0; sleep 1; done
-          cat /tmp/manuscript-http.log
+          python -m http.server 4173 --bind 127.0.0.1 > /tmp/manuscript-v422-http.log 2>&1 &
+          echo $! > /tmp/manuscript-v422-http.pid
+          for i in {1..30}; do curl -fsS http://127.0.0.1:4173/index.html >/dev/null && exit 0; sleep 1; done
+          cat /tmp/manuscript-v422-http.log
           exit 1
 
-      - name: Chromium + Firefox + WebKit + mobile/touch certification
+      - name: Chromium + Firefox + WebKit desktop/mobile certification
         timeout-minutes: 12
         env:
-          MANUSCRIPT_URL: http://127.0.0.1:4173/Manuscript_v4.2.1_Stable.html
-        run: node scripts/certify-v421.mjs
+          MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
+        run: node scripts/certify-v422.mjs
 
-      - name: Promote certified bytes on release branch
+      - name: Package certified release artifacts
         shell: bash
         run: |
-          cp "$STABLE_FILE" index.html
-          echo "$EXPECTED_STABLE_SHA256  index.html" | sha256sum --check --strict
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          # Only the production HTML is promotion state. The manifest contains a
-          # generation timestamp and is intentionally kept as a CI/release artifact
-          # so repeated certification is idempotent and cannot create a commit loop.
-          git add index.html
-          if git diff --cached --quiet; then
-            echo "Stable bytes already committed."
-          else
-            git commit -m "release: Manuscript v4.2.1 Stable [stable-generated]"
-            git push origin "HEAD:${{ github.head_ref }}"
-          fi
+          cp index.html "$STABLE_FILE"
+          echo "$EXPECTED_STABLE_SHA256  $STABLE_FILE" | sha256sum --check --strict
+          python - <<'PY'
+          import hashlib, json, os
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          stable = Path(os.environ['STABLE_FILE'])
+          expected = os.environ['EXPECTED_STABLE_SHA256']
+          manifest = {
+              'schema': 'manuscript-release-manifest-v1',
+              'product': 'Manuscript',
+              'version': '4.2.2',
+              'channel': 'stable',
+              'release_name': 'Manuscript v4.2.2 Stable',
+              'generated_at_utc': datetime.now(timezone.utc).isoformat(),
+              'artifact': {
+                  'filename': stable.name,
+                  'bytes': stable.stat().st_size,
+                  'sha256': hashlib.sha256(stable.read_bytes()).hexdigest(),
+              },
+              'contracts': {
+                  'stable': 'production-stable-v1',
+                  'editor_layout': 'exclusive-workspace-panes+mobile-flex-height-v1',
+                  'scroll': 'screen-scoped-scroll-ownership-v2',
+                  'mobile_viewport': 'dvh-keyboard-safe-v3',
+                  'themes': 'curated-interface-themes-v2',
+                  'visual': 'editorial-interface-v1.1',
+              },
+              'certification': {
+                  'script': 'scripts/certify-v422.mjs',
+                  'profiles': 7,
+                  'engines': ['chromium', 'firefox', 'webkit'],
+                  'desktop_modes': ['write', 'split', 'preview'],
+                  'mobile_orientations': ['portrait', 'landscape'],
+                  'passed': True,
+              },
+          }
+          assert manifest['artifact']['sha256'] == expected
+          Path(os.environ['STABLE_MANIFEST']).write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
+          PY
 
       - name: Upload certification artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: manuscript-v4.2.1-stable-certified
+          name: manuscript-v4.2.2-stable-certified
           path: |
-            Manuscript_v4.2.1_Stable.html
-            Manuscript_v4.2.1_Stable_RELEASE_MANIFEST.json
+            Manuscript_v4.2.2_Stable.html
+            Manuscript_v4.2.2_Stable_RELEASE_MANIFEST.json
+            V422_SHA256.txt
 
   publish-release:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.13'
+
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
 
-      - name: Verify merged Stable bytes
+      - name: Verify merged v4.2.2 Stable bytes
+        shell: bash
         run: |
           echo "$EXPECTED_STABLE_SHA256  index.html" | sha256sum --check --strict
-          grep -q '<title>Manuscript v4.2.1 Stable</title>' index.html
+          test "$(tr -d '\r\n' < V422_SHA256.txt)" = "$EXPECTED_STABLE_SHA256"
+          grep -q '<title>Manuscript v4.2.2 Stable</title>' index.html
+          grep -q 'id="v422-editor-layout-hotfix"' index.html
+          grep -q 'manuscript-editor-layout-contract" content="exclusive-workspace-panes+mobile-flex-height-v1' index.html
+          grep -q 'v4.2.2' sw.js
 
-      - name: Regenerate release manifest from merged bytes
+      - name: Install browser certification dependencies
         run: |
-          python tools/promote_v421.py index.html --output "$STABLE_FILE" --manifest "$STABLE_MANIFEST"
-          echo "$EXPECTED_STABLE_SHA256  $STABLE_FILE" | sha256sum --check --strict
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium firefox webkit
 
-      - name: Create GitHub Stable release and tag
+      - name: Serve merged Stable application
+        run: |
+          python -m http.server 4173 --bind 127.0.0.1 > /tmp/manuscript-v422-http.log 2>&1 &
+          echo $! > /tmp/manuscript-v422-http.pid
+          for i in {1..30}; do curl -fsS http://127.0.0.1:4173/index.html >/dev/null && exit 0; sleep 1; done
+          cat /tmp/manuscript-v422-http.log
+          exit 1
+
+      - name: Re-certify merged Stable application
+        timeout-minutes: 12
+        env:
+          MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
+        run: node scripts/certify-v422.mjs
+
+      - name: Package merged Stable release
+        shell: bash
+        run: |
+          cp index.html "$STABLE_FILE"
+          echo "$EXPECTED_STABLE_SHA256  $STABLE_FILE" | sha256sum --check --strict
+          python - <<'PY'
+          import hashlib, json, os
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          stable = Path(os.environ['STABLE_FILE'])
+          expected = os.environ['EXPECTED_STABLE_SHA256']
+          manifest = {
+              'schema': 'manuscript-release-manifest-v1',
+              'product': 'Manuscript',
+              'version': '4.2.2',
+              'channel': 'stable',
+              'release_name': 'Manuscript v4.2.2 Stable',
+              'generated_at_utc': datetime.now(timezone.utc).isoformat(),
+              'source_commit': os.environ.get('GITHUB_SHA', ''),
+              'artifact': {
+                  'filename': stable.name,
+                  'bytes': stable.stat().st_size,
+                  'sha256': hashlib.sha256(stable.read_bytes()).hexdigest(),
+              },
+              'contracts': {
+                  'stable': 'production-stable-v1',
+                  'editor_layout': 'exclusive-workspace-panes+mobile-flex-height-v1',
+                  'scroll': 'screen-scoped-scroll-ownership-v2',
+                  'mobile_viewport': 'dvh-keyboard-safe-v3',
+                  'themes': 'curated-interface-themes-v2',
+                  'visual': 'editorial-interface-v1.1',
+              },
+              'certification': {
+                  'script': 'scripts/certify-v422.mjs',
+                  'profiles': 7,
+                  'engines': ['chromium', 'firefox', 'webkit'],
+                  'desktop_modes': ['write', 'split', 'preview'],
+                  'mobile_orientations': ['portrait', 'landscape'],
+                  'passed': True,
+              },
+          }
+          assert manifest['artifact']['sha256'] == expected
+          Path(os.environ['STABLE_MANIFEST']).write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
+          PY
+
+      - name: Create or update GitHub Stable release
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
-          if gh release view v4.2.1 >/dev/null 2>&1; then
-            echo "Release v4.2.1 already exists; replacing assets."
-            gh release upload v4.2.1 "$STABLE_FILE" "$STABLE_MANIFEST" --clobber
+          if gh release view v4.2.2 >/dev/null 2>&1; then
+            gh release upload v4.2.2 "$STABLE_FILE" "$STABLE_MANIFEST" V422_SHA256.txt --clobber
           else
-            gh release create v4.2.1 "$STABLE_FILE" "$STABLE_MANIFEST" \
+            gh release create v4.2.2 "$STABLE_FILE" "$STABLE_MANIFEST" V422_SHA256.txt \
               --target "$GITHUB_SHA" \
-              --title "Manuscript v4.2.1 Stable" \
-              --notes-file RELEASE_NOTES_v4.2.1.md
+              --title "Manuscript v4.2.2 Stable" \
+              --notes-file RELEASE_NOTES_v4.2.2.md
           fi
