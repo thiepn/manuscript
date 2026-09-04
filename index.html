@@ -22,8 +22,9 @@
   <meta name="manuscript-browser-contract" content="capability-evidence-v1">
   <meta name="manuscript-deployment-contract" content="relative-sw-github-pages-v1">
   <meta name="manuscript-concurrency-contract" content="lock-and-conflict-guard-v1">
-  <meta name="description" content="Manuscript v4.2.1 Stable — local-first Markdown publishing studio with screen-scoped scrolling, six curated interface themes, consolidated editorial visual architecture, deterministic pagination, and publication-ready export.">
-  <title>Manuscript v4.2.1 Stable</title>
+  <meta name="description" content="Manuscript v4.2.2 Stable — local-first Markdown publishing studio with screen-scoped scrolling, six curated interface themes, consolidated editorial visual architecture, deterministic pagination, and publication-ready export.">
+  <title>Manuscript v4.2.2 Stable</title>
+<meta name="manuscript-editor-layout-contract" content="exclusive-workspace-panes+mobile-flex-height-v1">
   <style>:root {
   --app-bg:#f1f2f0;--workspace-bg:#e7e8e5;--surface-1:#fff;--surface-2:#f8f8f6;--surface-3:#f1f2ef;
   --surface-hover:#eceeeb;--surface-active:#e4e9ed;--paper:#fffefb;--paper-muted:#fbfaf5;
@@ -1701,7 +1702,7 @@ html[data-theme="ink"]{
 <meta name="manuscript-theme-contract" content="curated-interface-themes-v2">
 
 <style id="v421-visual-architecture">
-/* Manuscript v4.2.1 — certified editorial interface contract.
+/* Manuscript v4.2.2 — certified editorial interface contract.
    Principles: document first; borders before shadows; typography before decoration;
    compact professional chrome; restrained geometry; theme-independent document styling. */
 
@@ -1948,6 +1949,66 @@ html[data-density="compact"] .toolbar .icon-btn{width:28px;height:28px}
 <meta name="manuscript-stable-contract" content="production-stable-v1">
 
 <meta name="manuscript-certification-contract" content="scroll-v2+themes-v2+visual-v1.1">
+
+\n<style id="v422-editor-layout-hotfix">
+/* Manuscript v4.2.2 — editor mode + mobile height-chain repair. */
+
+/* Workspace modes are mutually exclusive at every viewport width. */
+.editor-preview.editor-only > .preview-pane{
+  display:none!important;
+}
+.editor-preview.preview-only > .editor-pane{
+  display:none!important;
+}
+
+/*
+   The legacy <=767px rule changes .workspace to display:block. That breaks the
+   flex/grid height chain beneath the viewport-locked editor shell and can leave
+   CodeMirror / preview with no usable block-size. Re-establish a bounded flex
+   chain for the editor only; fixed overlay panels remain out of flow.
+*/
+@media(max-width:767px){
+  html[data-screen="editor"] .workspace,
+  html[data-screen="editor"] .workspace.left-open{
+    display:flex!important;
+    flex:1 1 auto;
+    flex-direction:column;
+    min-height:0;
+    overflow:hidden;
+  }
+  html[data-screen="editor"] .main-stage{
+    flex:1 1 auto;
+    width:100%;
+    height:auto;
+    min-height:0!important;
+    overflow:hidden;
+  }
+  html[data-screen="editor"] .editor-preview{
+    flex:1 1 auto;
+    width:100%;
+    height:auto;
+    min-height:0;
+    overflow:hidden;
+  }
+  html[data-screen="editor"] .editor-pane,
+  html[data-screen="editor"] .preview-pane,
+  html[data-screen="editor"] .editor-shell,
+  html[data-screen="editor"] .native-editor-host,
+  html[data-screen="editor"] .codemirror-editor,
+  html[data-screen="editor"] .codemirror-editor-mount{
+    min-height:0;
+  }
+  html[data-screen="editor"] .native-editor-host,
+  html[data-screen="editor"] .codemirror-editor,
+  html[data-screen="editor"] .codemirror-editor-mount{
+    height:100%;
+  }
+  html[data-screen="editor"] .preview-scroll{
+    min-height:0;
+    padding-bottom:calc(72px + env(safe-area-inset-bottom,0px));
+  }
+}
+</style>
 
 </head>
 <body>
@@ -3676,8 +3737,8 @@ function installBootstrapState(state) {
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FEATURE_FREEZE = exports.RELEASE_PHASE = exports.RELEASE_CHANNEL = exports.PROJECT_SCHEMA_VERSION = exports.RELEASE_NAME = exports.APP_VERSION = void 0;
-exports.APP_VERSION = '4.2.1';
-exports.RELEASE_NAME = 'Manuscript v4.2.1 Stable';
+exports.APP_VERSION = '4.2.2';
+exports.RELEASE_NAME = 'Manuscript v4.2.2 Stable';
 exports.PROJECT_SCHEMA_VERSION = 6;
 exports.RELEASE_CHANNEL = 'stable';
 exports.RELEASE_PHASE = 'Phase 9 — Release Candidate Audit';
