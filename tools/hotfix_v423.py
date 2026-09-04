@@ -24,6 +24,21 @@ HOTFIX_STYLE = r'''\n<style id="v423-ui-hardening">
   max-width:100%;
 }
 
+/* Long utility actions in narrow tool panels must remain readable. */
+.left-panel .btn[data-action="export-csl"],
+.left-panel .btn[data-action="request-persistence"],
+.left-panel .btn[data-action="backup-library"],
+.left-panel .btn[data-action="backup-restore-file"]{
+  width:100%;
+  min-width:0;
+  height:auto;
+  min-height:32px;
+  padding-block:6px;
+  white-space:normal;
+  line-height:1.25;
+  overflow-wrap:anywhere;
+}
+
 /*
    The late visual layer accidentally returned the left tool panel to normal
    grid flow, overriding the established <=1199px overlay contract. Restore
@@ -80,6 +95,11 @@ HOTFIX_STYLE = r'''\n<style id="v423-ui-hardening">
     grid-template-columns:var(--rail-w) minmax(0,1fr)!important;
   }
 
+  html[data-screen="editor"] .appbar > .btn.primary[data-action="export"]{
+    flex-shrink:0;
+    min-width:76px;
+  }
+
   html[data-screen="editor"] .editor-preview.editor-only,
   html[data-screen="editor"] .editor-preview.preview-only{
     grid-template-columns:1fr!important;
@@ -117,6 +137,21 @@ HOTFIX_STYLE = r'''\n<style id="v423-ui-hardening">
     white-space:normal;
   }
 }
+
+/* Short landscape viewports need a hard viewport-fit contract for wide modals. */
+@media (max-height:480px) and (orientation:landscape){
+  .modal-layer{
+    padding:4px 8px!important;
+    align-items:center!important;
+  }
+  .modal-layer .modal{
+    max-height:calc(100dvh - 8px)!important;
+  }
+  .modal-layer .modal-body{
+    min-height:0;
+    overflow-y:auto;
+  }
+}
 </style>
 '''
 
@@ -136,6 +171,9 @@ def validate_html(text: str) -> None:
         "tablet vertical split": 'grid-template-rows:minmax(0,1fr) minmax(0,1fr)!important' in text,
         "tablet split panes restored": '> .preview-pane.mobile-hidden' in text and 'display:flex!important' in text,
         "modal footer wrapping": '.modal-foot{' in text and 'flex-wrap:wrap' in text,
+        "panel actions wrap": '[data-action="backup-library"]' in text and 'overflow-wrap:anywhere' in text,
+        "tablet export protected": 'min-width:76px' in text,
+        "landscape modal fit": 'max-height:calc(100dvh - 8px)!important' in text,
         "mobile onboarding primary": '[data-action="onboarding-blank"]' in text,
         "v422 retained": 'id="v422-editor-layout-hotfix"' in text,
     }
