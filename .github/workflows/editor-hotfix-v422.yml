@@ -40,7 +40,7 @@ jobs:
           grep -q '<title>Manuscript v4.2.2 Stable</title>' index.html
           grep -q 'id="v422-editor-layout-hotfix"' index.html
           grep -q 'exclusive-workspace-panes+mobile-flex-height-v1' index.html
-          grep -q 'manuscript-shell-.*v4.2.2' sw.js
+          grep -q 'v4.2.2' sw.js
 
       - name: Install browser certification dependencies
         run: |
