@@ -6,6 +6,7 @@ on:
     branches: [fix/ui-v423]
     paths:
       - tools/hotfix_v423.py
+      - tools/harden_v423_test_navigation.py
       - scripts/certify-v423.mjs
       - scripts/certify-v423-extras.mjs
       - scripts/ui-sweep-v423.mjs
@@ -36,12 +37,15 @@ jobs:
 
       - name: Apply deterministic v4.2.3 UI patch
         run: |
-          python -m py_compile tools/hotfix_v423.py
+          python -m py_compile tools/hotfix_v423.py tools/harden_v423_test_navigation.py
           python tools/hotfix_v423.py index.html --service-worker sw.js
           grep -q '<title>Manuscript v4.2.3 Stable</title>' index.html
           grep -q 'id="v423-ui-hardening"' index.html
           grep -q 'manuscript-ui-contract" content="responsive-ui-hardening-v1' index.html
           grep -q 'v4.2.3' sw.js
+
+      - name: Harden setup-only browser navigation
+        run: python tools/harden_v423_test_navigation.py
 
       - name: Install multi-engine browser dependencies
         run: |
@@ -107,6 +111,7 @@ jobs:
       - name: Commit certified v4.2.3 bytes
         shell: bash
         run: |
+          git checkout -- scripts/certify-v423.mjs scripts/certify-v423-extras.mjs
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html sw.js V423_SHA256.txt diagnostics/ui-sweep-v423.json diagnostics/ui-sweep-v423.md
