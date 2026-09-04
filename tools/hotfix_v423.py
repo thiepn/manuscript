@@ -24,19 +24,22 @@ HOTFIX_STYLE = r'''\n<style id="v423-ui-hardening">
   max-width:100%;
 }
 
-/* Long utility actions in narrow tool panels must remain readable. */
-.left-panel .btn[data-action="export-csl"],
-.left-panel .btn[data-action="request-persistence"],
-.left-panel .btn[data-action="backup-library"],
-.left-panel .btn[data-action="backup-restore-file"]{
-  width:100%;
-  min-width:0;
-  height:auto;
+/* Long utility actions must remain readable wherever the renderer places them. */
+.btn[data-action="export-csl"],
+.btn[data-action="request-persistence"],
+.btn[data-action="backup-library"],
+.btn[data-action="backup-restore-file"]{
+  box-sizing:border-box!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  height:auto!important;
   min-height:32px;
   padding-block:6px;
-  white-space:normal;
+  white-space:normal!important;
   line-height:1.25;
-  overflow-wrap:anywhere;
+  overflow-wrap:anywhere!important;
+  word-break:break-word;
 }
 
 /*
@@ -171,7 +174,7 @@ def validate_html(text: str) -> None:
         "tablet vertical split": 'grid-template-rows:minmax(0,1fr) minmax(0,1fr)!important' in text,
         "tablet split panes restored": '> .preview-pane.mobile-hidden' in text and 'display:flex!important' in text,
         "modal footer wrapping": '.modal-foot{' in text and 'flex-wrap:wrap' in text,
-        "panel actions wrap": '[data-action="backup-library"]' in text and 'overflow-wrap:anywhere' in text,
+        "utility actions wrap globally": '.btn[data-action="backup-library"]' in text and 'overflow-wrap:anywhere!important' in text,
         "tablet export protected": 'min-width:76px' in text,
         "landscape modal fit": 'max-height:calc(100dvh - 8px)!important' in text,
         "mobile onboarding primary": '[data-action="onboarding-blank"]' in text,
