@@ -1,0 +1,95 @@
+name: Manuscript v4.2.3 UI hardening
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [fix/ui-v423]
+    paths:
+      - tools/hotfix_v423.py
+      - scripts/certify-v423.mjs
+      - scripts/ui-sweep-v423.mjs
+      - .github/workflows/ui-hotfix-v423.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: manuscript-v423-ui-hotfix
+  cancel-in-progress: true
+
+jobs:
+  patch-certify:
+    if: ${{ !contains(github.event.head_commit.message, '[v423-generated]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Apply deterministic v4.2.3 UI patch
+        run: |
+          python -m py_compile tools/hotfix_v423.py
+          python tools/hotfix_v423.py index.html --service-worker sw.js
+          grep -q '<title>Manuscript v4.2.3 Stable</title>' index.html
+          grep -q 'id="v423-ui-hardening"' index.html
+          grep -q 'manuscript-ui-contract" content="responsive-ui-hardening-v1' index.html
+          grep -q 'v4.2.3' sw.js
+
+      - name: Install multi-engine browser dependencies
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium firefox webkit
+
+      - name: Serve patched application
+        run: |
+          python -m http.server 4173 --bind 127.0.0.1 > /tmp/manuscript-v423-http.log 2>&1 &
+          echo $! > /tmp/manuscript-v423-http.pid
+          for i in {1..30}; do curl -fsS http://127.0.0.1:4173/index.html >/dev/null && exit 0; sleep 1; done
+          cat /tmp/manuscript-v423-http.log
+          exit 1
+
+      - name: Run v4.2.3 multi-engine certification
+        env:
+          MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
+        run: node scripts/certify-v423.mjs
+
+      - name: Run broad Chromium UI sweep
+        env:
+          MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
+        run: node scripts/ui-sweep-v423.mjs
+
+      - name: Record certified production hash
+        shell: bash
+        run: |
+          sha256sum index.html | awk '{print $1}' > V423_SHA256.txt
+          echo "Certified index SHA256: $(cat V423_SHA256.txt)"
+
+      - name: Commit certified v4.2.3 bytes
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html sw.js V423_SHA256.txt diagnostics/ui-sweep-v423.json diagnostics/ui-sweep-v423.md
+          if git diff --cached --quiet; then
+            echo "Certified bytes already committed."
+          else
+            git commit -m "fix: Manuscript v4.2.3 responsive UI hardening [v423-generated]"
+            git pull --rebase origin fix/ui-v423
+            git push origin HEAD:fix/ui-v423
+          fi
+
+      - name: Upload certification evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: manuscript-v4.2.3-ui-certified
+          path: |
+            V423_SHA256.txt
+            diagnostics/ui-sweep-v423.json
+            diagnostics/ui-sweep-v423.md
