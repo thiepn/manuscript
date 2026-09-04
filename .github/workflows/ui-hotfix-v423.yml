@@ -7,6 +7,7 @@ on:
     paths:
       - tools/hotfix_v423.py
       - scripts/certify-v423.mjs
+      - scripts/certify-v423-extras.mjs
       - scripts/ui-sweep-v423.mjs
       - .github/workflows/ui-hotfix-v423.yml
 
@@ -59,6 +60,11 @@ jobs:
         env:
           MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
         run: node scripts/certify-v423.mjs
+
+      - name: Certify utility controls and mobile overlays
+        env:
+          MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
+        run: node scripts/certify-v423-extras.mjs
 
       - name: Run broad Chromium UI sweep
         id: sweep
