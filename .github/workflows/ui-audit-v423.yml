@@ -1,0 +1,52 @@
+name: Manuscript v4.2.3 UI audit
+
+on:
+  push:
+    branches: [fix/ui-v423]
+    paths:
+      - scripts/audit-ui-v423.mjs
+      - .github/workflows/ui-audit-v423.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  audit:
+    if: ${{ !contains(github.event.head_commit.message, '[ui-audit-generated]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Chromium audit dependency
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Serve current branch application
+        run: |
+          python -m http.server 4173 --bind 127.0.0.1 > /tmp/manuscript-ui-audit-http.log 2>&1 &
+          echo $! > /tmp/manuscript-ui-audit-http.pid
+          for i in {1..30}; do curl -fsS http://127.0.0.1:4173/index.html >/dev/null && exit 0; sleep 1; done
+          cat /tmp/manuscript-ui-audit-http.log
+          exit 1
+      - name: Run UI audit
+        env:
+          MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
+        run: node scripts/audit-ui-v423.mjs
+      - name: Commit audit report
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add diagnostics/ui-audit-v423.json diagnostics/ui-audit-v423.md
+          if git diff --cached --quiet; then
+            echo "Audit report unchanged."
+          else
+            git commit -m "chore: capture v4.2.3 UI audit [ui-audit-generated]"
+            git push origin HEAD:fix/ui-v423
+          fi
