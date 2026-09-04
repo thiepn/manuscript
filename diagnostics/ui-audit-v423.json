@@ -1,0 +1,92 @@
+{
+  "generatedAt": "2026-09-04T22:14:17.872Z",
+  "baseURL": "http://127.0.0.1:4173/index.html",
+  "profiles": [
+    {
+      "name": "desktop-wide",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "fatal": "locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('[data-panel=\"templates\"]').first()\n    - locator resolved to <button class=\"rail-btn \" title=\"Templates\" data-panel=\"templates\" aria-label=\"Templates\">…</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"modal-layer\">…</div> intercepts pointer events\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"modal-layer\">…</div> intercepts pointer events\n    - retrying click action\n      - waiting 100ms\n    13 × waiting for element to be visible, enabled and stable\n       - element is visible, enabled and stable\n       - scrolling into view if needed\n       - done scrolling\n       - <div class=\"modal-layer\">…</div> intercepts pointer events\n     - retrying click action\n       - waiting 500ms\n\n    at runProfile (/home/runner/work/manuscript/manuscript/scripts/audit-ui-v423.mjs:156:21)\n    at async file:///home/runner/work/manuscript/manuscript/scripts/audit-ui-v423.mjs:187:17",
+      "stages": [],
+      "issues": []
+    },
+    {
+      "name": "desktop-compact",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "fatal": "locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('[data-panel=\"templates\"]').first()\n    - locator resolved to <button class=\"rail-btn \" title=\"Templates\" data-panel=\"templates\" aria-label=\"Templates\">…</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"modal-layer\">…</div> intercepts pointer events\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"modal-layer\">…</div> intercepts pointer events\n    - retrying click action\n      - waiting 100ms\n    13 × waiting for element to be visible, enabled and stable\n       - element is visible, enabled and stable\n       - scrolling into view if needed\n       - done scrolling\n       - <div class=\"modal-layer\">…</div> intercepts pointer events\n     - retrying click action\n       - waiting 500ms\n\n    at runProfile (/home/runner/work/manuscript/manuscript/scripts/audit-ui-v423.mjs:156:21)\n    at async file:///home/runner/work/manuscript/manuscript/scripts/audit-ui-v423.mjs:187:17",
+      "stages": [],
+      "issues": []
+    },
+    {
+      "name": "tablet-edge",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "isMobile": true,
+      "hasTouch": true,
+      "fatal": "locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('[data-panel=\"templates\"]').first()\n    - locator resolved to <button class=\"rail-btn \" title=\"Templates\" data-panel=\"templates\" aria-label=\"Templates\">…</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"modal-layer\">…</div> intercepts pointer events\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"modal-layer\">…</div> intercepts pointer events\n    - retrying click action\n      - waiting 100ms\n    13 × waiting for element to be visible, enabled and stable\n       - element is visible, enabled and stable\n       - scrolling into view if needed\n       - done scrolling\n       - <div class=\"modal-layer\">…</div> intercepts pointer events\n     - retrying click action\n       - waiting 500ms\n\n    at runProfile (/home/runner/work/manuscript/manuscript/scripts/audit-ui-v423.mjs:156:21)\n    at async file:///home/runner/work/manuscript/manuscript/scripts/audit-ui-v423.mjs:187:17",
+      "stages": [],
+      "issues": []
+    },
+    {
+      "name": "mobile-portrait",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "isMobile": true,
+      "hasTouch": true,
+      "fatal": "locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('[data-action=\"workflow-content\"]').first()\n    - locator resolved to <button class=\"\" data-action=\"workflow-content\">Add</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n      - waiting 100ms\n    13 × waiting for element to be visible, enabled and stable\n       - element is not visible\n     - retrying click action\n       - waiting 500ms\n\n    at runProfile (/home/runner/work/manuscript/manuscript/scripts/audit-ui-v423.mjs:172:39)\n    at async file:///home/runner/work/manuscript/manuscript/scripts/audit-ui-v423.mjs:187:17",
+      "stages": [],
+      "issues": []
+    },
+    {
+      "name": "mobile-narrow",
+      "viewport": {
+        "width": 360,
+        "height": 800
+      },
+      "isMobile": true,
+      "hasTouch": true,
+      "fatal": "locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('[data-action=\"workflow-content\"]').first()\n    - locator resolved to <button class=\"\" data-action=\"workflow-content\">Add</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n      - waiting 100ms\n    13 × waiting for element to be visible, enabled and stable\n       - element is not visible\n     - retrying click action\n       - waiting 500ms\n\n    at runProfile (/home/runner/work/manuscript/manuscript/scripts/audit-ui-v423.mjs:172:39)\n    at async file:///home/runner/work/manuscript/manuscript/scripts/audit-ui-v423.mjs:187:17",
+      "stages": [],
+      "issues": []
+    },
+    {
+      "name": "mobile-small",
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "isMobile": true,
+      "hasTouch": true,
+      "fatal": "locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('[data-action=\"workflow-content\"]').first()\n    - locator resolved to <button class=\"\" data-action=\"workflow-content\">Add</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n      - waiting 100ms\n    13 × waiting for element to be visible, enabled and stable\n       - element is not visible\n     - retrying click action\n       - waiting 500ms\n\n    at runProfile (/home/runner/work/manuscript/manuscript/scripts/audit-ui-v423.mjs:172:39)\n    at async file:///home/runner/work/manuscript/manuscript/scripts/audit-ui-v423.mjs:187:17",
+      "stages": [],
+      "issues": []
+    },
+    {
+      "name": "mobile-landscape",
+      "viewport": {
+        "width": 740,
+        "height": 390
+      },
+      "isMobile": true,
+      "hasTouch": true,
+      "fatal": "locator.click: Timeout 7000ms exceeded.\nCall log:\n  - waiting for locator('[data-action=\"workflow-content\"]').first()\n    - locator resolved to <button class=\"\" data-action=\"workflow-content\">Add</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is not visible\n    - retrying click action\n      - waiting 100ms\n    13 × waiting for element to be visible, enabled and stable\n       - element is not visible\n     - retrying click action\n       - waiting 500ms\n\n    at runProfile (/home/runner/work/manuscript/manuscript/scripts/audit-ui-v423.mjs:172:39)\n    at async file:///home/runner/work/manuscript/manuscript/scripts/audit-ui-v423.mjs:187:17",
+      "stages": [],
+      "issues": []
+    }
+  ],
+  "summary": {
+    "total": 0,
+    "high": 0,
+    "medium": 0,
+    "fatal": 7
+  }
+}
