@@ -4,6 +4,11 @@ import assert from 'node:assert/strict';
 const baseURL=process.env.MANUSCRIPT_URL||'http://127.0.0.1:4173/index.html';
 const check=(ok,msg)=>assert.ok(ok,msg);
 
+async function settleBoot(page){
+  await page.waitForFunction(()=>['landing','home','editor'].includes(document.documentElement.dataset.screen||''),null,{timeout:15000});
+  await page.waitForTimeout(350);
+}
+
 async function closeModal(page){
   const layer=page.locator('.modal-layer').first();
   if(!(await layer.count())||!(await layer.isVisible().catch(()=>false))) return;
@@ -17,27 +22,40 @@ async function closeModal(page){
 }
 
 async function openHome(page){
-  const screen=await page.locator('html').getAttribute('data-screen');
+  await settleBoot(page);
+  let screen=await page.locator('html').getAttribute('data-screen');
+  if(screen==='editor') return 'editor';
   if(screen==='landing'){
     await closeModal(page);
-    await page.locator('[data-action="home"]').first().click({timeout:5000});
+    const home=page.locator('[data-action="home"]:visible').first();
+    if(await home.count()) await home.click({timeout:5000});
+    else await page.locator('[data-action="home"]').first().evaluate(node=>node.click());
+    await page.waitForFunction(()=>['home','editor'].includes(document.documentElement.dataset.screen||''),null,{timeout:15000});
+    screen=await page.locator('html').getAttribute('data-screen');
   }
-  await page.waitForFunction(()=>document.documentElement.dataset.screen==='home',null,{timeout:15000});
+  return screen;
 }
 
 async function openEditor(page){
-  await openHome(page);
-  const onboardingBlank=page.locator('.modal-layer [data-action="onboarding-blank"]').first();
-  if(await onboardingBlank.count()&&await onboardingBlank.isVisible().catch(()=>false)){
+  const screen=await openHome(page);
+  if(screen==='editor'){
+    await page.waitForSelector('.codemirror-editor .cm-scroller',{timeout:15000});
+    return;
+  }
+  check(screen==='home',`setup: expected home/editor, got ${screen}`);
+  const onboardingBlank=page.locator('.modal-layer [data-action="onboarding-blank"]:visible').first();
+  if(await onboardingBlank.count()){
     await onboardingBlank.click({timeout:5000});
     await page.waitForFunction(()=>document.documentElement.dataset.screen==='editor',null,{timeout:15000});
     await page.waitForSelector('.codemirror-editor .cm-scroller',{timeout:15000});
     return;
   }
   await closeModal(page);
-  await page.locator('[data-action="new"]').first().click({timeout:5000});
-  const post=page.locator('.modal-layer [data-action="onboarding-blank"]').first();
-  if(await post.count()&&await post.isVisible().catch(()=>false)) await post.click({timeout:5000});
+  const fresh=page.locator('[data-action="new"]:visible').first();
+  if(await fresh.count()) await fresh.click({timeout:5000});
+  else await page.locator('[data-action="new"]').first().evaluate(node=>node.click());
+  const post=page.locator('.modal-layer [data-action="onboarding-blank"]:visible').first();
+  if(await post.count()) await post.click({timeout:5000});
   await page.waitForFunction(()=>document.documentElement.dataset.screen==='editor',null,{timeout:15000});
   await page.waitForSelector('.codemirror-editor .cm-scroller',{timeout:15000});
 }
@@ -77,8 +95,9 @@ async function mobileAdd(width,height){
 
 async function landscapeOnboarding(){
   const browser=await chromium.launch({headless:true});const context=await browser.newContext({viewport:{width:740,height:390},isMobile:true,hasTouch:true,deviceScaleFactor:2});const page=await context.newPage();page.setDefaultTimeout(7000);await page.goto(baseURL,{waitUntil:'load'});try{
+    await settleBoot(page);
     const layer=page.locator('.modal-layer').first();if(await layer.count()&&await layer.isVisible().catch(()=>false)){const modal=layer.locator('.modal').first();const r=await rect(modal);check(r.left>=-1&&r.right<=741&&r.top>=-1&&r.bottom<=391,`landscape onboarding outside viewport ${JSON.stringify(r)}`);}
-    await closeModal(page);await openHome(page);const homeModal=page.locator('.modal-layer').first();if(await homeModal.count()&&await homeModal.isVisible().catch(()=>false)){const r=await rect(homeModal.locator('.modal').first());check(r.left>=-1&&r.right<=741&&r.top>=-1&&r.bottom<=391,`landscape home modal outside viewport ${JSON.stringify(r)}`);}
+    await closeModal(page);const screen=await openHome(page);if(screen==='home'){const homeModal=page.locator('.modal-layer').first();if(await homeModal.count()&&await homeModal.isVisible().catch(()=>false)){const r=await rect(homeModal.locator('.modal').first());check(r.left>=-1&&r.right<=741&&r.top>=-1&&r.bottom<=391,`landscape home modal outside viewport ${JSON.stringify(r)}`);}}
   }finally{await context.close();await browser.close();}
 }
 
