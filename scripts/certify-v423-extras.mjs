@@ -16,7 +16,12 @@ async function desktopUtilityButtons(){
     for(const panel of['references','settings']){
       await page.locator(`[data-panel="${panel}"]`).first().click();await page.waitForTimeout(80);
       const actions=panel==='references'?['export-csl']:['request-persistence','backup-library','backup-restore-file'];
-      for(const action of actions){const b=page.locator(`.left-panel [data-action="${action}"]`).first();check(await b.count()===1,`desktop: ${action} missing`);check(await fits(b),`desktop: ${action} label clipped`);const r=await rect(b);check(r.width>70&&r.height>=28,`desktop: ${action} unusable ${JSON.stringify(r)}`);}
+      for(const action of actions){
+        const b=page.locator(`[data-action="${action}"]:visible`).first();
+        check(await b.count()===1,`desktop: visible ${action} missing in ${panel}`);
+        check(await fits(b),`desktop: ${action} label clipped`);
+        const r=await rect(b);check(r.width>70&&r.height>=28,`desktop: ${action} unusable ${JSON.stringify(r)}`);
+      }
       await page.locator(`[data-panel="${panel}"]`).first().click().catch(()=>{});
     }
   }finally{await context.close();await browser.close();}
