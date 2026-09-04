@@ -58,6 +58,7 @@ async function inspect(page,stage){
     const add=(severity,code,message,el=null,data={})=>issues.push({severity,code,message,selector:desc(el),data});
     const inScope=el=>!modal||!!el.closest('.modal-layer');
     const scrollXAncestor=el=>{for(let p=el.parentElement;p;p=p.parentElement){const s=getComputedStyle(p);if(['auto','scroll'].includes(s.overflowX)&&p.scrollWidth>p.clientWidth+2)return true;}return false;};
+    const mobileOverlay=[...document.querySelectorAll('.left-panel,.inspector')].find(el=>visible(el)&&vw<768&&['fixed','absolute'].includes(getComputedStyle(el).position));
 
     if(document.documentElement.scrollWidth>vw+2)add('high','ROOT_X_OVERFLOW',`Root width ${document.documentElement.scrollWidth}px exceeds ${vw}px`,document.documentElement);
 
@@ -73,8 +74,13 @@ async function inspect(page,stage){
       for(const sel of['.workspace','.main-stage','.editor-preview']){
         const el=document.querySelector(sel);if(el&&visible(el)&&el.scrollWidth>el.clientWidth+2)add('high','EDITOR_CONTAINER_X_OVERFLOW','Editor layout container overflows horizontally',el,{clientWidth:el.clientWidth,scrollWidth:el.scrollWidth});
       }
-      for(const sel of['.editor-pane','.preview-pane','.preview-scroll','.native-editor-host','.codemirror-editor']){
-        const el=document.querySelector(sel);if(el&&visible(el)){const r=el.getBoundingClientRect();if(r.height<60)add('high','COLLAPSED_EDITOR_SURFACE','Visible editor surface has unusably small height',el,{width:r.width,height:r.height});}
+      if(!mobileOverlay){
+        for(const sel of['.editor-pane','.preview-pane','.preview-scroll','.native-editor-host','.codemirror-editor']){
+          const el=document.querySelector(sel);if(el&&visible(el)){const r=el.getBoundingClientRect();if(r.height<60)add('high','COLLAPSED_EDITOR_SURFACE','Visible editor surface has unusably small height',el,{width:r.width,height:r.height});}
+        }
+      }else{
+        const r=mobileOverlay.getBoundingClientRect();
+        if(r.width<vw-4||r.height<Math.min(180,vh*.45))add('high','MOBILE_OVERLAY_UNUSABLE','Visible mobile tool overlay is too small',mobileOverlay,{width:r.width,height:r.height,vw,vh});
       }
       const left=document.querySelector('.left-panel');
       if(left&&visible(left)&&vw>=768&&vw<1200){const s=getComputedStyle(left),r=left.getBoundingClientRect();if(s.position!=='fixed')add('high','LEFT_PANEL_NOT_OVERLAY','Responsive left panel is consuming grid flow instead of overlaying',left,{position:s.position});if(r.left<-1||r.right>vw+1)add('high','LEFT_PANEL_OFFSCREEN','Responsive left panel exceeds viewport',left,{left:r.left,right:r.right,vw});}
