@@ -45,7 +45,7 @@ jobs:
 
       - name: Install multi-engine browser dependencies
         run: |
-          npm install --no-save playwright
+          npm install --no-save playwright@1.62.1
           npx playwright install --with-deps chromium firefox webkit
 
       - name: Serve patched application
