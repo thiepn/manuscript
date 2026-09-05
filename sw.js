@@ -1,5 +1,5 @@
 const CACHE_PREFIX = 'manuscript-shell-';
-const CACHE_NAME = `${CACHE_PREFIX}v4.2.2`;
+const CACHE_NAME = `${CACHE_PREFIX}v4.2.3`;
 const SHELL = ['./', './index.html'];
 
 self.addEventListener('install', event => {

@@ -22,8 +22,9 @@
   <meta name="manuscript-browser-contract" content="capability-evidence-v1">
   <meta name="manuscript-deployment-contract" content="relative-sw-github-pages-v1">
   <meta name="manuscript-concurrency-contract" content="lock-and-conflict-guard-v1">
-  <meta name="description" content="Manuscript v4.2.2 Stable — local-first Markdown publishing studio with screen-scoped scrolling, six curated interface themes, consolidated editorial visual architecture, deterministic pagination, and publication-ready export.">
-  <title>Manuscript v4.2.2 Stable</title>
+  <meta name="description" content="Manuscript v4.2.3 Stable — local-first Markdown publishing studio with screen-scoped scrolling, six curated interface themes, consolidated editorial visual architecture, deterministic pagination, and publication-ready export.">
+  <title>Manuscript v4.2.3 Stable</title>
+<meta name="manuscript-ui-contract" content="responsive-ui-hardening-v1">
 <meta name="manuscript-editor-layout-contract" content="exclusive-workspace-panes+mobile-flex-height-v1">
   <style>:root {
   --app-bg:#f1f2f0;--workspace-bg:#e7e8e5;--surface-1:#fff;--surface-2:#f8f8f6;--surface-3:#f1f2ef;
@@ -1702,7 +1703,7 @@ html[data-theme="ink"]{
 <meta name="manuscript-theme-contract" content="curated-interface-themes-v2">
 
 <style id="v421-visual-architecture">
-/* Manuscript v4.2.2 — certified editorial interface contract.
+/* Manuscript v4.2.3 — certified editorial interface contract.
    Principles: document first; borders before shadows; typography before decoration;
    compact professional chrome; restrained geometry; theme-independent document styling. */
 
@@ -1951,7 +1952,7 @@ html[data-density="compact"] .toolbar .icon-btn{width:28px;height:28px}
 <meta name="manuscript-certification-contract" content="scroll-v2+themes-v2+visual-v1.1">
 
 \n<style id="v422-editor-layout-hotfix">
-/* Manuscript v4.2.2 — editor mode + mobile height-chain repair. */
+/* Manuscript v4.2.3 — editor mode + mobile height-chain repair. */
 
 /* Workspace modes are mutually exclusive at every viewport width. */
 .editor-preview.editor-only > .preview-pane{
@@ -2006,6 +2007,171 @@ html[data-density="compact"] .toolbar .icon-btn{width:28px;height:28px}
   html[data-screen="editor"] .preview-scroll{
     min-height:0;
     padding-bottom:calc(72px + env(safe-area-inset-bottom,0px));
+  }
+}
+</style>
+
+\n<style id="v423-ui-hardening">
+/* Manuscript v4.2.3 — responsive UI hardening. */
+
+/* Modal actions must wrap instead of shrinking labels into clipped controls. */
+.modal-foot{
+  flex-wrap:wrap;
+  min-width:0;
+}
+.modal-foot > .btn{
+  flex-shrink:0;
+  max-width:100%;
+}
+
+/* Long utility actions must remain readable wherever the renderer places them. */
+.btn[data-action="export-csl"],
+.btn[data-action="request-persistence"],
+.btn[data-action="backup-library"],
+.btn[data-action="backup-restore-file"]{
+  box-sizing:border-box!important;
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  height:auto!important;
+  min-height:32px;
+  padding:6px 8px!important;
+  white-space:normal!important;
+  line-height:1.25;
+  text-align:center;
+  overflow-wrap:anywhere!important;
+  word-break:break-word;
+}
+
+/*
+   The late visual layer accidentally returned the left tool panel to normal
+   grid flow, overriding the established <=1199px overlay contract. Restore
+   the overlay and remove the phantom grid column it was consuming.
+*/
+@media (min-width:768px) and (max-width:1199px){
+  html[data-screen="editor"] .left-panel{
+    position:fixed!important;
+    left:var(--rail-w)!important;
+    top:calc(var(--appbar-h) + var(--toolbar-h))!important;
+    bottom:var(--status-h)!important;
+    width:min(var(--leftpanel-w),calc(100vw - var(--rail-w)))!important;
+    height:auto!important;
+    max-height:none!important;
+    z-index:50!important;
+    box-shadow:var(--shadow-menu)!important;
+  }
+
+  /* Compact Split may shrink, but it must never widen the application root. */
+  html[data-screen="editor"] .editor-preview:not(.editor-only):not(.preview-only){
+    grid-template-columns:minmax(0,1fr) 5px minmax(0,1.2fr)!important;
+  }
+
+  /* Preserve current-page status while dropping the bulky direct-jump editor. */
+  html[data-screen="editor"] .editor-preview:not(.editor-only):not(.preview-only) .page-go-input,
+  html[data-screen="editor"] .editor-preview:not(.editor-only):not(.preview-only) .page-position [data-action="go-page"]{
+    display:none!important;
+  }
+  html[data-screen="editor"] .preview-toolbar{
+    min-width:0;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    overscroll-behavior-x:contain;
+  }
+}
+
+@media (min-width:901px) and (max-width:1199px){
+  html[data-screen="editor"] .workspace.left-open{
+    grid-template-columns:var(--rail-w) minmax(0,1fr) var(--inspector-w)!important;
+  }
+  html[data-screen="editor"] .workspace.left-open.inspector-closed{
+    grid-template-columns:var(--rail-w) minmax(0,1fr)!important;
+  }
+}
+
+/*
+   768–900px keeps the desktop/tablet controls but intentionally collapses the
+   side-by-side layout. Make Split honest and useful by stacking both panes.
+*/
+@media (min-width:768px) and (max-width:900px){
+  html[data-screen="editor"] .workspace,
+  html[data-screen="editor"] .workspace.left-open,
+  html[data-screen="editor"] .workspace.left-open.inspector-closed{
+    grid-template-columns:var(--rail-w) minmax(0,1fr)!important;
+  }
+
+  html[data-screen="editor"] .appbar > .btn.primary[data-action="export"]{
+    flex-shrink:0;
+    min-width:76px;
+  }
+
+  html[data-screen="editor"] .editor-preview.editor-only,
+  html[data-screen="editor"] .editor-preview.preview-only{
+    grid-template-columns:1fr!important;
+    grid-template-rows:minmax(0,1fr)!important;
+  }
+
+  html[data-screen="editor"] .editor-preview:not(.editor-only):not(.preview-only){
+    grid-template-columns:1fr!important;
+    grid-template-rows:minmax(0,1fr) minmax(0,1fr)!important;
+  }
+  html[data-screen="editor"] .editor-preview:not(.editor-only):not(.preview-only) > .editor-pane.mobile-hidden,
+  html[data-screen="editor"] .editor-preview:not(.editor-only):not(.preview-only) > .preview-pane.mobile-hidden{
+    display:flex!important;
+  }
+  html[data-screen="editor"] .editor-preview:not(.editor-only):not(.preview-only) > .editor-pane{
+    border-right:0;
+  }
+  html[data-screen="editor"] .editor-preview:not(.editor-only):not(.preview-only) > .preview-pane{
+    border-top:1px solid var(--border-default);
+  }
+}
+
+@media (max-width:767px){
+  /* Mobile Add/Style/inspector surfaces are full-screen overlays above the editor. */
+  html[data-screen="editor"] .left-panel,
+  html[data-screen="editor"] .inspector{
+    position:fixed!important;
+    left:0!important;
+    right:0!important;
+    top:var(--appbar-h)!important;
+    bottom:56px!important;
+    width:100%!important;
+    max-width:none!important;
+    height:auto!important;
+    max-height:none!important;
+    z-index:70!important;
+  }
+
+  .modal-foot > [data-action="onboarding-blank"]{
+    flex:1 1 100%;
+    width:100%;
+    white-space:normal;
+  }
+}
+
+@media (max-width:480px){
+  .modal-foot > .btn{
+    flex:1 1 100%;
+    width:100%;
+    white-space:normal;
+  }
+}
+
+/* Short landscape viewports need a hard viewport-fit contract for wide modals. */
+@media (max-height:480px) and (orientation:landscape){
+  .modal-layer{
+    padding:4px 8px!important;
+    align-items:center!important;
+  }
+  .modal-layer .modal{
+    max-height:calc(100dvh - 8px)!important;
+    animation:none!important;
+    transform:none!important;
+  }
+  .modal-layer .modal-body{
+    min-height:0;
+    overflow-y:auto;
   }
 }
 </style>
@@ -3737,8 +3903,8 @@ function installBootstrapState(state) {
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FEATURE_FREEZE = exports.RELEASE_PHASE = exports.RELEASE_CHANNEL = exports.PROJECT_SCHEMA_VERSION = exports.RELEASE_NAME = exports.APP_VERSION = void 0;
-exports.APP_VERSION = '4.2.2';
-exports.RELEASE_NAME = 'Manuscript v4.2.2 Stable';
+exports.APP_VERSION = '4.2.3';
+exports.RELEASE_NAME = 'Manuscript v4.2.3 Stable';
 exports.PROJECT_SCHEMA_VERSION = 6;
 exports.RELEASE_CHANNEL = 'stable';
 exports.RELEASE_PHASE = 'Phase 9 — Release Candidate Audit';
