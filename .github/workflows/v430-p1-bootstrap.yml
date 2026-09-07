@@ -241,10 +241,9 @@ jobs:
       - name: Commit certified P1 implementation
         shell: bash
         run: |
-          rm .github/workflows/v430-p1-bootstrap.yml
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add index.html tools/apply_v430_p1.py scripts/certify-v430-p1.mjs .github/workflows/v430-p1-bootstrap.yml
+          git add index.html tools/apply_v430_p1.py scripts/certify-v430-p1.mjs
           git diff --cached --check
           git commit -m 'feat: simplify navigation and quiet editor chrome for v4.3'
           git push origin HEAD:feat/v430-writing-experience
