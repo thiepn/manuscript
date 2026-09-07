@@ -87,7 +87,7 @@ jobs:
           if anchor not in t: raise SystemExit('v422 check anchor missing')
           t=t.replace(anchor,anchor+helper,1)
           replacements={
-            "if (screen === 'landing') await page.locator('[data-action=\"home\"]').first().click();":"if (screen === 'landing') await activateForSetup(page, '[data-action=\"home\"]');",
+            "if (screen === 'landing') await page.locator('[data-action=\"home\"]').first().click();":"if (screen === 'landing') { await closeModalIfOpen(page); await activateForSetup(page, '[data-action=\"home\"]'); }",
             "await onboardingBlank.click({ timeout:5000 });":"await activateForSetup(page, '.modal-layer [data-action=\"onboarding-blank\"]');",
             "await page.locator('[data-action=\"new\"]').first().click({ timeout:5000 });":"await activateForSetup(page, '[data-action=\"new\"]');",
             "await postNewOnboarding.click({ timeout:5000 });":"await activateForSetup(page, '.modal-layer [data-action=\"onboarding-blank\"]');",
