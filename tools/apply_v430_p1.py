@@ -223,6 +223,20 @@ html[data-screen="editor"] .left-panel {
   box-shadow: 8px 0 26px color-mix(in srgb, #000 9%, transparent) !important;
 }
 
+@media (min-width: 768px) {
+  html[data-screen="editor"] .v430-nav-host .v430-utility-source {
+    display: none !important;
+  }
+}
+
+@media (min-width: 1200px) {
+  html[data-screen="editor"] .v430-utility-trigger {
+    width: auto !important;
+    min-width: 72px !important;
+    padding-inline: 9px !important;
+  }
+}
+
 @media (max-width: 1199px) {
   .v430-utility-trigger .v430-more-label { display: none; }
 }
@@ -310,7 +324,7 @@ SCRIPT = r'''<script id="v430-p1-runtime">
   }
 
   function addGroupDividers(host, buttons) {
-    host.querySelectorAll(':scope > .v430-nav-divider').forEach(el => el.remove());
+    if (host.querySelector(':scope > .v430-nav-divider')) return;
     let previous = null;
     for (const group of GROUP_ORDER) {
       const first = buttons.find(button => host.contains(button) && button.dataset.v430Group === group && !UTILITY_PANELS.includes(button.dataset.panel));
@@ -354,38 +368,53 @@ SCRIPT = r'''<script id="v430-p1-runtime">
     button.append(copy);
   }
 
-  function moveUtilityPanels(host) {
-    const utilityMenu = ensureMenu();
-    for (const id of UTILITY_PANELS) {
-      let button = [...document.querySelectorAll(`[data-panel="${id}"]`)]
-        .find(el => !inMobileSurface(el) && !el.closest('.left-panel,.inspector,.modal-layer'));
-      if (!button) continue;
-      button.classList.add('v430-utility-item');
-      button.dataset.v430UtilityItem = id;
-      const label = PANEL_LABELS[id];
-      if (!button.getAttribute('aria-label')) button.setAttribute('aria-label', label);
-      button.setAttribute('title', label);
-      ensureUtilityCopy(button, label);
-      if (button.parentElement !== utilityMenu) utilityMenu.append(button);
-    }
+  function configureUtilityPanels(host) {
+  const utilityMenu = ensureMenu();
+  for (const id of UTILITY_PANELS) {
+    const source = [...host.querySelectorAll(`[data-panel="${id}"]`)]
+      .find(el => !inMobileSurface(el) && !inPanelContent(el));
+    if (!source) continue;
+    source.classList.add('v430-utility-source');
+    const label = PANEL_LABELS[id];
+    if (!source.getAttribute('aria-label')) source.setAttribute('aria-label', label);
+    source.setAttribute('title', label);
 
-    let themeProxy = utilityMenu.querySelector('[data-v430-utility-proxy="theme"]');
-    if (!themeProxy) {
-      themeProxy = document.createElement('button');
-      themeProxy.type = 'button';
-      themeProxy.className = 'v430-utility-proxy';
-      themeProxy.dataset.v430UtilityProxy = 'theme';
-      themeProxy.setAttribute('role', 'menuitem');
-      themeProxy.innerHTML = '<span aria-hidden="true">◐</span><span class="v430-utility-copy">Theme</span>';
-      themeProxy.addEventListener('click', () => {
-        const original = [...document.querySelectorAll('[data-action="theme"]')]
-          .find(el => el !== themeProxy && !el.closest('#v430-utility-menu'));
+    let proxy = utilityMenu.querySelector(`[data-v430-utility-item="${id}"]`);
+    if (!proxy) {
+      proxy = document.createElement('button');
+      proxy.type = 'button';
+      proxy.className = 'v430-utility-proxy';
+      proxy.dataset.v430UtilityItem = id;
+      proxy.setAttribute('role', 'menuitem');
+      proxy.setAttribute('aria-label', label);
+      proxy.innerHTML = `<span class="v430-utility-copy">${label}</span>`;
+      proxy.addEventListener('click', () => {
         closeMenu();
+        const original = [...document.querySelectorAll(`[data-panel="${id}"]`)]
+          .find(el => el.classList.contains('v430-utility-source') && !inMobileSurface(el));
         if (original) original.click();
       });
-      utilityMenu.append(themeProxy);
+      utilityMenu.append(proxy);
     }
   }
+
+  let themeProxy = utilityMenu.querySelector('[data-v430-utility-proxy="theme"]');
+  if (!themeProxy) {
+    themeProxy = document.createElement('button');
+    themeProxy.type = 'button';
+    themeProxy.className = 'v430-utility-proxy';
+    themeProxy.dataset.v430UtilityProxy = 'theme';
+    themeProxy.setAttribute('role', 'menuitem');
+    themeProxy.innerHTML = '<span aria-hidden="true">◐</span><span class="v430-utility-copy">Theme</span>';
+    themeProxy.addEventListener('click', () => {
+      const original = [...document.querySelectorAll('[data-action="theme"]')]
+        .find(el => el !== themeProxy && !el.closest('#v430-utility-menu'));
+      closeMenu();
+      if (original) original.click();
+    });
+    utilityMenu.append(themeProxy);
+  }
+}
 
   function ensureTrigger(host, preferredAnchor) {
     if (trigger?.isConnected && trigger.parentElement === host) return trigger;
@@ -470,6 +499,10 @@ SCRIPT = r'''<script id="v430-p1-runtime">
 
   function enhance() {
     scheduled = false;
+    if (document.documentElement.dataset.screen !== 'editor') {
+      closeMenu();
+      return;
+    }
     markWorkspaceModes();
     markChrome();
     if (!media.matches) {
@@ -484,7 +517,7 @@ SCRIPT = r'''<script id="v430-p1-runtime">
     normalizePanelButtons(host, buttons);
     const utilityAnchor = buttons.find(button => UTILITY_PANELS.includes(button.dataset.panel));
     ensureTrigger(host, utilityAnchor);
-    moveUtilityPanels(host);
+    configureUtilityPanels(host);
     addGroupDividers(host, desktopPanelButtons().filter(button => host.contains(button)));
   }
 
@@ -518,7 +551,7 @@ SCRIPT = r'''<script id="v430-p1-runtime">
     installListeners();
     scheduleEnhance();
     observer = new MutationObserver(scheduleEnhance);
-    observer.observe(document.body, {subtree: true, childList: true});
+    observer.observe(document.documentElement, {attributes: true, attributeFilter: ['data-screen']});
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, {once: true});

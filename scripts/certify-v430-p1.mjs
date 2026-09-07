@@ -57,28 +57,35 @@ async function closeTransient(page) {
 }
 
 async function openHome(page) {
-  const screen=await page.locator('html').getAttribute('data-screen');
+    await page.waitForFunction(()=>['landing','home','editor'].includes(document.documentElement.dataset.screen||''),null,{timeout:15000});
+  let screen=await page.locator('html').getAttribute('data-screen');
+  if (screen==='editor') return 'editor';
   if (screen==='landing') {
     await closeTransient(page);
     await clickVisible(page,'[data-action="home"]');
+    await page.waitForFunction(()=>['home','editor'].includes(document.documentElement.dataset.screen||''),null,{timeout:15000});
+    screen=await page.locator('html').getAttribute('data-screen');
   }
-  await page.waitForFunction(()=>document.documentElement.dataset.screen==='home',null,{timeout:10000});
+  return screen;
 }
 
 async function openEditor(page) {
-  await openHome(page);
-  const blank=page.locator('.modal-layer [data-action="onboarding-blank"]').first();
-  if (await blank.count() && await blank.isVisible().catch(()=>false)) {
-    try { await blank.click({timeout:3000}); } catch { await blank.evaluate(el=>el.click()); }
-  } else {
-    await closeTransient(page);
-    await clickVisible(page,'[data-action="new"]');
-    const post=page.locator('.modal-layer [data-action="onboarding-blank"]').first();
-    if (await post.count() && await post.isVisible().catch(()=>false)) {
-      try { await post.click({timeout:3000}); } catch { await post.evaluate(el=>el.click()); }
+  const screen=await openHome(page);
+  if (screen!=='editor') {
+    check(screen==='home',`setup: expected home/editor, got ${screen}`);
+    const blank=page.locator('.modal-layer [data-action="onboarding-blank"]').first();
+    if (await blank.count() && await blank.isVisible().catch(()=>false)) {
+      try { await blank.click({timeout:3000}); } catch { await blank.evaluate(el=>el.click()); }
+    } else {
+      await closeTransient(page);
+      await clickVisible(page,'[data-action="new"]');
+      const post=page.locator('.modal-layer [data-action="onboarding-blank"]').first();
+      if (await post.count() && await post.isVisible().catch(()=>false)) {
+        try { await post.click({timeout:3000}); } catch { await post.evaluate(el=>el.click()); }
+      }
     }
+    await page.waitForFunction(()=>document.documentElement.dataset.screen==='editor',null,{timeout:15000});
   }
-  await page.waitForFunction(()=>document.documentElement.dataset.screen==='editor',null,{timeout:15000});
   await page.waitForSelector('.codemirror-editor .cm-scroller',{timeout:15000});
   await page.waitForFunction(()=>!!document.querySelector('.v430-nav-host') || innerWidth<768,null,{timeout:8000});
 }
