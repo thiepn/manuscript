@@ -1,0 +1,129 @@
+name: V430 P1 one-shot implementation
+
+on:
+  push:
+    branches: [feat/v430-writing-experience]
+    paths:
+      - '.github/workflows/v430-p1-bootstrap.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: manuscript-v430-p1-bootstrap
+  cancel-in-progress: false
+
+jobs:
+  implement-and-certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/v430-writing-experience
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Repair bootstrap patcher idempotence guard
+        shell: python
+        run: |
+          from pathlib import Path
+          path = Path('tools/apply_v430_p1.py')
+          text = path.read_text(encoding='utf-8')
+          old = "    host.querySelectorAll(':scope > .v430-nav-divider').forEach(el => el.remove());\n    let previous = null;"
+          new = "    if (host.querySelector(':scope > .v430-nav-divider')) return;\n    let previous = null;"
+          if old not in text:
+              raise SystemExit('bootstrap repair anchor not found')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+      - name: Apply V430-P1 to certified v4.2.3 shell
+        run: python3 tools/apply_v430_p1.py
+
+      - name: Verify static contracts
+        shell: bash
+        run: |
+          grep -q 'id="v422-editor-layout-hotfix"' index.html
+          grep -q 'id="v423-ui-hardening"' index.html
+          grep -q 'manuscript-ui-contract" content="responsive-ui-hardening-v1' index.html
+          grep -q 'id="v430-p1-simplified-navigation"' index.html
+          grep -q 'id="v430-p1-runtime"' index.html
+          grep -q 'manuscript-writing-ui-contract" content="simplified-navigation-v1' index.html
+          grep -q '<title>Manuscript v4.2.3 Stable</title>' index.html
+          grep -q 'v4.2.3' sw.js
+
+      - name: Install browser certification dependencies
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium firefox webkit
+
+      - name: Harden setup-only navigation in inherited v4.2.3 tests
+        run: python3 tools/harden_v423_test_navigation.py
+
+      - name: Serve P1 application
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/manuscript-v430-p1-http.log 2>&1 &
+          echo $! > /tmp/manuscript-v430-p1-http.pid
+          for i in {1..30}; do curl -fsS http://127.0.0.1:4173/index.html >/dev/null && exit 0; sleep 1; done
+          cat /tmp/manuscript-v430-p1-http.log
+          exit 1
+
+      - name: Re-run v4.2.2 editor/mobile behavioral contract
+        shell: bash
+        env:
+          MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
+        run: |
+          cp scripts/certify-v422.mjs scripts/.certify-v422-p1-compat.mjs
+          sed -i 's/Manuscript v4\.2\.2 Stable/Manuscript v4.2.3 Stable/g' scripts/.certify-v422-p1-compat.mjs
+          node scripts/.certify-v422-p1-compat.mjs
+          rm scripts/.certify-v422-p1-compat.mjs
+
+      - name: Re-run v4.2.3 responsive certification
+        timeout-minutes: 12
+        env:
+          MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
+        run: node scripts/certify-v423.mjs
+
+      - name: Re-run v4.2.3 utility/mobile-overlay certification
+        env:
+          MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
+        run: node scripts/certify-v423-extras.mjs
+
+      - name: Certify V430-P1 navigation and chrome contract
+        timeout-minutes: 10
+        env:
+          MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
+        run: node scripts/certify-v430-p1.mjs
+
+      - name: Enforce broad zero-finding UI sweep
+        env:
+          MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
+        run: node scripts/ui-sweep-v423.mjs
+
+      - name: Restore inherited test sources and validate clean scope
+        shell: bash
+        run: |
+          git checkout -- scripts/certify-v423.mjs scripts/certify-v423-extras.mjs
+          rm -f scripts/.certify-v422-p1-compat.mjs
+          test -f diagnostics/ui-sweep-v423.json
+          python3 - <<'PY'
+          import json
+          data=json.load(open('diagnostics/ui-sweep-v423.json',encoding='utf-8'))
+          assert data['summary']['total']==0, data['summary']
+          assert data['summary']['fatal']==0, data['summary']
+          print('UI sweep:', data['summary'])
+          PY
+
+      - name: Commit certified P1 implementation
+        shell: bash
+        run: |
+          rm .github/workflows/v430-p1-bootstrap.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html tools/apply_v430_p1.py scripts/certify-v430-p1.mjs .github/workflows/v430-p1-bootstrap.yml
+          git diff --cached --check
+          git commit -m 'feat: simplify navigation and quiet editor chrome for v4.3'
+          git push origin HEAD:feat/v430-writing-experience
