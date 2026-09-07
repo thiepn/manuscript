@@ -551,7 +551,10 @@ def main() -> None:
             raise SystemExit(f"Required v4.2.x contract missing: {required}")
 
     text = text.replace('</head>', f'{META}\n{STYLE}\n</head>', 1)
-    text = text.replace('</body>', f'{SCRIPT}\n</body>', 1)
+    body_close = text.rfind('</body>')
+    if body_close < 0:
+        raise SystemExit('Document closing </body> anchor not found')
+    text = text[:body_close] + SCRIPT + '\n' + text[body_close:]
     INDEX.write_text(text, encoding="utf-8")
 
     patched = INDEX.read_text(encoding="utf-8")
