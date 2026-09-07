@@ -28,17 +28,110 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Repair bootstrap patcher idempotence guard
+      - name: Harden P1 patcher integration boundaries
         shell: python
         run: |
           from pathlib import Path
+
           path = Path('tools/apply_v430_p1.py')
           text = path.read_text(encoding='utf-8')
+
+          # Dividers must not create a child-list mutation loop.
           old = "    host.querySelectorAll(':scope > .v430-nav-divider').forEach(el => el.remove());\n    let previous = null;"
           new = "    if (host.querySelector(':scope > .v430-nav-divider')) return;\n    let previous = null;"
           if old not in text:
-              raise SystemExit('bootstrap repair anchor not found')
-          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+              raise SystemExit('divider idempotence anchor not found')
+          text = text.replace(old, new, 1)
+
+          # Keep low-frequency source buttons in their original DOM hierarchy so
+          # existing delegated handlers remain intact; only hide them in the
+          # desktop editor rail after proxies are installed.
+          css_anchor = '@media (max-width: 1199px) {'
+          css_insert = '''@media (min-width: 768px) {
+            html[data-screen="editor"] .v430-nav-host .v430-utility-source {
+              display: none !important;
+            }
+          }
+
+          '''
+          if css_anchor not in text:
+              raise SystemExit('utility source CSS anchor not found')
+          text = text.replace(css_anchor, css_insert + css_anchor, 1)
+
+          start = text.find('  function moveUtilityPanels(host) {')
+          end = text.find('  function ensureTrigger(host, preferredAnchor) {', start)
+          if start < 0 or end < 0:
+              raise SystemExit('utility panel function anchors not found')
+          safe_utility = r'''  function configureUtilityPanels(host) {
+            const utilityMenu = ensureMenu();
+            for (const id of UTILITY_PANELS) {
+              const source = [...host.querySelectorAll(`[data-panel="${id}"]`)]
+                .find(el => !inMobileSurface(el) && !inPanelContent(el));
+              if (!source) continue;
+              source.classList.add('v430-utility-source');
+              const label = PANEL_LABELS[id];
+              if (!source.getAttribute('aria-label')) source.setAttribute('aria-label', label);
+              source.setAttribute('title', label);
+
+              let proxy = utilityMenu.querySelector(`[data-v430-utility-item="${id}"]`);
+              if (!proxy) {
+                proxy = document.createElement('button');
+                proxy.type = 'button';
+                proxy.className = 'v430-utility-proxy';
+                proxy.dataset.v430UtilityItem = id;
+                proxy.setAttribute('role', 'menuitem');
+                proxy.setAttribute('aria-label', label);
+                proxy.innerHTML = `<span class="v430-utility-copy">${label}</span>`;
+                proxy.addEventListener('click', () => {
+                  closeMenu();
+                  const original = [...document.querySelectorAll(`[data-panel="${id}"]`)]
+                    .find(el => el.classList.contains('v430-utility-source') && !inMobileSurface(el));
+                  if (original) original.click();
+                });
+                utilityMenu.append(proxy);
+              }
+            }
+
+            let themeProxy = utilityMenu.querySelector('[data-v430-utility-proxy="theme"]');
+            if (!themeProxy) {
+              themeProxy = document.createElement('button');
+              themeProxy.type = 'button';
+              themeProxy.className = 'v430-utility-proxy';
+              themeProxy.dataset.v430UtilityProxy = 'theme';
+              themeProxy.setAttribute('role', 'menuitem');
+              themeProxy.innerHTML = '<span aria-hidden="true">◐</span><span class="v430-utility-copy">Theme</span>';
+              themeProxy.addEventListener('click', () => {
+                const original = [...document.querySelectorAll('[data-action="theme"]')]
+                  .find(el => el !== themeProxy && !el.closest('#v430-utility-menu'));
+                closeMenu();
+                if (original) original.click();
+              });
+              utilityMenu.append(themeProxy);
+            }
+          }
+
+          '''
+          text = text[:start] + safe_utility + text[end:]
+
+          # Structural navigation enhancement must never touch Landing/Home.
+          enhance_anchor = "  function enhance() {\n    scheduled = false;\n    markWorkspaceModes();"
+          enhance_replacement = "  function enhance() {\n    scheduled = false;\n    if (document.documentElement.dataset.screen !== 'editor') {\n      closeMenu();\n      return;\n    }\n    markWorkspaceModes();"
+          if enhance_anchor not in text:
+              raise SystemExit('editor-only enhance anchor not found')
+          text = text.replace(enhance_anchor, enhance_replacement, 1)
+
+          if '    moveUtilityPanels(host);' not in text:
+              raise SystemExit('utility configure call anchor not found')
+          text = text.replace('    moveUtilityPanels(host);', '    configureUtilityPanels(host);', 1)
+
+          observer_anchor = "    observer.observe(document.body, {subtree: true, childList: true});"
+          observer_replacement = "    observer.observe(document.documentElement, {subtree: true, childList: true, attributes: true, attributeFilter: ['data-screen']});"
+          if observer_anchor not in text:
+              raise SystemExit('observer anchor not found')
+          text = text.replace(observer_anchor, observer_replacement, 1)
+
+          path.write_text(text, encoding='utf-8')
+          print('P1 patcher hardened: editor-only structure, stable utility sources, idempotent observer')
 
       - name: Apply V430-P1 to certified v4.2.3 shell
         run: python3 tools/apply_v430_p1.py
@@ -138,10 +231,6 @@ jobs:
           cat /tmp/manuscript-v430-p1-http.log
           exit 1
 
-      # certify-v423 is the maintained superset gate for the inherited v4.2.2
-      # editor/mobile contract: it explicitly verifies Write/Preview/Split pane
-      # exclusivity, editor dimensions, mobile mode switching, viewport locking,
-      # overflow, and then adds the v4.2.3 responsive checks.
       - name: Re-run inherited v4.2.2 + v4.2.3 responsive behavioral certification
         timeout-minutes: 12
         env:
