@@ -149,7 +149,7 @@ jobs:
           npm install --no-save playwright
           npx playwright install --with-deps chromium firefox webkit
 
-      - name: Apply certified v4.2.3 setup hardening
+      - name: Apply current-entry setup hardening
         run: python3 tools/harden_v423_test_navigation.py
 
       - name: Adapt inherited Settings utility test to P1 navigation
