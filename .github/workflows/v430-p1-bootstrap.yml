@@ -5,6 +5,7 @@ on:
     branches: [feat/v430-writing-experience]
     paths:
       - '.github/workflows/v430-p1-bootstrap.yml'
+      - 'scripts/certify-v430-p1.mjs'
   workflow_dispatch:
 
 permissions:
@@ -219,7 +220,7 @@ jobs:
           MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
         run: node scripts/certify-v423-extras.mjs
 
-      - name: Certify V430-P1 navigation and chrome contract
+      - name: Certify V430-P1 navigation, utilities, and chrome contract
         timeout-minutes: 10
         env:
           MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
