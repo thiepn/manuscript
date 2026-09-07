@@ -107,7 +107,8 @@ async function verifyModes(page,name) {
 }
 
 async function openUtilityMenu(page,name) {
-  const trigger=page.locator('.v430-utility-trigger').first();
+  await closeTransient(page);
+  const trigger=page.locator('.v430-utility-trigger:visible').first();
   check(await trigger.count()===1 && await trigger.isVisible(),`${name}: More tools trigger unavailable`);
   await trigger.click();
   const menu=page.locator('#v430-utility-menu[data-open="true"]');
