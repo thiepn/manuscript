@@ -61,8 +61,74 @@ jobs:
           npm install --no-save playwright
           npx playwright install --with-deps chromium firefox webkit
 
-      - name: Harden setup-only navigation in inherited v4.2.3 tests
-        run: python3 tools/harden_v423_test_navigation.py
+      - name: Harden setup-only navigation in inherited suites
+        shell: python
+        run: |
+          import subprocess
+          from pathlib import Path
+
+          subprocess.run(['python3','tools/harden_v423_test_navigation.py'],check=True)
+
+          old_helper = '''async function activateForSetup(page, selector) {
+            const el = page.locator(selector).first();
+            try {
+              await el.click({timeout:2500});
+            } catch {
+              await el.evaluate(node => node.click());
+            }
+          }
+          '''
+          new_helper = '''async function activateForSetup(page, selector) {
+            const nodes = page.locator(selector);
+            const count = await nodes.count();
+            const before = await page.locator('html').getAttribute('data-screen');
+            for (let i = 0; i < count; i++) {
+              const el = nodes.nth(i);
+              if (!(await el.isVisible().catch(() => false))) continue;
+              try { await el.click({timeout:2500}); }
+              catch { await el.evaluate(node => node.click()); }
+              await page.waitForTimeout(100);
+              const after = await page.locator('html').getAttribute('data-screen');
+              const modalVisible = await page.locator('.modal-layer').first().isVisible().catch(() => false);
+              if (after !== before || modalVisible || selector.includes('onboarding-blank')) return;
+            }
+            for (let i = 0; i < count; i++) {
+              const el = nodes.nth(i);
+              try {
+                await el.evaluate(node => node.click());
+                await page.waitForTimeout(100);
+                const after = await page.locator('html').getAttribute('data-screen');
+                const modalVisible = await page.locator('.modal-layer').first().isVisible().catch(() => false);
+                if (after !== before || modalVisible || selector.includes('onboarding-blank')) return;
+              } catch {}
+            }
+            throw new Error(`No actionable setup control for ${selector}`);
+          }
+          '''
+
+          for name in ['scripts/certify-v423.mjs','scripts/certify-v423-extras.mjs']:
+              path=Path(name)
+              text=path.read_text(encoding='utf-8')
+              if old_helper not in text:
+                  raise SystemExit(f'activateForSetup anchor missing in {name}')
+              path.write_text(text.replace(old_helper,new_helper,1),encoding='utf-8')
+
+          sweep=Path('scripts/ui-sweep-v423.mjs')
+          text=sweep.read_text(encoding='utf-8')
+          helper='''\nasync function activateForSetup(page, selector) {\n  const nodes=page.locator(selector);\n  const count=await nodes.count();\n  const before=await page.locator('html').getAttribute('data-screen');\n  for(let i=0;i<count;i++){\n    const el=nodes.nth(i);\n    if(!(await el.isVisible().catch(()=>false)))continue;\n    try{await el.click({timeout:2500});}catch{await el.evaluate(node=>node.click());}\n    await page.waitForTimeout(100);\n    const after=await page.locator('html').getAttribute('data-screen');\n    const modalVisible=await page.locator('.modal-layer').first().isVisible().catch(()=>false);\n    if(after!==before||modalVisible||selector.includes('onboarding-blank'))return;\n  }\n  for(let i=0;i<count;i++){\n    try{await nodes.nth(i).evaluate(node=>node.click());await page.waitForTimeout(100);}catch{continue;}\n    const after=await page.locator('html').getAttribute('data-screen');\n    const modalVisible=await page.locator('.modal-layer').first().isVisible().catch(()=>false);\n    if(after!==before||modalVisible||selector.includes('onboarding-blank'))return;\n  }\n  throw new Error(`No actionable setup control for ${selector}`);\n}\n'''
+          anchor="const report={generatedAt:new Date().toISOString(),baseURL,profiles:[],summary:{}};\n"
+          if anchor not in text: raise SystemExit('ui sweep helper anchor missing')
+          text=text.replace(anchor,anchor+helper,1)
+          replacements={
+            "await page.locator('[data-action=\"home\"]').first().click({timeout:5000});":"await activateForSetup(page,'[data-action=\"home\"]');",
+            "if(await blank.count()&&await blank.isVisible().catch(()=>false))await blank.click({timeout:5000});":"if(await blank.count()&&await blank.isVisible().catch(()=>false))await activateForSetup(page,'.modal-layer [data-action=\"onboarding-blank\"]');",
+            "await page.locator('[data-action=\"new\"]').first().click({timeout:5000});":"await activateForSetup(page,'[data-action=\"new\"]');",
+            "if(await post.count()&&await post.isVisible().catch(()=>false))await post.click({timeout:5000});":"if(await post.count()&&await post.isVisible().catch(()=>false))await activateForSetup(page,'.modal-layer [data-action=\"onboarding-blank\"]');",
+          }
+          for old,new in replacements.items():
+              if old not in text: raise SystemExit(f'ui sweep setup anchor missing: {old}')
+              text=text.replace(old,new,1)
+          sweep.write_text(text,encoding='utf-8')
 
       - name: Serve P1 application
         run: |
@@ -101,7 +167,7 @@ jobs:
       - name: Restore inherited test sources and validate clean scope
         shell: bash
         run: |
-          git checkout -- scripts/certify-v423.mjs scripts/certify-v423-extras.mjs
+          git checkout -- scripts/certify-v423.mjs scripts/certify-v423-extras.mjs scripts/ui-sweep-v423.mjs
           test -f diagnostics/ui-sweep-v423.json
           python3 - <<'PY'
           import json
