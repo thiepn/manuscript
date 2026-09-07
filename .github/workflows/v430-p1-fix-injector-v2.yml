@@ -1,0 +1,66 @@
+name: Repair V430 P1 body anchor
+
+on:
+  push:
+    branches: [feat/v430-writing-experience]
+    paths:
+      - '.github/workflows/v430-p1-fix-injector-v2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/v430-writing-experience
+          fetch-depth: 0
+
+      - name: Repair injector source and retrigger certification
+        shell: python
+        run: |
+          from pathlib import Path
+
+          patcher = Path('tools/apply_v430_p1.py')
+          text = patcher.read_text(encoding='utf-8')
+          old = "    text = text.replace('</body>', f'{SCRIPT}\\n</body>', 1)"
+          new = "    body_close = text.rfind('</body>')\n    if body_close < 0:\n        raise SystemExit('Document closing </body> anchor not found')\n    text = text[:body_close] + SCRIPT + '\\n' + text[body_close:]"
+          if old not in text:
+              raise SystemExit('unsafe body injection line not found')
+          patcher.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+          bootstrap = Path('.github/workflows/v430-p1-bootstrap.yml')
+          workflow = bootstrap.read_text(encoding='utf-8')
+          trigger = '# injector-fix-trigger: final-document-body\n'
+          if trigger not in workflow:
+              workflow += '\n' + trigger
+          bootstrap.write_text(workflow, encoding='utf-8')
+
+          for name in [
+              '.github/workflows/v430-p1-entry-diagnostic.yml',
+              '.github/workflows/v430-p1-injector-diagnostic.yml',
+              '.github/workflows/v430-p1-fix-injector.yml',
+              '.github/workflows/v430-p1-fix-injector-v2.yml',
+          ]:
+              p = Path(name)
+              if p.exists():
+                  p.unlink()
+
+      - name: Verify source repair
+        shell: bash
+        run: |
+          grep -q "body_close = text.rfind('</body>')" tools/apply_v430_p1.py
+          grep -q 'injector-fix-trigger: final-document-body' .github/workflows/v430-p1-bootstrap.yml
+
+      - name: Commit repair
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A tools/apply_v430_p1.py .github/workflows/
+          git diff --cached --check
+          git commit -m 'fix: anchor P1 runtime at real document body close'
+          git push origin HEAD:feat/v430-writing-experience
