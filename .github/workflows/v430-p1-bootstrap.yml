@@ -120,13 +120,13 @@ jobs:
           text = text.replace('    moveUtilityPanels(host);', '    configureUtilityPanels(host);', 1)
 
           observer_anchor = "    observer.observe(document.body, {subtree: true, childList: true});"
-          observer_replacement = "    observer.observe(document.documentElement, {subtree: true, childList: true, attributes: true, attributeFilter: ['data-screen']});"
+          observer_replacement = "    observer.observe(document.documentElement, {attributes: true, attributeFilter: ['data-screen']});"
           if observer_anchor not in text:
               raise SystemExit('observer anchor not found')
           text = text.replace(observer_anchor, observer_replacement, 1)
 
           path.write_text(text, encoding='utf-8')
-          print('P1 patcher hardened: editor-only structure, stable utility sources, idempotent observer')
+          print('P1 patcher hardened: editor-only structure, stable utility sources, bounded observer')
 
       - name: Apply V430-P1 to certified v4.2.3 shell
         run: python3 tools/apply_v430_p1.py
