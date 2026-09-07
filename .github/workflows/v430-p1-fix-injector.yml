@@ -1,0 +1,101 @@
+name: Repair V430 P1 injector
+
+on:
+  push:
+    branches: [feat/v430-writing-experience]
+    paths:
+      - '.github/workflows/v430-p1-fix-injector.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/v430-writing-experience
+          fetch-depth: 0
+
+      - name: Persist hardened P1 patcher and repair document-body injection
+        shell: python
+        run: |
+          import textwrap
+          from pathlib import Path
+
+          bootstrap_path = Path('.github/workflows/v430-p1-bootstrap.yml')
+          bootstrap = bootstrap_path.read_text(encoding='utf-8')
+
+          marker = '      - name: Harden P1 patcher integration boundaries\n        shell: python\n        run: |\n'
+          start = bootstrap.find(marker)
+          if start < 0:
+              raise SystemExit('bootstrap hardening block not found')
+          code_start = start + len(marker)
+          end = bootstrap.find('\n      - name:', code_start)
+          if end < 0:
+              raise SystemExit('bootstrap hardening block end not found')
+
+          # Execute the already-reviewed integration hardening once and persist it.
+          code = textwrap.dedent(bootstrap[code_start:end])
+          exec(compile(code, '<bootstrap-hardening>', 'exec'), {})
+
+          patcher = Path('tools/apply_v430_p1.py')
+          text = patcher.read_text(encoding='utf-8')
+          old = "    text = text.replace('</body>', f'{SCRIPT}\\n</body>', 1)"
+          new = """    body_close = text.rfind('</body>')
+    if body_close < 0:
+        raise SystemExit('Document closing </body> anchor not found')
+    text = text[:body_close] + SCRIPT + '\\n' + text[body_close:]"""
+          if old not in text:
+              raise SystemExit('unsafe body injection anchor not found')
+          text = text.replace(old, new, 1)
+          patcher.write_text(text, encoding='utf-8')
+
+          # The patcher is now hardened in source; bootstrap should verify rather than
+          # dynamically rewrite it on every certification run.
+          replacement = '''      - name: Verify hardened P1 patcher source
+        shell: bash
+        run: |
+          grep -q "document.documentElement.dataset.screen !== 'editor'" tools/apply_v430_p1.py
+          grep -q "body_close = text.rfind('</body>')" tools/apply_v430_p1.py
+          grep -q "configureUtilityPanels(host)" tools/apply_v430_p1.py
+          grep -q "v430-utility-source" tools/apply_v430_p1.py
+'''
+          bootstrap = bootstrap[:start] + replacement.rstrip('\n') + bootstrap[end:]
+          bootstrap_path.write_text(bootstrap, encoding='utf-8')
+
+          # Remove temporary diagnostics; final P1 should contain only product/test assets.
+          for name in [
+              '.github/workflows/v430-p1-entry-diagnostic.yml',
+              '.github/workflows/v430-p1-injector-diagnostic.yml',
+              '.github/workflows/v430-p1-fix-injector.yml',
+          ]:
+              p=Path(name)
+              if p.exists(): p.unlink()
+
+      - name: Static injector sanity check
+        shell: python
+        run: |
+          import subprocess
+          from pathlib import Path
+          original = Path('index.html').read_bytes()
+          subprocess.run(['python3','tools/apply_v430_p1.py'],check=True)
+          text=Path('index.html').read_text(encoding='utf-8')
+          assert text.count('id="v430-p1-runtime"') == 1
+          assert text.rfind('id="v430-p1-runtime"') > text.find('<body')
+          assert text.rfind('id="v430-p1-runtime"') < text.rfind('</body>')
+          assert text.find('id="v430-p1-runtime"') > 3_400_000
+          Path('index.html').write_bytes(original)
+          print('P1 runtime injection is anchored to the real document body close')
+
+      - name: Commit repair and trigger full P1 gate
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A tools/apply_v430_p1.py .github/workflows/
+          git diff --cached --check
+          git commit -m 'fix: harden P1 HTML injection and editor integration'
+          git push origin HEAD:feat/v430-writing-experience
