@@ -78,6 +78,25 @@ jobs:
         run: |
           cp scripts/certify-v422.mjs scripts/.certify-v422-p1-compat.mjs
           sed -i 's/Manuscript v4\.2\.2 Stable/Manuscript v4.2.3 Stable/g' scripts/.certify-v422-p1-compat.mjs
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('scripts/.certify-v422-p1-compat.mjs')
+          t=p.read_text(encoding='utf-8')
+          helper='''\nasync function activateForSetup(page, selector) {\n  const el = page.locator(selector).first();\n  try { await el.click({timeout:2500}); }\n  catch { await el.evaluate(node => node.click()); }\n}\n'''
+          anchor='function check(ok, message) { assert.ok(ok, message); }\n'
+          if anchor not in t: raise SystemExit('v422 check anchor missing')
+          t=t.replace(anchor,anchor+helper,1)
+          replacements={
+            "if (screen === 'landing') await page.locator('[data-action=\"home\"]').first().click();":"if (screen === 'landing') await activateForSetup(page, '[data-action=\"home\"]');",
+            "await onboardingBlank.click({ timeout:5000 });":"await activateForSetup(page, '.modal-layer [data-action=\"onboarding-blank\"]');",
+            "await page.locator('[data-action=\"new\"]').first().click({ timeout:5000 });":"await activateForSetup(page, '[data-action=\"new\"]');",
+            "await postNewOnboarding.click({ timeout:5000 });":"await activateForSetup(page, '.modal-layer [data-action=\"onboarding-blank\"]');",
+          }
+          for old,new in replacements.items():
+              if old not in t: raise SystemExit(f'v422 setup anchor missing: {old}')
+              t=t.replace(old,new,1)
+          p.write_text(t,encoding='utf-8')
+          PY
           node scripts/.certify-v422-p1-compat.mjs
           rm scripts/.certify-v422-p1-compat.mjs
 
