@@ -1,0 +1,240 @@
+name: V430 P1 entry diagnostic
+
+on:
+  push:
+    branches: [feat/v430-writing-experience]
+    paths:
+      - '.github/workflows/v430-p1-entry-diagnostic.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compare-entry-flow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/v430-writing-experience
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Build isolated baseline and P1 candidates
+        shell: python
+        run: |
+          import subprocess
+          from pathlib import Path
+
+          baseline = subprocess.check_output([
+              'git','show','1e32b2d7bf6050cd6e3c41b362ee474844354c00:index.html'
+          ])
+          Path('diag-base').mkdir()
+          Path('diag-base/index.html').write_bytes(baseline)
+          Path('diag-base/sw.js').write_bytes(Path('sw.js').read_bytes())
+
+          path = Path('tools/apply_v430_p1.py')
+          text = path.read_text(encoding='utf-8')
+          text = text.replace(
+              "    host.querySelectorAll(':scope > .v430-nav-divider').forEach(el => el.remove());\n    let previous = null;",
+              "    if (host.querySelector(':scope > .v430-nav-divider')) return;\n    let previous = null;",
+              1,
+          )
+          css_anchor = '@media (max-width: 1199px) {'
+          text = text.replace(css_anchor, '''@media (min-width: 768px) {
+            html[data-screen="editor"] .v430-nav-host .v430-utility-source {
+              display: none !important;
+            }
+          }
+
+          ''' + css_anchor, 1)
+
+          start = text.find('  function moveUtilityPanels(host) {')
+          end = text.find('  function ensureTrigger(host, preferredAnchor) {', start)
+          if start < 0 or end < 0:
+              raise SystemExit('utility function anchors missing')
+          safe_utility = r'''  function configureUtilityPanels(host) {
+            const utilityMenu = ensureMenu();
+            for (const id of UTILITY_PANELS) {
+              const source = [...host.querySelectorAll(`[data-panel="${id}"]`)]
+                .find(el => !inMobileSurface(el) && !inPanelContent(el));
+              if (!source) continue;
+              source.classList.add('v430-utility-source');
+              const label = PANEL_LABELS[id];
+              if (!source.getAttribute('aria-label')) source.setAttribute('aria-label', label);
+              source.setAttribute('title', label);
+              let proxy = utilityMenu.querySelector(`[data-v430-utility-item="${id}"]`);
+              if (!proxy) {
+                proxy = document.createElement('button');
+                proxy.type = 'button';
+                proxy.className = 'v430-utility-proxy';
+                proxy.dataset.v430UtilityItem = id;
+                proxy.setAttribute('role', 'menuitem');
+                proxy.setAttribute('aria-label', label);
+                proxy.innerHTML = `<span class="v430-utility-copy">${label}</span>`;
+                proxy.addEventListener('click', () => {
+                  closeMenu();
+                  const original = [...document.querySelectorAll(`[data-panel="${id}"]`)]
+                    .find(el => el.classList.contains('v430-utility-source') && !inMobileSurface(el));
+                  if (original) original.click();
+                });
+                utilityMenu.append(proxy);
+              }
+            }
+            let themeProxy = utilityMenu.querySelector('[data-v430-utility-proxy="theme"]');
+            if (!themeProxy) {
+              themeProxy = document.createElement('button');
+              themeProxy.type = 'button';
+              themeProxy.className = 'v430-utility-proxy';
+              themeProxy.dataset.v430UtilityProxy = 'theme';
+              themeProxy.setAttribute('role', 'menuitem');
+              themeProxy.innerHTML = '<span aria-hidden="true">◐</span><span class="v430-utility-copy">Theme</span>';
+              themeProxy.addEventListener('click', () => {
+                const original = [...document.querySelectorAll('[data-action="theme"]')]
+                  .find(el => el !== themeProxy && !el.closest('#v430-utility-menu'));
+                closeMenu();
+                if (original) original.click();
+              });
+              utilityMenu.append(themeProxy);
+            }
+          }
+
+          '''
+          text = text[:start] + safe_utility + text[end:]
+          text = text.replace(
+              "  function enhance() {\n    scheduled = false;\n    markWorkspaceModes();",
+              "  function enhance() {\n    scheduled = false;\n    if (document.documentElement.dataset.screen !== 'editor') {\n      closeMenu();\n      return;\n    }\n    markWorkspaceModes();",
+              1,
+          )
+          text = text.replace('    moveUtilityPanels(host);', '    configureUtilityPanels(host);', 1)
+          text = text.replace(
+              "    observer.observe(document.body, {subtree: true, childList: true});",
+              "    observer.observe(document.documentElement, {subtree: true, childList: true, attributes: true, attributeFilter: ['data-screen']});",
+              1,
+          )
+          path.write_text(text, encoding='utf-8')
+          subprocess.run(['python3','tools/apply_v430_p1.py'], check=True)
+
+          Path('diag-p1').mkdir()
+          Path('diag-p1/index.html').write_bytes(Path('index.html').read_bytes())
+          Path('diag-p1/sw.js').write_bytes(Path('sw.js').read_bytes())
+
+      - name: Install Chromium
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Serve isolated candidates
+        shell: bash
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 --directory diag-base >/tmp/base.log 2>&1 &
+          python3 -m http.server 4174 --bind 127.0.0.1 --directory diag-p1 >/tmp/p1.log 2>&1 &
+          for port in 4173 4174; do
+            for i in {1..30}; do curl -fsS http://127.0.0.1:$port/index.html >/dev/null && break; sleep 1; done
+            curl -fsS http://127.0.0.1:$port/index.html >/dev/null
+          done
+
+      - name: Compare Landing to Home behavior
+        shell: bash
+        run: |
+          cat > /tmp/entry-diagnostic.mjs <<'JS'
+          import { chromium } from 'playwright';
+
+          async function state(page, label) {
+            const snapshot = await page.evaluate(() => {
+              const visible = el => {
+                const s=getComputedStyle(el),r=el.getBoundingClientRect();
+                return s.display!=='none'&&s.visibility!=='hidden'&&r.width>0&&r.height>0;
+              };
+              const actions=[...document.querySelectorAll('[data-action]')]
+                .filter(visible)
+                .map(el=>({
+                  tag:el.tagName,
+                  action:el.getAttribute('data-action'),
+                  text:(el.textContent||'').trim().replace(/\s+/g,' ').slice(0,120),
+                  aria:el.getAttribute('aria-label'),
+                  title:el.getAttribute('title'),
+                  cls:el.className,
+                  rect:(()=>{const r=el.getBoundingClientRect();return {x:r.x,y:r.y,w:r.width,h:r.height};})(),
+                }));
+              const homes=[...document.querySelectorAll('[data-action="home"]')].map((el,i)=>({
+                i,visible:visible(el),tag:el.tagName,text:(el.textContent||'').trim().replace(/\s+/g,' ').slice(0,120),
+                aria:el.getAttribute('aria-label'),title:el.getAttribute('title'),cls:el.className,
+                parent:el.parentElement?.className||'',
+              }));
+              const modal=[...document.querySelectorAll('.modal-layer')].find(visible);
+              return {
+                screen:document.documentElement.dataset.screen||'',
+                title:document.title,
+                homes,
+                visibleActions:actions,
+                modal:modal?{text:(modal.textContent||'').trim().replace(/\s+/g,' ').slice(0,300),cls:modal.className}:null,
+                p1:!!document.querySelector('#v430-p1-runtime'),
+              };
+            });
+            console.log(`\n=== ${label} ===`);
+            console.log(JSON.stringify(snapshot,null,2));
+            return snapshot;
+          }
+
+          async function closeModalIfOpen(page) {
+            const layer=page.locator('.modal-layer').first();
+            if (!(await layer.count()) || !(await layer.isVisible().catch(()=>false))) return;
+            const close=layer.locator('[data-action="modal-close"],.modal-close').first();
+            if(await close.count()) await close.click({timeout:5000});
+            else await page.keyboard.press('Escape');
+            await layer.waitFor({state:'detached',timeout:5000}).catch(async()=>{
+              await page.keyboard.press('Escape');
+              await layer.waitFor({state:'detached',timeout:5000}).catch(()=>{});
+            });
+          }
+
+          async function runCandidate(name,url) {
+            const browser=await chromium.launch({headless:true});
+            const context=await browser.newContext({viewport:{width:1440,height:900}});
+            const page=await context.newPage();
+            const errors=[];
+            page.on('pageerror',e=>errors.push(`page:${e}`));
+            page.on('console',m=>{if(m.type()==='error')errors.push(`console:${m.text()}`);});
+            try {
+              await page.goto(url,{waitUntil:'load',timeout:45000});
+              await page.waitForTimeout(300);
+              await state(page,`${name} initial`);
+              await closeModalIfOpen(page);
+              await page.waitForTimeout(100);
+              await state(page,`${name} after closeModal`);
+              const first=page.locator('[data-action="home"]').first();
+              console.log(`${name}: first home count=${await first.count()} visible=${await first.isVisible().catch(()=>false)}`);
+              try { await first.click({timeout:2500}); console.log(`${name}: playwright first-home click succeeded`); }
+              catch(e) { console.log(`${name}: playwright click failed: ${e.message}`); try { await first.evaluate(el=>el.click()); console.log(`${name}: DOM click executed`); } catch(e2){ console.log(`${name}: DOM click failed: ${e2.message}`); } }
+              await page.waitForTimeout(500);
+              await state(page,`${name} after first-home activation`);
+              console.log(`${name}: errors=${JSON.stringify(errors)}`);
+
+              // Fresh-page per-home-index probe.
+              const homeCount=await page.locator('[data-action="home"]').count();
+              for(let i=0;i<homeCount;i++){
+                const probe=await context.newPage();
+                await probe.goto(url,{waitUntil:'load',timeout:45000});
+                await probe.waitForTimeout(250);
+                await closeModalIfOpen(probe);
+                const homes=probe.locator('[data-action="home"]');
+                const node=homes.nth(i);
+                let result='';
+                try { await node.click({timeout:2000}); result='playwright'; }
+                catch { try { await node.evaluate(el=>el.click()); result='dom'; } catch { result='failed'; } }
+                await probe.waitForTimeout(300);
+                console.log(`${name}: home[${i}] via ${result} -> screen=${await probe.locator('html').getAttribute('data-screen')}`);
+                await probe.close();
+              }
+            } finally { await context.close(); await browser.close(); }
+          }
+
+          await runCandidate('BASELINE','http://127.0.0.1:4173/index.html');
+          await runCandidate('P1','http://127.0.0.1:4174/index.html');
+          JS
+          node /tmp/entry-diagnostic.mjs
