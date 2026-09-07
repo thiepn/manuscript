@@ -22,7 +22,8 @@ injection = r'''
 <style id="v430-p2-compact-density">
 /* V430-P2 — Compact Views & Information Density
    Deliberately limited to non-mobile editor chrome. Writing typography,
-   document rendering, modals, and mobile touch surfaces are unchanged. */
+   document rendering, modals, mobile touch surfaces, and P1 nav controls
+   retain their existing ergonomics. */
 @media (min-width: 768px) {
   html[data-screen="editor"] .v430-nav-host {
     gap: 2px !important;
@@ -87,11 +88,6 @@ injection = r'''
     min-height: var(--v430-density-control-height) !important;
     padding-top: 3px !important;
     padding-bottom: 3px !important;
-  }
-
-  html[data-screen="editor"] .left-panel button:not(.modal-close),
-  html[data-screen="editor"] .inspector button:not(.modal-close) {
-    min-height: var(--v430-density-control-height);
   }
 
   html[data-screen="editor"] .left-panel > header,
