@@ -169,8 +169,10 @@ jobs:
                 }
                 await page.locator(`[data-panel="${panel}"]`).first().click().catch(()=>{});
               }'''
-          new='''    for(const panel of['references','settings']){
+          new='''    await closeModal(page);
+              for(const panel of['references','settings']){
                 if(panel==='settings'){
+                  await closeModal(page);
                   await page.locator('.v430-utility-trigger:visible').first().click();
                   await page.locator('#v430-utility-menu [data-v430-utility-item="settings"]:visible').first().click();
                 }else{
@@ -185,6 +187,7 @@ jobs:
                   const r=await rect(b);check(r.width>70&&r.height>=28,`desktop: ${action} unusable ${JSON.stringify(r)}`);
                 }
                 if(panel==='settings'){
+                  await closeModal(page);
                   await page.locator('.v430-utility-trigger:visible').first().click();
                   await page.locator('#v430-utility-menu [data-v430-utility-item="settings"]:visible').first().click();
                 }else{
