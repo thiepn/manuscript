@@ -167,47 +167,41 @@ jobs:
         shell: python
         run: |
           from pathlib import Path
-          path=Path('scripts/certify-v423-extras.mjs')
-          text=path.read_text(encoding='utf-8')
-          old='''    for(const panel of['references','settings']){
-            await page.locator(`[data-panel="${panel}"]`).first().click();await page.waitForTimeout(80);
-            const actions=panel==='references'?['export-csl']:['request-persistence','backup-library','backup-restore-file'];
-            for(const action of actions){
-              const b=page.locator(`[data-action="${action}"]:visible`).first();
-              check(await b.count()===1,`desktop: visible ${action} missing in ${panel}`);
-              check(await fits(b),`desktop: ${action} label clipped`);
-              const r=await rect(b);check(r.width>70&&r.height>=28,`desktop: ${action} unusable ${JSON.stringify(r)}`);
-            }
-            await page.locator(`[data-panel="${panel}"]`).first().click().catch(()=>{});
-          }'''
-          new='''    await closeModal(page);
-          for(const panel of['references','settings']){
-            if(panel==='settings'){
-              await closeModal(page);
-              await page.locator('.v430-utility-trigger:visible').first().click();
-              await page.locator('#v430-utility-menu [data-v430-utility-item="settings"]:visible').first().click();
-            }else{
-              await page.locator(`[data-panel="${panel}"]`).first().click();
-            }
-            await page.waitForTimeout(80);
-            const actions=panel==='references'?['export-csl']:['request-persistence','backup-library','backup-restore-file'];
-            for(const action of actions){
-              const b=page.locator(`[data-action="${action}"]:visible`).first();
-              check(await b.count()===1,`desktop: visible ${action} missing in ${panel}`);
-              check(await fits(b),`desktop: ${action} label clipped`);
-              const r=await rect(b);check(r.width>70&&r.height>=28,`desktop: ${action} unusable ${JSON.stringify(r)}`);
-            }
-            if(panel==='settings'){
-              await closeModal(page);
-              await page.locator('.v430-utility-trigger:visible').first().click();
-              await page.locator('#v430-utility-menu [data-v430-utility-item="settings"]:visible').first().click();
-            }else{
-              await page.locator(`[data-panel="${panel}"]`).first().click().catch(()=>{});
-            }
-          }'''
-          if old not in text:
-              raise SystemExit('desktop utility loop anchor not found')
-          path.write_text(text.replace(old,new,1),encoding='utf-8')
+          path = Path('scripts/certify-v423-extras.mjs')
+          text = path.read_text(encoding='utf-8')
+
+          loop = "    for(const panel of['references','settings']){"
+          if loop not in text:
+              raise SystemExit('desktop utility loop start missing')
+          text = text.replace(loop, "    await closeModal(page);\n" + loop, 1)
+
+          open_line = 'await page.locator(`[data-panel="${panel}"]`).first().click();await page.waitForTimeout(80);'
+          open_replacement = '''if(panel==='settings'){
+                await closeModal(page);
+                await page.locator('.v430-utility-trigger:visible').first().click();
+                await page.locator('#v430-utility-menu [data-v430-utility-item="settings"]:visible').first().click();
+              }else{
+                await page.locator(`[data-panel="${panel}"]`).first().click();
+              }
+              await page.waitForTimeout(80);'''
+          if open_line not in text:
+              raise SystemExit('desktop utility open statement missing')
+          text = text.replace(open_line, open_replacement, 1)
+
+          close_line = 'await page.locator(`[data-panel="${panel}"]`).first().click().catch(()=>{});'
+          close_replacement = '''if(panel==='settings'){
+                await closeModal(page);
+                await page.locator('.v430-utility-trigger:visible').first().click();
+                await page.locator('#v430-utility-menu [data-v430-utility-item="settings"]:visible').first().click();
+              }else{
+                await page.locator(`[data-panel="${panel}"]`).first().click().catch(()=>{});
+              }'''
+          if close_line not in text:
+              raise SystemExit('desktop utility close statement missing')
+          text = text.replace(close_line, close_replacement, 1)
+
+          path.write_text(text, encoding='utf-8')
+          print('adapted inherited Settings checks to P1 More tools')
 
       - name: Serve P1 application
         run: |
