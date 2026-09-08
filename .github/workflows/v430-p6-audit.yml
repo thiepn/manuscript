@@ -37,7 +37,7 @@ jobs:
           MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
         run: |
           mkdir -p diagnostics
-          cat > /tmp/audit-v430-p6.mjs <<'EOF'
+          cat > audit-v430-p6.mjs <<'EOF'
           import { chromium } from 'playwright';
           import AxeBuilder from '@axe-core/playwright';
           import fs from 'node:fs';
@@ -83,7 +83,6 @@ jobs:
             await page.waitForFunction(()=>document.documentElement.dataset.screen==='editor',null,{timeout:15000});
             await page.waitForSelector('.codemirror-editor .cm-scroller',{timeout:15000});
           }
-
           async function semantics(page){
             return page.evaluate(()=>{
               const isVisible=el=>{const s=getComputedStyle(el),r=el.getBoundingClientRect();return s.display!=='none'&&s.visibility!=='hidden'&&r.width>0&&r.height>0;};
@@ -96,12 +95,10 @@ jobs:
               const ariaHiddenFocusable=nodes.filter(el=>el.closest('[aria-hidden="true"]')).map(el=>({tag:el.tagName,cls:el.className,hiddenBy:el.closest('[aria-hidden="true"]')?.className}));
               const ids=[...document.querySelectorAll('[id]')].map(el=>el.id).filter(Boolean); const counts={}; ids.forEach(id=>counts[id]=(counts[id]||0)+1);
               const duplicateIds=Object.entries(counts).filter(([,n])=>n>1).map(([id,count])=>({id,count}));
-              const emptyButtons=nodes.filter(el=>el.tagName==='BUTTON'&&!name(el)).length;
-              return {visibleInteractive:nodes.length,unnamed,positiveTabindex,ariaHiddenFocusable,duplicateIds,emptyButtons};
+              return {visibleInteractive:nodes.length,unnamed,positiveTabindex,ariaHiddenFocusable,duplicateIds};
             });
           }
-
-          async function tabOrder(page, count=36){
+          async function tabOrder(page,count=36){
             await page.evaluate(()=>{document.body.setAttribute('tabindex','-1');document.body.focus();});
             const seen=[];
             for(let i=0;i<count;i++){
@@ -110,99 +107,48 @@ jobs:
             }
             return seen;
           }
-
           async function axe(page,label){
             const result=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa','wcag22aa']).analyze();
             return result.violations.map(v=>({surface:label,id:v.id,impact:v.impact,help:v.help,nodes:v.nodes.slice(0,6).map(n=>({target:n.target,html:n.html.slice(0,220),summary:n.failureSummary}))}));
           }
-
-          async function keyboardProbes(page, profile){
+          async function keyboardProbes(page,profile){
             const out={};
             const active=()=>page.evaluate(()=>({tag:document.activeElement?.tagName||'',id:document.activeElement?.id||'',cls:String(document.activeElement?.className||''),action:document.activeElement?.getAttribute?.('data-action')||'',aria:document.activeElement?.getAttribute?.('aria-label')||''}));
-
-            const editor=page.locator('.cm-content').first();
-            if(await editor.count()) await editor.focus().catch(()=>{});
+            const editor=page.locator('.cm-content').first(); if(await editor.count()) await editor.focus().catch(()=>{});
             out.beforeShortcut=await active();
-            await page.keyboard.press('Control+k');
-            await page.locator('.command-layer .command-palette').first().waitFor({state:'visible',timeout:5000});
-            out.commandOpenFocus=await active();
-            out.commandRole=await page.locator('.command-layer .command-palette').first().getAttribute('role');
-            out.commandAriaModal=await page.locator('.command-layer .command-palette').first().getAttribute('aria-modal');
-            out.commandLabel=await page.locator('.command-layer .command-palette').first().getAttribute('aria-label');
-            await page.keyboard.press('Escape');
-            await page.locator('.command-layer').first().waitFor({state:'detached',timeout:5000}).catch(()=>{});
-            await page.waitForTimeout(80);
-            out.afterShortcutClose=await active();
-
+            await page.keyboard.press('Control+k'); await page.locator('.command-layer .command-palette').first().waitFor({state:'visible',timeout:5000});
+            const palette=page.locator('.command-layer .command-palette').first();
+            out.commandOpenFocus=await active(); out.commandRole=await palette.getAttribute('role'); out.commandAriaModal=await palette.getAttribute('aria-modal'); out.commandLabel=await palette.getAttribute('aria-label');
+            out.axeCommand=await axe(page,'commands');
+            await page.keyboard.press('Escape'); await page.locator('.command-layer').first().waitFor({state:'detached',timeout:5000}).catch(()=>{}); await page.waitForTimeout(80); out.afterShortcutClose=await active();
             const utility=page.locator('.v430-utility-trigger:visible').first();
             if(await visible(utility)){
-              await utility.focus(); await page.keyboard.press('Enter'); await page.waitForTimeout(100);
-              out.utilityOpen=await page.locator('#v430-utility-menu:visible').count()===1;
-              out.utilityOpenFocus=await active();
-              out.utilityRole=await page.locator('#v430-utility-menu').first().getAttribute('role');
-              await page.keyboard.press('Escape'); await page.waitForTimeout(80);
-              out.utilityClosed=await page.locator('#v430-utility-menu:visible').count()===0;
-              out.utilityRestored=await active();
+              await utility.focus(); await page.keyboard.press('Enter'); await page.waitForTimeout(100); out.utilityOpen=await page.locator('#v430-utility-menu:visible').count()===1; out.utilityOpenFocus=await active(); out.utilityRole=await page.locator('#v430-utility-menu').first().getAttribute('role');
+              await page.keyboard.press('Escape'); await page.waitForTimeout(80); out.utilityClosed=await page.locator('#v430-utility-menu:visible').count()===0; out.utilityRestored=await active();
             }
-
             const publish=page.locator('[data-action="export"]:visible').first();
             if(await visible(publish)){
-              await publish.focus(); await page.keyboard.press('Enter'); await page.waitForTimeout(180);
-              const modal=page.locator('.modal-layer .modal:visible').first();
-              out.publishOpened=await visible(modal);
-              if(out.publishOpened){
-                out.publishRole=await modal.getAttribute('role');
-                out.publishAriaModal=await modal.getAttribute('aria-modal');
-                out.publishLabel=await modal.getAttribute('aria-label');
-                out.publishLabelledby=await modal.getAttribute('aria-labelledby');
-                out.publishOpenFocus=await active();
-                const before=await active(); await page.keyboard.press('Tab'); out.publishAfterTab=await active();
-                await page.keyboard.press('Escape'); await page.waitForTimeout(100);
-                out.publishClosed=!(await visible(modal));
-                out.publishRestored=await active();
-                out.publishBeforeTab=before;
-              }
+              await publish.focus(); await page.keyboard.press('Enter'); await page.waitForTimeout(180); const modal=page.locator('.modal-layer .modal:visible').first(); out.publishOpened=await visible(modal);
+              if(out.publishOpened){out.publishRole=await modal.getAttribute('role');out.publishAriaModal=await modal.getAttribute('aria-modal');out.publishLabel=await modal.getAttribute('aria-label');out.publishLabelledby=await modal.getAttribute('aria-labelledby');out.publishOpenFocus=await active();out.axePublish=await axe(page,'publish');await page.keyboard.press('Tab');out.publishAfterTab=await active();await page.keyboard.press('Escape');await page.waitForTimeout(100);out.publishClosed=!(await visible(modal));out.publishRestored=await active();}
             }
-
             if(profile.viewport.width>=768){
-              const focus=page.locator('.v430-focus-trigger:visible').first();
-              if(await visible(focus)){
-                await focus.focus(); await page.keyboard.press('Enter');
-                await page.waitForFunction(()=>document.documentElement.dataset.v430Focus==='true',null,{timeout:5000});
-                out.focusEnteredByKeyboard=true; out.focusEntry=await active();
-                await page.keyboard.press('Escape');
-                await page.waitForFunction(()=>!document.documentElement.dataset.v430Focus,null,{timeout:5000});
-                out.focusExitedByEscape=true; out.focusRestored=await active();
-              }
+              const focus=page.locator('.v430-focus-trigger:visible').first(); if(await visible(focus)){await focus.focus();await page.keyboard.press('Enter');await page.waitForFunction(()=>document.documentElement.dataset.v430Focus==='true',null,{timeout:5000});out.focusEnteredByKeyboard=true;out.focusEntry=await active();await page.keyboard.press('Escape');await page.waitForFunction(()=>!document.documentElement.dataset.v430Focus,null,{timeout:5000});out.focusExitedByEscape=true;out.focusRestored=await active();}
             } else {
-              const add=page.locator('.mobile-bottom-nav [data-action="workflow-content"]:visible').first();
-              if(await visible(add)){
-                await add.focus(); await page.keyboard.press('Enter'); await page.waitForTimeout(120);
-                const panel=page.locator('.left-panel:visible').first(); out.addOpened=await visible(panel); out.addOpenFocus=await active();
-                const back=panel.locator('.mobile-panel-back:visible').first();
-                if(await visible(back)){await back.focus();await page.keyboard.press('Enter');await page.waitForTimeout(100);out.addClosed=!(await visible(panel));out.addRestored=await active();}
-              }
+              const add=page.locator('.mobile-bottom-nav [data-action="workflow-content"]:visible').first(); if(await visible(add)){await add.focus();await page.keyboard.press('Enter');await page.waitForTimeout(120);const panel=page.locator('.left-panel:visible').first();out.addOpened=await visible(panel);out.addOpenFocus=await active();if(out.addOpened)out.axeAdd=await axe(page,'add');const back=panel.locator('.mobile-panel-back:visible').first();if(await visible(back)){await back.focus();await page.keyboard.press('Enter');await page.waitForTimeout(100);out.addClosed=!(await visible(panel));out.addRestored=await active();}}
             }
             return out;
           }
-
           const report={baseline:'a3aae2a4ec510f7a09badf4b589851e74d6c6fde',generatedAt:new Date().toISOString(),profiles:[]};
           for(const profile of profiles){
             const browser=await chromium.launch({headless:true});
             const context=await browser.newContext({viewport:profile.viewport,isMobile:!!profile.isMobile,hasTouch:!!profile.hasTouch,deviceScaleFactor:profile.isMobile?2:1});
-            const page=await context.newPage(); page.setDefaultTimeout(7000);
-            const errors=[]; page.on('pageerror',e=>errors.push(String(e)));
-            try{
-              await page.goto(baseURL,{waitUntil:'load',timeout:45000}); await openEditor(page); await closeModal(page); await page.waitForTimeout(150);
-              const item={name:profile.name,semantics:await semantics(page),tabOrder:await tabOrder(page),axeBase:await axe(page,'editor'),keyboard:await keyboardProbes(page,profile),pageErrors:errors};
-              if(await page.locator('.command-layer .command-palette:visible').count()) item.axeCommand=await axe(page,'commands');
-              report.profiles.push(item);
-              console.log(profile.name, JSON.stringify({axe:item.axeBase.length,unnamed:item.semantics.unnamed.length,positiveTabindex:item.semantics.positiveTabindex.length,ariaHiddenFocusable:item.semantics.ariaHiddenFocusable.length,duplicateIds:item.semantics.duplicateIds.length,keyboard:item.keyboard}));
-            } finally {await context.close();await browser.close();}
+            const page=await context.newPage(); page.setDefaultTimeout(7000); const errors=[]; page.on('pageerror',e=>errors.push(String(e)));
+            try{await page.goto(baseURL,{waitUntil:'load',timeout:45000});await openEditor(page);await closeModal(page);await page.waitForTimeout(150);const item={name:profile.name,semantics:await semantics(page),tabOrder:await tabOrder(page),axeBase:await axe(page,'editor'),keyboard:await keyboardProbes(page,profile),pageErrors:errors};report.profiles.push(item);console.log(profile.name,JSON.stringify({axe:item.axeBase.map(v=>v.id),unnamed:item.semantics.unnamed.length,positiveTabindex:item.semantics.positiveTabindex.length,ariaHiddenFocusable:item.semantics.ariaHiddenFocusable.length,duplicateIds:item.semantics.duplicateIds.length,keyboard:item.keyboard}));}finally{await context.close();await browser.close();}
           }
           fs.writeFileSync('diagnostics/v430-p6-baseline.json',JSON.stringify(report,null,2));
           EOF
-          node /tmp/audit-v430-p6.mjs
+          node audit-v430-p6.mjs
+          rm audit-v430-p6.mjs
       - name: Persist audit report
         run: |
           git config user.name 'github-actions[bot]'
