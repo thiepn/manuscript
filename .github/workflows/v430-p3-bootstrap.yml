@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/v430-p3-bootstrap.yml'
       - 'tools/apply_v430_p3.py'
+      - 'tools/refine_v430_p3_focus_layout.py'
       - 'scripts/certify-v430-p3.mjs'
   workflow_dispatch:
 
@@ -32,6 +33,9 @@ jobs:
 
       - name: Apply V430-P3 to certified P2 shell
         run: python3 tools/apply_v430_p3.py
+
+      - name: Refine P3 focus layout
+        run: python3 tools/refine_v430_p3_focus_layout.py
 
       - name: Verify static contracts
         shell: bash
