@@ -197,7 +197,7 @@ async function certifyMobile(page, profile) {
     return { left: r.left, right: r.right, width: r.width, height: r.height };
   }));
   for (const rect of rects) {
-    check(rect.width > 80 && rect.height >= 38, `${profile.name}: unusable mobile quick action ${JSON.stringify(rect)}`);
+    check(rect.width > 80 && rect.height >= 44, `${profile.name}: unusable mobile quick action ${JSON.stringify(rect)}`);
     check(rect.left >= -1 && rect.right <= profile.viewport.width + 1, `${profile.name}: quick action outside viewport ${JSON.stringify(rect)}`);
   }
   check(await rootFits(page), `${profile.name}: mobile palette overflow`);
