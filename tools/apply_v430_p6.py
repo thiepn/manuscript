@@ -45,6 +45,26 @@ html[data-screen="editor"] :where(
   opacity: 1 !important;
 }
 
+/* P6: preserve P4's quiet command affordance without compositing text below AA. */
+.v430-command-trigger {
+  opacity: 1 !important;
+}
+.v430-command-trigger > svg {
+  opacity: .72;
+}
+.v430-command-trigger:hover > svg,
+.v430-command-trigger:focus-visible > svg {
+  opacity: 1;
+}
+.v430-command-shortcut {
+  color: inherit !important;
+  opacity: 1 !important;
+}
+.v430-command-palette .command-item > kbd {
+  color: inherit !important;
+  opacity: 1 !important;
+}
+
 [data-v430-p6-mobile-dialog="true"] {
   isolation: isolate;
 }
@@ -95,7 +115,10 @@ SCRIPT = r'''<script id="v430-p6-runtime">
     '.v430-command-fast-head > span',
     '.v430-command-fast-btn [data-v430-fast-label]',
     '.v430-command-fast-btn kbd',
-    '#command-search'
+    '#command-search',
+    '#v430-command-hint',
+    '#v430-command-hint > span',
+    '#v430-command-hint > kbd'
   ].join(',');
 
   function isVisible(el) {
@@ -264,10 +287,14 @@ SCRIPT = r'''<script id="v430-p6-runtime">
       if (group.length < 2) continue;
       const signatures = new Set(group.map(node => `${node.tagName}\n${(node.textContent || '').trim()}`));
       if (signatures.size !== 1) continue;
-      const visible = group.filter(isVisible);
-      const hidden = group.filter(node => !isVisible(node));
-      if (!visible.length || !hidden.length) continue;
-      const keeper = visible[0];
+      // Parallel document render clones may both keep non-zero boxes on mobile.
+      // Preserve the canonical paginated preview copy, not whichever clone CSS happens
+      // to report as visible first.
+      const score = node =>
+        (node.closest('.page-content.doc') ? 100 : 0) +
+        (node.closest('#preview-scroll') ? 50 : 0) +
+        (isVisible(node) ? 10 : 0);
+      const keeper = [...group].sort((a, b) => score(b) - score(a))[0];
       for (const node of group) {
         node.dataset.v430P6OriginalId = id;
         if (node === keeper) {
@@ -310,11 +337,23 @@ SCRIPT = r'''<script id="v430-p6-runtime">
     return null;
   }
 
+  function resolveMobileOrigin(previous) {
+    if (previous?.origin?.isConnected && isVisible(previous.origin)) return previous.origin;
+    const selector = previous?.kind === 'add'
+      ? '.mobile-bottom-nav [data-action="workflow-content"]'
+      : previous?.kind === 'style'
+        ? '.mobile-bottom-nav [data-mobile="style"]'
+        : '';
+    if (!selector) return null;
+    return [...document.querySelectorAll(selector)].find(isVisible) || null;
+  }
+
   function restoreMobileOrigin(previous) {
-    if (!previous?.origin?.isConnected || !isVisible(previous.origin)) return;
+    const origin = resolveMobileOrigin(previous);
+    if (!origin) return;
     const active = document.activeElement;
     if (active === document.body || active === document.documentElement || !isVisible(active) || previous.root.contains(active)) {
-      previous.origin.focus({preventScroll:true});
+      origin.focus({preventScroll:true});
     }
   }
 
@@ -423,6 +462,7 @@ SCRIPT = r'''<script id="v430-p6-runtime">
     event.stopPropagation();
     close.click();
     requestAnimationFrame(scheduleEnhance);
+    setTimeout(scheduleEnhance, 260);
     return true;
   }
 
@@ -484,7 +524,7 @@ SCRIPT = r'''<script id="v430-p6-runtime">
       childList:true,
       subtree:true,
       attributes:true,
-      attributeFilter:['class','data-theme','data-screen','hidden','aria-current','aria-pressed']
+      attributeFilter:['class','data-theme','data-screen','hidden']
     });
     scheduleEnhance();
   }
@@ -527,8 +567,8 @@ def main() -> None:
     for marker in required:
         if marker not in text:
             raise SystemExit(f"Required inherited V430 contract missing: {marker}")
-    if text.count('</head>') != 1 or text.count('</body>') != 1:
-        raise SystemExit("Expected unique document closing anchors")
+    if '</head>' not in text or '</body>' not in text:
+        raise SystemExit("Document closing anchors missing")
 
     text = text.replace('</head>', f'{META}\n{STYLE}\n</head>', 1)
     body_close = text.rfind('</body>')

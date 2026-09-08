@@ -266,7 +266,7 @@ async function checkMobileSurface(page, name, selector, rootSelector, expectedLa
   check(await visible(origin), `${name}: mobile origin ${selector} missing`);
   await origin.focus();
   await page.keyboard.press('Enter');
-  const root=page.locator(rootSelector).filter({visible:true}).first();
+  const root=page.locator(`${rootSelector}:visible`).first();
   await root.waitFor({state:'visible',timeout:4000});
   await sleep(180);
   check(await root.getAttribute('role')==='dialog', `${name}: ${expectedLabel} mobile surface role missing`);
