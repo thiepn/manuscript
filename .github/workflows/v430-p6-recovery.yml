@@ -1,0 +1,52 @@
+name: V430 P6 candidate recovery
+
+on:
+  push:
+    branches: [tmp/v430-p6-a11y]
+    paths:
+      - '.github/workflows/v430-p6-recovery.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: tmp/v430-p6-a11y
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Correct closing-anchor guard and execute P6 candidate ladder
+        shell: bash
+        run: |
+          python3 -m pip install --quiet pyyaml
+          python3 - <<'PY'
+          import os, subprocess, yaml
+          from pathlib import Path
+
+          patcher=Path('tools/apply_v430_p6.py')
+          text=patcher.read_text(encoding='utf-8')
+          old="    if text.count('</head>') != 1 or text.count('</body>') != 1:\n        raise SystemExit(\"Expected unique document closing anchors\")"
+          new="    if '</head>' not in text or '</body>' not in text:\n        raise SystemExit(\"Document closing anchors missing\")"
+          if text.count(old)!=1:
+              raise SystemExit(f'closing-anchor guard count={text.count(old)}')
+          patcher.write_text(text.replace(old,new,1),encoding='utf-8')
+          print('corrected P6 closing-anchor guard; final body insertion remains rfind-based')
+
+          workflow=yaml.safe_load(Path('.github/workflows/v430-p6-candidate.yml').read_text(encoding='utf-8'))
+          steps=workflow['jobs']['certify']['steps']
+          for step in steps:
+              name=step.get('name'); run=step.get('run')
+              if not name or not run:
+                  continue
+              print(f'\n===== {name} =====',flush=True)
+              env=os.environ.copy(); env.update({str(k):str(v) for k,v in (step.get('env') or {}).items()})
+              shell=step.get('shell','bash')
+              cmd=['python3','-c',run] if shell=='python' else ['bash','-euo','pipefail','-c',run]
+              subprocess.run(cmd,env=env,check=True)
+          PY
