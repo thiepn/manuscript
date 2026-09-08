@@ -36,7 +36,6 @@ jobs:
           p=Path('tools/apply_v430_p6.py')
           text=p.read_text(encoding='utf-8')
 
-          # Corrections already established by prior source/runtime audits.
           pairs=[
             ("attributeFilter:['class','data-theme','data-screen','hidden','aria-current','aria-pressed']","attributeFilter:['class','data-theme','data-screen','hidden']"),
             ("    close.click();\n    requestAnimationFrame(scheduleEnhance);\n    return true;","    close.click();\n    requestAnimationFrame(scheduleEnhance);\n    setTimeout(scheduleEnhance, 260);\n    return true;"),
@@ -47,16 +46,12 @@ jobs:
               raise SystemExit(f'P6 established correction anchor count={text.count(old)}: {old[:75]}')
             text=text.replace(old,new,1)
 
-          # The appbar command trigger was globally faded to 72%, which made the
-          # tiny Ctrl-K label fail AA even after its own text color was corrected.
           css_anchor="#command-search::placeholder {\n  color: inherit !important;\n  opacity: 1 !important;\n}"
           css_replacement=css_anchor+"\n\n.v430-command-shortcut,\nbutton.v430-command-trigger {\n  opacity: 1 !important;\n}"
           if text.count(css_anchor)!=1:
             raise SystemExit(f'P6 command opacity anchor count={text.count(css_anchor)}')
           text=text.replace(css_anchor,css_replacement,1)
 
-          # Runtime Axe evidence identified exactly these additional low-contrast
-          # transient command-palette labels; keep remediation tightly scoped.
           selector_anchor="    '.v430-command-fast-btn kbd',\n    '#command-search'"
           selector_replacement="    '.v430-command-fast-btn kbd',\n    '.command-item > kbd',\n    '.v430-command-hint > span',\n    '.v430-command-hint > kbd',\n    '#command-search'"
           if text.count(selector_anchor)!=1:
@@ -64,20 +59,21 @@ jobs:
           text=text.replace(selector_anchor,selector_replacement,1)
 
           contrast_anchor="    document.querySelectorAll(CONTRAST_SELECTORS).forEach(el => ensureContrast(el));"
-          contrast_replacement="""    document.querySelectorAll(CONTRAST_SELECTORS).forEach(el => {
-      const minimum = el.matches('.v430-command-shortcut')
-        ? 6.5
-        : el.matches('.command-item > kbd, .v430-command-hint > span, .v430-command-hint > kbd')
-          ? 5.0
-          : 4.6;
-      ensureContrast(el, minimum);
-    });"""
+          contrast_replacement='\n'.join([
+            "    document.querySelectorAll(CONTRAST_SELECTORS).forEach(el => {",
+            "      const minimum = el.matches('.v430-command-shortcut')",
+            "        ? 6.5",
+            "        : el.matches('.command-item > kbd, .v430-command-hint > span, .v430-command-hint > kbd')",
+            "          ? 5.0",
+            "          : 4.6;",
+            "      ensureContrast(el, minimum);",
+            "    });",
+          ])
           if text.count(contrast_anchor)!=1:
             raise SystemExit(f'P6 contrast-margin anchor count={text.count(contrast_anchor)}')
           text=text.replace(contrast_anchor,contrast_replacement,1)
           p.write_text(text,encoding='utf-8')
 
-          # Playwright mobile-surface locator correction established during source review.
           c=Path('scripts/certify-v430-p6.mjs')
           ctext=c.read_text(encoding='utf-8')
           old="  const root=page.locator(rootSelector).filter({visible:true}).first();"
