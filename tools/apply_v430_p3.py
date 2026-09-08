@@ -203,14 +203,23 @@ script = r'''
     return media.matches && editorReady() && (mode === 'editor' || mode === 'split');
   }
 
+  function setAttr(el, name, value) {
+    if (el.getAttribute(name) !== value) el.setAttribute(name, value);
+  }
+
   function setTriggerState() {
     if (!trigger?.isConnected) return;
-    trigger.setAttribute('aria-pressed', active ? 'true' : 'false');
-    trigger.setAttribute('aria-label', active ? 'Exit focus mode' : 'Enter focus mode');
-    trigger.setAttribute('title', active ? 'Exit focus mode · Esc' : 'Focus mode');
+    const pressed = active ? 'true' : 'false';
+    const ariaLabel = active ? 'Exit focus mode' : 'Enter focus mode';
+    const title = active ? 'Exit focus mode · Esc' : 'Focus mode';
+    const copy = active ? 'Exit Focus' : 'Focus';
+    setAttr(trigger, 'aria-pressed', pressed);
+    setAttr(trigger, 'aria-label', ariaLabel);
+    setAttr(trigger, 'title', title);
     const label = trigger.querySelector('.v430-focus-label');
-    if (label) label.textContent = active ? 'Exit Focus' : 'Focus';
-    trigger.disabled = !active && !eligible();
+    if (label && label.textContent !== copy) label.textContent = copy;
+    const disabled = !active && !eligible();
+    if (trigger.disabled !== disabled) trigger.disabled = disabled;
   }
 
   function focusEditor() {
