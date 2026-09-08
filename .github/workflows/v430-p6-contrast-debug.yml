@@ -1,0 +1,61 @@
+name: V430 P6 contrast debug
+
+on:
+  push:
+    branches: [tmp/v430-p6-a11y]
+    paths:
+      - '.github/workflows/v430-p6-contrast-debug.yml'
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: tmp/v430-p6-a11y
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Prepare P6 candidate
+        shell: python
+        run: |
+          from pathlib import Path
+          p=Path('tools/apply_v430_p6.py'); text=p.read_text(encoding='utf-8')
+          pairs=[
+            ("attributeFilter:['class','data-theme','data-screen','hidden','aria-current','aria-pressed']","attributeFilter:['class','data-theme','data-screen','hidden']"),
+            ("    close.click();\n    requestAnimationFrame(scheduleEnhance);\n    return true;","    close.click();\n    requestAnimationFrame(scheduleEnhance);\n    setTimeout(scheduleEnhance, 260);\n    return true;"),
+            ("    if text.count('</head>') != 1 or text.count('</body>') != 1:\n        raise SystemExit(\"Expected unique document closing anchors\")","    if '</head>' not in text or '</body>' not in text:\n        raise SystemExit(\"Document closing anchors missing\")"),
+          ]
+          for old,new in pairs:
+            if text.count(old)!=1: raise SystemExit(f'patch anchor count={text.count(old)}: {old[:70]}')
+            text=text.replace(old,new,1)
+          p.write_text(text,encoding='utf-8')
+      - run: |
+          python3 tools/apply_v430_p6.py
+          npm install --no-save playwright @axe-core/playwright
+          npx playwright install --with-deps chromium
+      - run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/http.log 2>&1 &
+          for i in {1..30}; do curl -fsS http://127.0.0.1:4173/index.html >/dev/null && exit 0; sleep 1; done
+          exit 1
+      - name: Print remaining contrast nodes
+        env:
+          MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
+        run: |
+          cat > p6-contrast-debug.mjs <<'EOF'
+          import { chromium } from 'playwright';
+          import AxeBuilder from '@axe-core/playwright';
+          const url=process.env.MANUSCRIPT_URL;
+          const visible=async l=>(await l.count())>0&&await l.isVisible().catch(()=>false);
+          async function closeModal(page){const l=page.locator('.modal-layer').first();if(await visible(l)){const c=l.locator('[data-action="modal-close"],.modal-close').first();if(await visible(c))await c.click().catch(()=>{});else await page.keyboard.press('Escape');await page.waitForTimeout(60);}}
+          async function clickVisible(page,sel){const nodes=page.locator(sel);for(let i=0;i<await nodes.count();i++){const n=nodes.nth(i);if(await n.isVisible().catch(()=>false)){try{await n.click({timeout:3000});}catch{await n.evaluate(e=>e.click());}return;}}throw new Error(`missing ${sel}`);}
+          async function openEditor(page){await page.goto(url,{waitUntil:'load'});await page.waitForFunction(()=>['landing','home','editor'].includes(document.documentElement.dataset.screen||''),null,{timeout:15000});let s=await page.locator('html').getAttribute('data-screen');if(s==='landing'){await closeModal(page);await clickVisible(page,'[data-action="home"]');await page.waitForFunction(()=>['home','editor'].includes(document.documentElement.dataset.screen||''),null,{timeout:15000});s=await page.locator('html').getAttribute('data-screen');}if(s!=='editor'){await closeModal(page);const b=page.locator('.modal-layer [data-action="onboarding-blank"]:visible').first();if(await b.count())await b.click();else{await clickVisible(page,'[data-action="new"]');const p=page.locator('.modal-layer [data-action="onboarding-blank"]:visible').first();if(await p.count())await p.click();}}await page.waitForFunction(()=>document.documentElement.dataset.screen==='editor',null,{timeout:15000});await page.waitForSelector('.cm-content',{timeout:15000});}
+          const browser=await chromium.launch({headless:true});const ctx=await browser.newContext({viewport:{width:1440,height:900}});const page=await ctx.newPage();await openEditor(page);await closeModal(page);await page.evaluate(()=>window.__manuscriptV430P6?.refresh?.());await page.waitForTimeout(500);
+          const axe=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa','wcag22aa']).analyze();
+          const contrasts=axe.violations.filter(v=>v.id==='color-contrast');
+          for(const v of contrasts){for(const n of v.nodes){console.log('TARGET',JSON.stringify(n.target));console.log('HTML',n.html);console.log('SUMMARY',n.failureSummary);console.log('ANCESTORS',await page.locator(n.target.join(' ')).first().evaluate(el=>{const out=[];for(let x=el;x&&out.length<6;x=x.parentElement)out.push({tag:x.tagName,id:x.id,cls:String(x.className||''),color:getComputedStyle(x).color,bg:getComputedStyle(x).backgroundColor});return out;}).catch(e=>String(e)));}}
+          console.log('ALL_SERIOUS',axe.violations.filter(v=>['serious','critical'].includes(v.impact)).map(v=>({id:v.id,count:v.nodes.length,targets:v.nodes.map(n=>n.target)})));
+          await ctx.close();await browser.close();
+          EOF
+          node p6-contrast-debug.mjs
