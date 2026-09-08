@@ -41,25 +41,14 @@ jobs:
             text=text.replace(old,new,1)
 
           css_anchor="#command-search::placeholder {\n  color: inherit !important;\n  opacity: 1 !important;\n}"
-          css_new=css_anchor+"""
-
-/* P4 muted the entire command button with parent opacity. Keep the icon quiet
-   without compositing the shortcut text below WCAG contrast. */
-.v430-command-trigger {
-  opacity: 1 !important;
-}
-.v430-command-trigger > svg {
-  opacity: .72;
-}
-.v430-command-trigger:hover > svg,
-.v430-command-trigger:focus-visible > svg {
-  opacity: 1;
-}
-.v430-command-shortcut {
-  opacity: 1 !important;
-}"""
+          css_extra=("\n\n/* Keep P4's icon visually quiet without compositing shortcut text below AA. */"
+                     "\n.v430-command-trigger {\n  opacity: 1 !important;\n}"
+                     "\n.v430-command-trigger > svg {\n  opacity: .72;\n}"
+                     "\n.v430-command-trigger:hover > svg,"
+                     "\n.v430-command-trigger:focus-visible > svg {\n  opacity: 1;\n}"
+                     "\n.v430-command-shortcut {\n  opacity: 1 !important;\n}")
           if text.count(css_anchor)!=1: raise SystemExit(f'command trigger CSS anchor count={text.count(css_anchor)}')
-          text=text.replace(css_anchor,css_new,1)
+          text=text.replace(css_anchor,css_anchor+css_extra,1)
 
           old="    document.querySelectorAll(CONTRAST_SELECTORS).forEach(el => ensureContrast(el));"
           new="    document.querySelectorAll(CONTRAST_SELECTORS).forEach(el =>\n      ensureContrast(el, el.matches('.v430-command-shortcut') ? 5.0 : 4.6)\n    );"
