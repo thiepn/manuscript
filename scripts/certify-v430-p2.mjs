@@ -80,6 +80,30 @@ async function openEditor(page) {
   await page.waitForSelector('.codemirror-editor .cm-scroller', { timeout: 15000 });
 }
 
+async function probeDensity(page) {
+  return page.evaluate(() => {
+    const panel = document.createElement('div');
+    panel.className = 'left-panel';
+    panel.style.position = 'fixed';
+    panel.style.left = '-10000px';
+    panel.style.top = '0';
+    panel.style.visibility = 'hidden';
+    const heading = document.createElement('h3');
+    heading.textContent = 'Density probe';
+    panel.append(heading);
+    document.body.append(panel);
+    const ps = getComputedStyle(panel);
+    const hs = getComputedStyle(heading);
+    const result = {
+      controlHeight: ps.getPropertyValue('--v430-density-control-height').trim(),
+      headingTop: parseFloat(hs.marginTop || '0'),
+      headingBottom: parseFloat(hs.marginBottom || '0'),
+    };
+    panel.remove();
+    return result;
+  });
+}
+
 async function certify(profile) {
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({
@@ -108,15 +132,15 @@ async function certify(profile) {
 
     const mediaMatches = await page.evaluate(() => matchMedia('(min-width: 768px)').matches);
     check(mediaMatches === profile.dense, `density breakpoint mismatch: ${mediaMatches}`);
+    const density = await probeDensity(page);
 
     if (profile.dense) {
       // P1 owns navigation geometry; P2 only verifies that the certified nav remains available.
       const nav = page.locator('.v430-nav-host:visible').first();
       check(await visible(nav), 'P1 navigation host missing');
 
-      const leftPanel = page.locator('.left-panel').first();
-      const densityVar = await leftPanel.evaluate(el => getComputedStyle(el).getPropertyValue('--v430-density-control-height').trim());
-      check(densityVar === '30px', `left-panel density token missing: ${densityVar}`);
+      check(density.controlHeight === '30px', `P2 density token missing: ${JSON.stringify(density)}`);
+      check(density.headingTop <= 6 && density.headingBottom <= 6, `P2 heading spacing is not compact: ${JSON.stringify(density)}`);
 
       const more = page.locator('.v430-utility-trigger:visible').first();
       check(await visible(more), 'More Tools trigger missing');
@@ -160,15 +184,6 @@ async function certify(profile) {
       check(itemMetrics.height >= 28 && itemMetrics.height <= 38, `utility row density outside safe range: ${JSON.stringify(itemMetrics)}`);
       check(itemMetrics.scrollWidth <= itemMetrics.clientWidth + 2, `utility row label clipped: ${JSON.stringify(itemMetrics)}`);
       await page.keyboard.press('Escape');
-
-      const heading = page.locator('.left-panel h2:visible, .left-panel h3:visible, .left-panel h4:visible').first();
-      if (await heading.count()) {
-        const margins = await heading.evaluate(el => {
-          const s = getComputedStyle(el);
-          return { top: parseFloat(s.marginTop || '0'), bottom: parseFloat(s.marginBottom || '0') };
-        });
-        check(margins.top <= 6 && margins.bottom <= 6, `panel heading spacing is not compact: ${JSON.stringify(margins)}`);
-      }
     } else {
       const mobileNav = page.locator('.mobile-bottom-nav:visible').first();
       check(await visible(mobileNav), 'mobile bottom navigation missing');
@@ -180,8 +195,7 @@ async function certify(profile) {
       for (const metric of buttonMetrics) {
         check(metric.width >= 30 && metric.height >= 30, `mobile target regressed: ${JSON.stringify(metric)}`);
       }
-      const mobileDensity = await page.locator('.left-panel').first().evaluate(el => getComputedStyle(el).getPropertyValue('--v430-density-control-height').trim());
-      check(mobileDensity !== '30px', 'desktop P2 density rules leaked into mobile');
+      check(density.controlHeight !== '30px', `desktop P2 density rules leaked into mobile: ${JSON.stringify(density)}`);
     }
 
     check(pageErrors.length === 0, `fatal page errors: ${pageErrors.join(' | ')}`);
