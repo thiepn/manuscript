@@ -21,23 +21,10 @@ injection = r'''
 <meta name="manuscript-density-ui-contract" content="compact-density-v1">
 <style id="v430-p2-compact-density">
 /* V430-P2 — Compact Views & Information Density
-   Deliberately limited to non-mobile editor chrome. Writing typography,
-   document rendering, modals, mobile touch surfaces, and P1 nav controls
-   retain their existing ergonomics. */
+   Deliberately limited to non-mobile secondary/editor chrome. Writing
+   typography, document rendering, modals, mobile touch surfaces, and the
+   certified V430-P1 navigation host retain their existing geometry. */
 @media (min-width: 768px) {
-  html[data-screen="editor"] .v430-nav-host {
-    gap: 2px !important;
-    padding-top: 4px !important;
-    padding-bottom: 4px !important;
-  }
-
-  html[data-screen="editor"] .v430-nav-host > button,
-  html[data-screen="editor"] .v430-nav-host > [role="button"] {
-    min-height: 32px !important;
-    padding-top: 4px !important;
-    padding-bottom: 4px !important;
-  }
-
   html[data-screen="editor"] #v430-utility-menu {
     padding: 4px !important;
     gap: 2px !important;
@@ -96,13 +83,6 @@ injection = r'''
   html[data-screen="editor"] .inspector > .header {
     padding-top: 6px !important;
     padding-bottom: 6px !important;
-  }
-}
-
-@media (min-width: 1200px) {
-  html[data-screen="editor"] .v430-nav-host {
-    padding-left: 6px !important;
-    padding-right: 6px !important;
   }
 }
 </style>
