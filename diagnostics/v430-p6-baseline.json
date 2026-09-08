@@ -1,0 +1,3233 @@
+{
+  "baseline": "a3aae2a4ec510f7a09badf4b589851e74d6c6fde",
+  "generatedAt": "2026-09-08T15:50:07.972Z",
+  "profiles": [
+    {
+      "name": "desktop-wide",
+      "semantics": {
+        "visibleInteractive": 49,
+        "unnamed": [],
+        "positiveTabindex": [],
+        "ariaHiddenFocusable": [],
+        "duplicateIds": [
+          {
+            "id": "untitled-document",
+            "count": 2
+          }
+        ]
+      },
+      "tabOrder": [
+        {
+          "tag": "A",
+          "id": "",
+          "cls": "skip-link",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "",
+          "text": "Skip to Manuscript"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "home",
+          "panel": "",
+          "mobile": "",
+          "aria": "Home",
+          "text": ""
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "cls": "doc-title",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Document title",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "active",
+          "action": "workflow-write",
+          "panel": "",
+          "mobile": "",
+          "aria": "",
+          "text": "Write"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "",
+          "action": "workflow-preview",
+          "panel": "",
+          "mobile": "",
+          "aria": "",
+          "text": "Preview"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "",
+          "action": "workflow-design",
+          "panel": "",
+          "mobile": "",
+          "aria": "",
+          "text": "Format"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "",
+          "action": "workflow-content",
+          "panel": "",
+          "mobile": "",
+          "aria": "",
+          "text": "Add"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "",
+          "action": "workflow-publish",
+          "panel": "",
+          "mobile": "",
+          "aria": "",
+          "text": "Publish"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn v430-focus-trigger",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Enter focus mode",
+          "text": "◐Focus"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn desktop-only",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Undo",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn desktop-only",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Redo",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn desktop-only",
+          "action": "history",
+          "panel": "",
+          "mobile": "",
+          "aria": "History",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn desktop-only ",
+          "action": "toggle-inspector",
+          "panel": "",
+          "mobile": "",
+          "aria": "Toggle inspector",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn v430-secondary-action",
+          "action": "theme",
+          "panel": "",
+          "mobile": "",
+          "aria": "Choose interface theme",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn v430-command-trigger",
+          "action": "command",
+          "panel": "",
+          "mobile": "",
+          "aria": "Open command palette",
+          "text": "⌕CommandsCtrl K"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "btn primary",
+          "action": "export",
+          "panel": "",
+          "mobile": "",
+          "aria": "",
+          "text": "Export"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "more",
+          "panel": "",
+          "mobile": "",
+          "aria": "More options",
+          "text": ""
+        },
+        {
+          "tag": "SELECT",
+          "id": "",
+          "cls": "tool-select",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Paragraph style",
+          "text": "ParagraphHeading 1Heading 2Heading 3Heading 4Heading 5Heading 6"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Bold · Ctrl/Cmd+B",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Italic · Ctrl/Cmd+I",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Link",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "List",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Table",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Image",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "More insert options",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "v430-mode-button",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "",
+          "text": "Write"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "active v430-mode-button",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "",
+          "text": "Split"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "v430-mode-button",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "",
+          "text": "Preview"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "rail-btn v430-nav-item",
+          "action": "",
+          "panel": "files",
+          "mobile": "",
+          "aria": "Files",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "rail-btn v430-nav-item",
+          "action": "",
+          "panel": "outline",
+          "mobile": "",
+          "aria": "Outline",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "rail-btn v430-nav-item",
+          "action": "",
+          "panel": "search",
+          "mobile": "",
+          "aria": "Search",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "rail-btn v430-nav-item",
+          "action": "",
+          "panel": "insert",
+          "mobile": "",
+          "aria": "Insert",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "rail-btn v430-nav-item",
+          "action": "",
+          "panel": "assets",
+          "mobile": "",
+          "aria": "Media",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "rail-btn v430-nav-item",
+          "action": "",
+          "panel": "references",
+          "mobile": "",
+          "aria": "References",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "rail-btn v430-nav-item",
+          "action": "",
+          "panel": "diagnostics",
+          "mobile": "",
+          "aria": "Checks",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "rail-btn v430-nav-item",
+          "action": "",
+          "panel": "history",
+          "mobile": "",
+          "aria": "History",
+          "text": ""
+        }
+      ],
+      "axeBase": [
+        {
+          "surface": "editor",
+          "id": "aria-required-attr",
+          "impact": "critical",
+          "help": "Required ARIA attributes must be provided",
+          "nodes": [
+            {
+              "target": [
+                ".splitter"
+              ],
+              "html": "<div class=\"splitter\" role=\"separator\" aria-label=\"Resize editor and preview\" tabindex=\"0\" aria-valuemin=\"25\" aria-valuemax=\"72\"></div>",
+              "summary": "Fix any of the following:\n  Required ARIA attribute not present: aria-valuenow"
+            }
+          ]
+        },
+        {
+          "surface": "editor",
+          "id": "color-contrast",
+          "impact": "serious",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": [
+                ".save-state"
+              ],
+              "html": "<span class=\"save-state\" role=\"status\" aria-live=\"polite\">Saved locally</span>",
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "kbd"
+              ],
+              "html": "<kbd class=\"v430-command-shortcut\">Ctrl K</kbd>",
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 2.64 (foreground color: #999a94, background color: #f9f7f2, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".pane-head"
+              ],
+              "html": "<div class=\"pane-head\">Markdown source<span class=\"pane-head-spacer\"></span><span>5 words</span></div>",
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".pane-head > span:nth-child(2)"
+              ],
+              "html": "<span>5 words</span>",
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "#cursor-status"
+              ],
+              "html": "<span id=\"cursor-status\">Ln 1, Col 1</span>",
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "footer > span:nth-child(3)"
+              ],
+              "html": "<span>5 words</span>",
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        },
+        {
+          "surface": "editor",
+          "id": "scrollable-region-focusable",
+          "impact": "serious",
+          "help": "Scrollable region must have keyboard access",
+          "nodes": [
+            {
+              "target": [
+                "#preview-scroll"
+              ],
+              "html": "<div class=\"preview-scroll\" id=\"preview-scroll\">",
+              "summary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+            }
+          ]
+        }
+      ],
+      "keyboard": {
+        "beforeShortcut": {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "aria": "Markdown editor"
+        },
+        "commandOpenFocus": {
+          "tag": "INPUT",
+          "id": "command-search",
+          "cls": "command-search",
+          "action": "",
+          "aria": "Search commands"
+        },
+        "commandRole": "dialog",
+        "commandAriaModal": "true",
+        "commandLabel": "Command palette",
+        "axeCommand": [
+          {
+            "surface": "commands",
+            "id": "aria-required-attr",
+            "impact": "critical",
+            "help": "Required ARIA attributes must be provided",
+            "nodes": [
+              {
+                "target": [
+                  ".splitter"
+                ],
+                "html": "<div class=\"splitter\" role=\"separator\" aria-label=\"Resize editor and preview\" tabindex=\"0\" aria-valuemin=\"25\" aria-valuemax=\"72\"></div>",
+                "summary": "Fix any of the following:\n  Required ARIA attribute not present: aria-valuenow"
+              }
+            ]
+          },
+          {
+            "surface": "commands",
+            "id": "color-contrast",
+            "impact": "serious",
+            "help": "Elements must meet minimum color contrast ratio thresholds",
+            "nodes": [
+              {
+                "target": [
+                  ".save-state"
+                ],
+                "html": "<span class=\"save-state\" role=\"status\" aria-live=\"polite\">Saved locally</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".v430-command-shortcut"
+                ],
+                "html": "<kbd class=\"v430-command-shortcut\">Ctrl K</kbd>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.65 (foreground color: #74766f, background color: #e7e5e0, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".pane-head"
+                ],
+                "html": "<div class=\"pane-head\">Markdown source<span class=\"pane-head-spacer\"></span><span>5 words</span></div>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".pane-head > span:nth-child(2)"
+                ],
+                "html": "<span>5 words</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  "#cursor-status"
+                ],
+                "html": "<span id=\"cursor-status\">Ln 1, Col 1</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  "footer > span:nth-child(3)"
+                ],
+                "html": "<span>5 words</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ]
+          },
+          {
+            "surface": "commands",
+            "id": "scrollable-region-focusable",
+            "impact": "serious",
+            "help": "Scrollable region must have keyboard access",
+            "nodes": [
+              {
+                "target": [
+                  "#preview-scroll"
+                ],
+                "html": "<div class=\"preview-scroll\" id=\"preview-scroll\">",
+                "summary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+              }
+            ]
+          }
+        ],
+        "afterShortcutClose": {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "aria": "Markdown editor"
+        },
+        "utilityOpen": true,
+        "utilityOpenFocus": {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "v430-utility-proxy",
+          "action": "",
+          "aria": "Templates"
+        },
+        "utilityRole": "menu",
+        "utilityClosed": true,
+        "utilityRestored": {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "v430-utility-trigger",
+          "action": "",
+          "aria": "More tools"
+        },
+        "publishOpened": true,
+        "publishRole": "dialog",
+        "publishAriaModal": "true",
+        "publishLabel": "Export Document",
+        "publishLabelledby": null,
+        "publishOpenFocus": {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn modal-close",
+          "action": "modal-close",
+          "aria": "Close"
+        },
+        "axePublish": [
+          {
+            "surface": "publish",
+            "id": "aria-required-attr",
+            "impact": "critical",
+            "help": "Required ARIA attributes must be provided",
+            "nodes": [
+              {
+                "target": [
+                  ".splitter"
+                ],
+                "html": "<div class=\"splitter\" role=\"separator\" aria-label=\"Resize editor and preview\" tabindex=\"0\" aria-valuemin=\"25\" aria-valuemax=\"72\"></div>",
+                "summary": "Fix any of the following:\n  Required ARIA attribute not present: aria-valuenow"
+              }
+            ]
+          },
+          {
+            "surface": "publish",
+            "id": "color-contrast",
+            "impact": "serious",
+            "help": "Elements must meet minimum color contrast ratio thresholds",
+            "nodes": [
+              {
+                "target": [
+                  ".save-state"
+                ],
+                "html": "<span class=\"save-state\" role=\"status\" aria-live=\"polite\">Saved locally</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  "kbd"
+                ],
+                "html": "<kbd class=\"v430-command-shortcut\">Ctrl K</kbd>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 2.64 (foreground color: #999a94, background color: #f9f7f2, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".pane-head"
+                ],
+                "html": "<div class=\"pane-head\">Markdown source<span class=\"pane-head-spacer\"></span><span>5 words</span></div>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".pane-head > span:nth-child(2)"
+                ],
+                "html": "<span>5 words</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  "#cursor-status"
+                ],
+                "html": "<span id=\"cursor-status\">Ln 1, Col 1</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".statusbar > span:nth-child(3)"
+                ],
+                "html": "<span>5 words</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ]
+          },
+          {
+            "surface": "publish",
+            "id": "scrollable-region-focusable",
+            "impact": "serious",
+            "help": "Scrollable region must have keyboard access",
+            "nodes": [
+              {
+                "target": [
+                  "#preview-scroll"
+                ],
+                "html": "<div class=\"preview-scroll\" id=\"preview-scroll\">",
+                "summary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+              }
+            ]
+          }
+        ],
+        "publishAfterTab": {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "btn small",
+          "action": "rerun-diagnostics",
+          "aria": ""
+        },
+        "publishClosed": true,
+        "publishRestored": {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "btn primary",
+          "action": "export",
+          "aria": ""
+        },
+        "focusEnteredByKeyboard": true,
+        "focusEntry": {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn v430-focus-trigger",
+          "action": "",
+          "aria": "Exit focus mode"
+        },
+        "focusExitedByEscape": true,
+        "focusRestored": {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn v430-focus-trigger",
+          "action": "",
+          "aria": "Enter focus mode"
+        }
+      },
+      "pageErrors": []
+    },
+    {
+      "name": "desktop-compact",
+      "semantics": {
+        "visibleInteractive": 44,
+        "unnamed": [],
+        "positiveTabindex": [],
+        "ariaHiddenFocusable": [],
+        "duplicateIds": [
+          {
+            "id": "untitled-document",
+            "count": 2
+          }
+        ]
+      },
+      "tabOrder": [
+        {
+          "tag": "A",
+          "id": "",
+          "cls": "skip-link",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "",
+          "text": "Skip to Manuscript"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "home",
+          "panel": "",
+          "mobile": "",
+          "aria": "Home",
+          "text": ""
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "cls": "doc-title",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Document title",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "active",
+          "action": "workflow-write",
+          "panel": "",
+          "mobile": "",
+          "aria": "",
+          "text": "Write"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "",
+          "action": "workflow-preview",
+          "panel": "",
+          "mobile": "",
+          "aria": "",
+          "text": "Preview"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "",
+          "action": "workflow-design",
+          "panel": "",
+          "mobile": "",
+          "aria": "",
+          "text": "Format"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "",
+          "action": "workflow-content",
+          "panel": "",
+          "mobile": "",
+          "aria": "",
+          "text": "Add"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "",
+          "action": "workflow-publish",
+          "panel": "",
+          "mobile": "",
+          "aria": "",
+          "text": "Publish"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn v430-focus-trigger",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Enter focus mode",
+          "text": "◐Focus"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn desktop-only ",
+          "action": "toggle-inspector",
+          "panel": "",
+          "mobile": "",
+          "aria": "Toggle inspector",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn v430-secondary-action",
+          "action": "theme",
+          "panel": "",
+          "mobile": "",
+          "aria": "Choose interface theme",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn v430-command-trigger",
+          "action": "command",
+          "panel": "",
+          "mobile": "",
+          "aria": "Open command palette",
+          "text": "⌕CommandsCtrl K"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "btn primary",
+          "action": "export",
+          "panel": "",
+          "mobile": "",
+          "aria": "",
+          "text": "Export"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "more",
+          "panel": "",
+          "mobile": "",
+          "aria": "More options",
+          "text": ""
+        },
+        {
+          "tag": "SELECT",
+          "id": "",
+          "cls": "tool-select",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Paragraph style",
+          "text": "ParagraphHeading 1Heading 2Heading 3Heading 4Heading 5Heading 6"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Bold · Ctrl/Cmd+B",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Italic · Ctrl/Cmd+I",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Link",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "List",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Table",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Image",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "More insert options",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "v430-mode-button",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "",
+          "text": "Write"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "active v430-mode-button",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "",
+          "text": "Split"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "v430-mode-button",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "",
+          "text": "Preview"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "rail-btn v430-nav-item",
+          "action": "",
+          "panel": "files",
+          "mobile": "",
+          "aria": "Files",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "rail-btn v430-nav-item",
+          "action": "",
+          "panel": "outline",
+          "mobile": "",
+          "aria": "Outline",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "rail-btn v430-nav-item",
+          "action": "",
+          "panel": "search",
+          "mobile": "",
+          "aria": "Search",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "rail-btn v430-nav-item",
+          "action": "",
+          "panel": "insert",
+          "mobile": "",
+          "aria": "Insert",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "rail-btn v430-nav-item",
+          "action": "",
+          "panel": "assets",
+          "mobile": "",
+          "aria": "Media",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "rail-btn v430-nav-item",
+          "action": "",
+          "panel": "references",
+          "mobile": "",
+          "aria": "References",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "rail-btn v430-nav-item",
+          "action": "",
+          "panel": "diagnostics",
+          "mobile": "",
+          "aria": "Checks",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "rail-btn v430-nav-item",
+          "action": "",
+          "panel": "history",
+          "mobile": "",
+          "aria": "History",
+          "text": ""
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        }
+      ],
+      "axeBase": [
+        {
+          "surface": "editor",
+          "id": "aria-required-attr",
+          "impact": "critical",
+          "help": "Required ARIA attributes must be provided",
+          "nodes": [
+            {
+              "target": [
+                ".splitter"
+              ],
+              "html": "<div class=\"splitter\" role=\"separator\" aria-label=\"Resize editor and preview\" tabindex=\"0\" aria-valuemin=\"25\" aria-valuemax=\"72\"></div>",
+              "summary": "Fix any of the following:\n  Required ARIA attribute not present: aria-valuenow"
+            }
+          ]
+        },
+        {
+          "surface": "editor",
+          "id": "color-contrast",
+          "impact": "serious",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": [
+                ".pane-head"
+              ],
+              "html": "<div class=\"pane-head\">Markdown source<span class=\"pane-head-spacer\"></span><span>5 words</span></div>",
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".pane-head > span:nth-child(2)"
+              ],
+              "html": "<span>5 words</span>",
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "#cursor-status"
+              ],
+              "html": "<span id=\"cursor-status\">Ln 1, Col 5</span>",
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "span:nth-child(3)"
+              ],
+              "html": "<span>5 words</span>",
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "span:nth-child(4)"
+              ],
+              "html": "<span>1 pages</span>",
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "span:nth-child(8)"
+              ],
+              "html": "<span>82%</span>",
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        },
+        {
+          "surface": "editor",
+          "id": "scrollable-region-focusable",
+          "impact": "serious",
+          "help": "Scrollable region must have keyboard access",
+          "nodes": [
+            {
+              "target": [
+                "#preview-scroll"
+              ],
+              "html": "<div class=\"preview-scroll\" id=\"preview-scroll\">",
+              "summary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+            }
+          ]
+        }
+      ],
+      "keyboard": {
+        "beforeShortcut": {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "aria": "Markdown editor"
+        },
+        "commandOpenFocus": {
+          "tag": "INPUT",
+          "id": "command-search",
+          "cls": "command-search",
+          "action": "",
+          "aria": "Search commands"
+        },
+        "commandRole": "dialog",
+        "commandAriaModal": "true",
+        "commandLabel": "Command palette",
+        "axeCommand": [
+          {
+            "surface": "commands",
+            "id": "aria-required-attr",
+            "impact": "critical",
+            "help": "Required ARIA attributes must be provided",
+            "nodes": [
+              {
+                "target": [
+                  ".splitter"
+                ],
+                "html": "<div class=\"splitter\" role=\"separator\" aria-label=\"Resize editor and preview\" tabindex=\"0\" aria-valuemin=\"25\" aria-valuemax=\"72\"></div>",
+                "summary": "Fix any of the following:\n  Required ARIA attribute not present: aria-valuenow"
+              }
+            ]
+          },
+          {
+            "surface": "commands",
+            "id": "color-contrast",
+            "impact": "serious",
+            "help": "Elements must meet minimum color contrast ratio thresholds",
+            "nodes": [
+              {
+                "target": [
+                  ".pane-head"
+                ],
+                "html": "<div class=\"pane-head\">Markdown source<span class=\"pane-head-spacer\"></span><span>5 words</span></div>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".pane-head > span:nth-child(2)"
+                ],
+                "html": "<span>5 words</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  "#cursor-status"
+                ],
+                "html": "<span id=\"cursor-status\">Ln 1, Col 5</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  "footer > span:nth-child(3)"
+                ],
+                "html": "<span>5 words</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  "footer > span:nth-child(4)"
+                ],
+                "html": "<span>1 pages</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  "footer > span:nth-child(8)"
+                ],
+                "html": "<span>82%</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ]
+          },
+          {
+            "surface": "commands",
+            "id": "scrollable-region-focusable",
+            "impact": "serious",
+            "help": "Scrollable region must have keyboard access",
+            "nodes": [
+              {
+                "target": [
+                  "#preview-scroll"
+                ],
+                "html": "<div class=\"preview-scroll\" id=\"preview-scroll\">",
+                "summary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+              }
+            ]
+          }
+        ],
+        "afterShortcutClose": {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "aria": "Markdown editor"
+        },
+        "utilityOpen": true,
+        "utilityOpenFocus": {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "v430-utility-proxy",
+          "action": "",
+          "aria": "Templates"
+        },
+        "utilityRole": "menu",
+        "utilityClosed": true,
+        "utilityRestored": {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "v430-utility-trigger",
+          "action": "",
+          "aria": "More tools"
+        },
+        "publishOpened": true,
+        "publishRole": "dialog",
+        "publishAriaModal": "true",
+        "publishLabel": "Export Document",
+        "publishLabelledby": null,
+        "publishOpenFocus": {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn modal-close",
+          "action": "modal-close",
+          "aria": "Close"
+        },
+        "axePublish": [
+          {
+            "surface": "publish",
+            "id": "aria-required-attr",
+            "impact": "critical",
+            "help": "Required ARIA attributes must be provided",
+            "nodes": [
+              {
+                "target": [
+                  ".splitter"
+                ],
+                "html": "<div class=\"splitter\" role=\"separator\" aria-label=\"Resize editor and preview\" tabindex=\"0\" aria-valuemin=\"25\" aria-valuemax=\"72\"></div>",
+                "summary": "Fix any of the following:\n  Required ARIA attribute not present: aria-valuenow"
+              }
+            ]
+          },
+          {
+            "surface": "publish",
+            "id": "color-contrast",
+            "impact": "serious",
+            "help": "Elements must meet minimum color contrast ratio thresholds",
+            "nodes": [
+              {
+                "target": [
+                  ".save-state"
+                ],
+                "html": "<span class=\"save-state \" role=\"status\" aria-live=\"polite\">Saved locally</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".pane-head"
+                ],
+                "html": "<div class=\"pane-head\">Markdown source<span class=\"pane-head-spacer\"></span><span>5 words</span></div>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".pane-head > span:nth-child(2)"
+                ],
+                "html": "<span>5 words</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  "#cursor-status"
+                ],
+                "html": "<span id=\"cursor-status\">Ln 1, Col 5</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".statusbar > span:nth-child(3)"
+                ],
+                "html": "<span>5 words</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".statusbar > span:nth-child(4)"
+                ],
+                "html": "<span>1 pages</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ]
+          },
+          {
+            "surface": "publish",
+            "id": "scrollable-region-focusable",
+            "impact": "serious",
+            "help": "Scrollable region must have keyboard access",
+            "nodes": [
+              {
+                "target": [
+                  "#preview-scroll"
+                ],
+                "html": "<div class=\"preview-scroll\" id=\"preview-scroll\">",
+                "summary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+              }
+            ]
+          }
+        ],
+        "publishAfterTab": {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "btn small",
+          "action": "rerun-diagnostics",
+          "aria": ""
+        },
+        "publishClosed": true,
+        "publishRestored": {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "btn primary",
+          "action": "export",
+          "aria": ""
+        },
+        "focusEnteredByKeyboard": true,
+        "focusEntry": {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn v430-focus-trigger",
+          "action": "",
+          "aria": "Exit focus mode"
+        },
+        "focusExitedByEscape": true,
+        "focusRestored": {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn v430-focus-trigger",
+          "action": "",
+          "aria": "Enter focus mode"
+        }
+      },
+      "pageErrors": []
+    },
+    {
+      "name": "tablet-edge",
+      "semantics": {
+        "visibleInteractive": 41,
+        "unnamed": [],
+        "positiveTabindex": [],
+        "ariaHiddenFocusable": [],
+        "duplicateIds": [
+          {
+            "id": "untitled-document",
+            "count": 2
+          }
+        ]
+      },
+      "tabOrder": [
+        {
+          "tag": "A",
+          "id": "",
+          "cls": "skip-link",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "",
+          "text": "Skip to Manuscript"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "home",
+          "panel": "",
+          "mobile": "",
+          "aria": "Home",
+          "text": ""
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "cls": "doc-title",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Document title",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn v430-focus-trigger",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Enter focus mode",
+          "text": "◐Focus"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn desktop-only",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Undo",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn desktop-only",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Redo",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn desktop-only",
+          "action": "history",
+          "panel": "",
+          "mobile": "",
+          "aria": "History",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn desktop-only ",
+          "action": "toggle-inspector",
+          "panel": "",
+          "mobile": "",
+          "aria": "Toggle inspector",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn v430-secondary-action",
+          "action": "theme",
+          "panel": "",
+          "mobile": "",
+          "aria": "Choose interface theme",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn v430-command-trigger",
+          "action": "command",
+          "panel": "",
+          "mobile": "",
+          "aria": "Open command palette",
+          "text": "⌕CommandsCtrl K"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "btn primary",
+          "action": "export",
+          "panel": "",
+          "mobile": "",
+          "aria": "",
+          "text": "Export"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "more",
+          "panel": "",
+          "mobile": "",
+          "aria": "More options",
+          "text": ""
+        },
+        {
+          "tag": "SELECT",
+          "id": "",
+          "cls": "tool-select",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Paragraph style",
+          "text": "ParagraphHeading 1Heading 2Heading 3Heading 4Heading 5Heading 6"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Bold · Ctrl/Cmd+B",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Italic · Ctrl/Cmd+I",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Link",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "List",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Table",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Image",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "More insert options",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "v430-mode-button",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "",
+          "text": "Write"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "active v430-mode-button",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "",
+          "text": "Split"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "v430-mode-button",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "",
+          "text": "Preview"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "rail-btn v430-nav-item",
+          "action": "",
+          "panel": "files",
+          "mobile": "",
+          "aria": "Files",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "rail-btn v430-nav-item",
+          "action": "",
+          "panel": "outline",
+          "mobile": "",
+          "aria": "Outline",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "rail-btn v430-nav-item",
+          "action": "",
+          "panel": "search",
+          "mobile": "",
+          "aria": "Search",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "rail-btn v430-nav-item",
+          "action": "",
+          "panel": "insert",
+          "mobile": "",
+          "aria": "Insert",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "rail-btn v430-nav-item",
+          "action": "",
+          "panel": "assets",
+          "mobile": "",
+          "aria": "Media",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "rail-btn v430-nav-item",
+          "action": "",
+          "panel": "references",
+          "mobile": "",
+          "aria": "References",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "rail-btn v430-nav-item",
+          "action": "",
+          "panel": "diagnostics",
+          "mobile": "",
+          "aria": "Checks",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "rail-btn v430-nav-item",
+          "action": "",
+          "panel": "history",
+          "mobile": "",
+          "aria": "History",
+          "text": ""
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        }
+      ],
+      "axeBase": [
+        {
+          "surface": "editor",
+          "id": "color-contrast",
+          "impact": "serious",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": [
+                ".pane-head"
+              ],
+              "html": "<div class=\"pane-head\">Markdown source<span class=\"pane-head-spacer\"></span><span>5 words</span></div>",
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".pane-head > span:nth-child(2)"
+              ],
+              "html": "<span>5 words</span>",
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "#cursor-status"
+              ],
+              "html": "<span id=\"cursor-status\">Ln 1, Col 9</span>",
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "span:nth-child(3)"
+              ],
+              "html": "<span>5 words</span>",
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "span:nth-child(4)"
+              ],
+              "html": "<span>1 pages</span>",
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "span:nth-child(8)"
+              ],
+              "html": "<span>82%</span>",
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        },
+        {
+          "surface": "editor",
+          "id": "scrollable-region-focusable",
+          "impact": "serious",
+          "help": "Scrollable region must have keyboard access",
+          "nodes": [
+            {
+              "target": [
+                "#preview-scroll"
+              ],
+              "html": "<div class=\"preview-scroll\" id=\"preview-scroll\">",
+              "summary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+            }
+          ]
+        }
+      ],
+      "keyboard": {
+        "beforeShortcut": {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "aria": "Markdown editor"
+        },
+        "commandOpenFocus": {
+          "tag": "INPUT",
+          "id": "command-search",
+          "cls": "command-search",
+          "action": "",
+          "aria": "Search commands"
+        },
+        "commandRole": "dialog",
+        "commandAriaModal": "true",
+        "commandLabel": "Command palette",
+        "axeCommand": [
+          {
+            "surface": "commands",
+            "id": "color-contrast",
+            "impact": "serious",
+            "help": "Elements must meet minimum color contrast ratio thresholds",
+            "nodes": [
+              {
+                "target": [
+                  ".pane-head"
+                ],
+                "html": "<div class=\"pane-head\">Markdown source<span class=\"pane-head-spacer\"></span><span>5 words</span></div>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".pane-head > span:nth-child(2)"
+                ],
+                "html": "<span>5 words</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  "#cursor-status"
+                ],
+                "html": "<span id=\"cursor-status\">Ln 1, Col 9</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  "footer > span:nth-child(3)"
+                ],
+                "html": "<span>5 words</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  "footer > span:nth-child(4)"
+                ],
+                "html": "<span>1 pages</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  "footer > span:nth-child(8)"
+                ],
+                "html": "<span>82%</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ]
+          },
+          {
+            "surface": "commands",
+            "id": "scrollable-region-focusable",
+            "impact": "serious",
+            "help": "Scrollable region must have keyboard access",
+            "nodes": [
+              {
+                "target": [
+                  "#preview-scroll"
+                ],
+                "html": "<div class=\"preview-scroll\" id=\"preview-scroll\">",
+                "summary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+              }
+            ]
+          }
+        ],
+        "afterShortcutClose": {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "aria": "Markdown editor"
+        },
+        "utilityOpen": true,
+        "utilityOpenFocus": {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "v430-utility-proxy",
+          "action": "",
+          "aria": "Templates"
+        },
+        "utilityRole": "menu",
+        "utilityClosed": true,
+        "utilityRestored": {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "v430-utility-trigger",
+          "action": "",
+          "aria": "More tools"
+        },
+        "publishOpened": true,
+        "publishRole": "dialog",
+        "publishAriaModal": "true",
+        "publishLabel": "Export Document",
+        "publishLabelledby": null,
+        "publishOpenFocus": {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn modal-close",
+          "action": "modal-close",
+          "aria": "Close"
+        },
+        "axePublish": [
+          {
+            "surface": "publish",
+            "id": "color-contrast",
+            "impact": "serious",
+            "help": "Elements must meet minimum color contrast ratio thresholds",
+            "nodes": [
+              {
+                "target": [
+                  ".pane-head"
+                ],
+                "html": "<div class=\"pane-head\">Markdown source<span class=\"pane-head-spacer\"></span><span>5 words</span></div>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".pane-head > span:nth-child(2)"
+                ],
+                "html": "<span>5 words</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  "#cursor-status"
+                ],
+                "html": "<span id=\"cursor-status\">Ln 1, Col 1</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".statusbar > span:nth-child(3)"
+                ],
+                "html": "<span>5 words</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".statusbar > span:nth-child(4)"
+                ],
+                "html": "<span>1 pages</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".statusbar > span:nth-child(8)"
+                ],
+                "html": "<span>82%</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ]
+          },
+          {
+            "surface": "publish",
+            "id": "scrollable-region-focusable",
+            "impact": "serious",
+            "help": "Scrollable region must have keyboard access",
+            "nodes": [
+              {
+                "target": [
+                  "#preview-scroll"
+                ],
+                "html": "<div class=\"preview-scroll\" id=\"preview-scroll\">",
+                "summary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+              }
+            ]
+          }
+        ],
+        "publishAfterTab": {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "btn small",
+          "action": "rerun-diagnostics",
+          "aria": ""
+        },
+        "publishClosed": true,
+        "publishRestored": {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "btn primary",
+          "action": "export",
+          "aria": ""
+        },
+        "focusEnteredByKeyboard": true,
+        "focusEntry": {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "aria": "Markdown editor"
+        },
+        "focusExitedByEscape": true,
+        "focusRestored": {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "aria": "Markdown editor"
+        }
+      },
+      "pageErrors": []
+    },
+    {
+      "name": "mobile-portrait",
+      "semantics": {
+        "visibleInteractive": 17,
+        "unnamed": [],
+        "positiveTabindex": [],
+        "ariaHiddenFocusable": [],
+        "duplicateIds": [
+          {
+            "id": "untitled-document",
+            "count": 2
+          }
+        ]
+      },
+      "tabOrder": [
+        {
+          "tag": "A",
+          "id": "",
+          "cls": "skip-link",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "",
+          "text": "Skip to Manuscript"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "home",
+          "panel": "",
+          "mobile": "",
+          "aria": "Home",
+          "text": ""
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "cls": "doc-title",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Document title",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn v430-mobile-command-trigger",
+          "action": "command",
+          "panel": "",
+          "mobile": "",
+          "aria": "Open command palette",
+          "text": "⌕"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "more",
+          "panel": "",
+          "mobile": "",
+          "aria": "More options",
+          "text": ""
+        },
+        {
+          "tag": "SELECT",
+          "id": "",
+          "cls": "tool-select",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Paragraph style",
+          "text": "ParagraphHeading 1Heading 2Heading 3Heading 4Heading 5Heading 6"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Bold · Ctrl/Cmd+B",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Italic · Ctrl/Cmd+I",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Link",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "List",
+          "text": ""
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        }
+      ],
+      "axeBase": [
+        {
+          "surface": "editor",
+          "id": "color-contrast",
+          "impact": "serious",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": [
+                ".pane-head"
+              ],
+              "html": "<div class=\"pane-head\">Markdown source<span class=\"pane-head-spacer\"></span><span>5 words</span></div>",
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".pane-head > span:nth-child(2)"
+              ],
+              "html": "<span>5 words</span>",
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ],
+      "keyboard": {
+        "beforeShortcut": {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "aria": "Markdown editor"
+        },
+        "commandOpenFocus": {
+          "tag": "INPUT",
+          "id": "command-search",
+          "cls": "command-search",
+          "action": "",
+          "aria": "Search commands"
+        },
+        "commandRole": "dialog",
+        "commandAriaModal": "true",
+        "commandLabel": "Command palette",
+        "axeCommand": [
+          {
+            "surface": "commands",
+            "id": "color-contrast",
+            "impact": "serious",
+            "help": "Elements must meet minimum color contrast ratio thresholds",
+            "nodes": [
+              {
+                "target": [
+                  ".pane-head"
+                ],
+                "html": "<div class=\"pane-head\">Markdown source<span class=\"pane-head-spacer\"></span><span>5 words</span></div>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".pane-head > span:nth-child(2)"
+                ],
+                "html": "<span>5 words</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".v430-command-fast-head > span:nth-child(1)"
+                ],
+                "html": "<span>Quick actions</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 2.17 (foreground color: #a2a49e, background color: #eeefea, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".v430-command-fast-btn[data-command-action=\"save-local\"][type=\"button\"] > span[data-v430-fast-label=\"\"]"
+                ],
+                "html": "<span data-v430-fast-label=\"\">Save</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.49 (foreground color: #71716e, background color: #f7f5f0, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".v430-command-fast-btn[data-command-action=\"save-local\"][type=\"button\"] > kbd"
+                ],
+                "html": "<kbd>Ctrl+S</kbd>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 2.16 (foreground color: #a6a6a0, background color: #f2f1ec, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".v430-command-fast-btn[data-command-action=\"export\"][type=\"button\"] > span[data-v430-fast-label=\"\"]"
+                ],
+                "html": "<span data-v430-fast-label=\"\">Export</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.49 (foreground color: #71716e, background color: #f7f5f0, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ]
+          }
+        ],
+        "afterShortcutClose": {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "aria": "Markdown editor"
+        },
+        "publishOpened": true,
+        "publishRole": "dialog",
+        "publishAriaModal": "true",
+        "publishLabel": "Export Document",
+        "publishLabelledby": null,
+        "publishOpenFocus": {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn modal-close",
+          "action": "modal-close",
+          "aria": "Close"
+        },
+        "axePublish": [
+          {
+            "surface": "publish",
+            "id": "color-contrast",
+            "impact": "serious",
+            "help": "Elements must meet minimum color contrast ratio thresholds",
+            "nodes": [
+              {
+                "target": [
+                  ".pane-head"
+                ],
+                "html": "<div class=\"pane-head\">Markdown source<span class=\"pane-head-spacer\"></span><span>5 words</span></div>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".pane-head > span:nth-child(2)"
+                ],
+                "html": "<span>5 words</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+              }
+            ]
+          }
+        ],
+        "publishAfterTab": {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "btn small",
+          "action": "rerun-diagnostics",
+          "aria": ""
+        },
+        "publishClosed": true,
+        "publishRestored": {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "mobile-nav-btn",
+          "action": "export",
+          "aria": "Publish: export, print, or save the document"
+        },
+        "addOpened": true,
+        "addOpenFocus": {
+          "tag": "BODY",
+          "id": "",
+          "cls": "",
+          "action": "",
+          "aria": ""
+        },
+        "axeAdd": [
+          {
+            "surface": "add",
+            "id": "color-contrast",
+            "impact": "serious",
+            "help": "Elements must meet minimum color contrast ratio thresholds",
+            "nodes": [
+              {
+                "target": [
+                  ".pane-head"
+                ],
+                "html": "<div class=\"pane-head\">Markdown source<span class=\"pane-head-spacer\"></span><span>5 words</span></div>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".pane-head > span:nth-child(2)"
+                ],
+                "html": "<span>5 words</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+              }
+            ]
+          }
+        ],
+        "addClosed": true,
+        "addRestored": {
+          "tag": "BODY",
+          "id": "",
+          "cls": "",
+          "action": "",
+          "aria": ""
+        }
+      },
+      "pageErrors": []
+    },
+    {
+      "name": "mobile-small",
+      "semantics": {
+        "visibleInteractive": 17,
+        "unnamed": [],
+        "positiveTabindex": [],
+        "ariaHiddenFocusable": [],
+        "duplicateIds": [
+          {
+            "id": "untitled-document",
+            "count": 2
+          }
+        ]
+      },
+      "tabOrder": [
+        {
+          "tag": "A",
+          "id": "",
+          "cls": "skip-link",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "",
+          "text": "Skip to Manuscript"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "home",
+          "panel": "",
+          "mobile": "",
+          "aria": "Home",
+          "text": ""
+        },
+        {
+          "tag": "INPUT",
+          "id": "",
+          "cls": "doc-title",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Document title",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn v430-mobile-command-trigger",
+          "action": "command",
+          "panel": "",
+          "mobile": "",
+          "aria": "Open command palette",
+          "text": "⌕"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "more",
+          "panel": "",
+          "mobile": "",
+          "aria": "More options",
+          "text": ""
+        },
+        {
+          "tag": "SELECT",
+          "id": "",
+          "cls": "tool-select",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Paragraph style",
+          "text": "ParagraphHeading 1Heading 2Heading 3Heading 4Heading 5Heading 6"
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Bold · Ctrl/Cmd+B",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Italic · Ctrl/Cmd+I",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Link",
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "List",
+          "text": ""
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "panel": "",
+          "mobile": "",
+          "aria": "Markdown editor",
+          "text": "# Untitled DocumentStart writing here…"
+        }
+      ],
+      "axeBase": [
+        {
+          "surface": "editor",
+          "id": "color-contrast",
+          "impact": "serious",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": [
+                ".pane-head"
+              ],
+              "html": "<div class=\"pane-head\">Markdown source<span class=\"pane-head-spacer\"></span><span>5 words</span></div>",
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".pane-head > span:nth-child(2)"
+              ],
+              "html": "<span>5 words</span>",
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ],
+      "keyboard": {
+        "beforeShortcut": {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "aria": "Markdown editor"
+        },
+        "commandOpenFocus": {
+          "tag": "INPUT",
+          "id": "command-search",
+          "cls": "command-search",
+          "action": "",
+          "aria": "Search commands"
+        },
+        "commandRole": "dialog",
+        "commandAriaModal": "true",
+        "commandLabel": "Command palette",
+        "axeCommand": [
+          {
+            "surface": "commands",
+            "id": "color-contrast",
+            "impact": "serious",
+            "help": "Elements must meet minimum color contrast ratio thresholds",
+            "nodes": [
+              {
+                "target": [
+                  ".pane-head"
+                ],
+                "html": "<div class=\"pane-head\">Markdown source<span class=\"pane-head-spacer\"></span><span>5 words</span></div>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".pane-head > span:nth-child(2)"
+                ],
+                "html": "<span>5 words</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  "#command-search"
+                ],
+                "html": "<input class=\"command-search\" id=\"command-search\" aria-label=\"Search commands\" placeholder=\"Search commands or actions…\" autocomplete=\"off\" role=\"combobox\" aria-controls=\"command-list\" aria-expanded=\"true\" aria-activedes",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.49 (foreground color: #71716e, background color: #f7f5f0, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".v430-command-fast-head > span:nth-child(1)"
+                ],
+                "html": "<span>Quick actions</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 2.14 (foreground color: #a6a7a0, background color: #f2f1ec, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".v430-command-fast-btn[data-command-action=\"save-local\"][type=\"button\"] > kbd"
+                ],
+                "html": "<kbd>Ctrl+S</kbd>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 2.18 (foreground color: #a3a49e, background color: #f0efea, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".v430-command-fast-btn[data-command-action=\"export\"][type=\"button\"] > kbd"
+                ],
+                "html": "<kbd>Ctrl+Shift+E</kbd>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 2.18 (foreground color: #a3a49e, background color: #f0efea, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ]
+          }
+        ],
+        "afterShortcutClose": {
+          "tag": "DIV",
+          "id": "",
+          "cls": "cm-content cm-lineWrapping",
+          "action": "",
+          "aria": "Markdown editor"
+        },
+        "publishOpened": true,
+        "publishRole": "dialog",
+        "publishAriaModal": "true",
+        "publishLabel": "Export Document",
+        "publishLabelledby": null,
+        "publishOpenFocus": {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "icon-btn modal-close",
+          "action": "modal-close",
+          "aria": "Close"
+        },
+        "axePublish": [
+          {
+            "surface": "publish",
+            "id": "color-contrast",
+            "impact": "serious",
+            "help": "Elements must meet minimum color contrast ratio thresholds",
+            "nodes": [
+              {
+                "target": [
+                  ".pane-head"
+                ],
+                "html": "<div class=\"pane-head\">Markdown source<span class=\"pane-head-spacer\"></span><span>5 words</span></div>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".pane-head > span:nth-child(2)"
+                ],
+                "html": "<span>5 words</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+              }
+            ]
+          }
+        ],
+        "publishAfterTab": {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "btn small",
+          "action": "rerun-diagnostics",
+          "aria": ""
+        },
+        "publishClosed": true,
+        "publishRestored": {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "mobile-nav-btn",
+          "action": "export",
+          "aria": "Publish: export, print, or save the document"
+        },
+        "addOpened": true,
+        "addOpenFocus": {
+          "tag": "BODY",
+          "id": "",
+          "cls": "",
+          "action": "",
+          "aria": ""
+        },
+        "axeAdd": [
+          {
+            "surface": "add",
+            "id": "color-contrast",
+            "impact": "serious",
+            "help": "Elements must meet minimum color contrast ratio thresholds",
+            "nodes": [
+              {
+                "target": [
+                  ".pane-head"
+                ],
+                "html": "<div class=\"pane-head\">Markdown source<span class=\"pane-head-spacer\"></span><span>5 words</span></div>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+              },
+              {
+                "target": [
+                  ".pane-head > span:nth-child(2)"
+                ],
+                "html": "<span>5 words</span>",
+                "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #74766f, background color: #f8f7f2, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+              }
+            ]
+          }
+        ],
+        "addClosed": true,
+        "addRestored": {
+          "tag": "BODY",
+          "id": "",
+          "cls": "",
+          "action": "",
+          "aria": ""
+        }
+      },
+      "pageErrors": []
+    }
+  ]
+}
