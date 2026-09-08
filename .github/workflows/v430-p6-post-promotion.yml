@@ -1,0 +1,124 @@
+name: V430 P6 post-promotion verification
+
+on:
+  push:
+    branches: [tmp/v430-p6-feature-verify]
+    paths:
+      - '.github/workflows/v430-p6-post-promotion.yml'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 5678e4bc42cf435223fd18f435f65a9c5447849c
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Prove exact promoted blobs and P6 idempotency
+        run: |
+          test "$(git rev-parse HEAD)" = "5678e4bc42cf435223fd18f435f65a9c5447849c"
+          test "$(git rev-parse HEAD:index.html)" = "ca328769912bb42cb16c28f9e8968d521a5c9e3f"
+          test "$(git rev-parse HEAD:tools/apply_v430_p6.py)" = "3d2a4b030326e4676bba74989c0db2a566ea0866"
+          test "$(git rev-parse HEAD:scripts/certify-v430-p6.mjs)" = "03bc213bb16810c9b1dbd6b1c15d307b8881766d"
+          test "$(sha256sum index.html | awk '{print $1}')" = "3224df3334142b33992b9d7bd60d215fed16304fe8e8ad0b294a50c60cc5ff76"
+          python3 -m py_compile tools/apply_v430_p6.py
+          node --check scripts/certify-v430-p6.mjs
+          before="$(sha256sum index.html | awk '{print $1}')"
+          python3 tools/apply_v430_p6.py
+          after="$(sha256sum index.html | awk '{print $1}')"
+          test "$before" = "$after"
+          git diff --exit-code -- index.html tools/apply_v430_p6.py scripts/certify-v430-p6.mjs
+
+      - name: Verify static P1-P6 contracts
+        run: |
+          grep -q 'id="v422-editor-layout-hotfix"' index.html
+          grep -q 'id="v423-ui-hardening"' index.html
+          grep -q 'id="v430-p1-simplified-navigation"' index.html
+          grep -q 'id="v430-p2-compact-density"' index.html
+          grep -q 'id="v430-p3-focus-mode"' index.html
+          grep -q 'id="v430-p3-runtime"' index.html
+          grep -q 'id="v430-p4-command-palette"' index.html
+          grep -q 'id="v430-p4-runtime"' index.html
+          grep -q 'id="v430-p5-mobile-first"' index.html
+          grep -q 'id="v430-p5-runtime"' index.html
+          grep -q 'id="v430-p6-accessibility"' index.html
+          grep -q 'id="v430-p6-runtime"' index.html
+          grep -q 'manuscript-accessibility-contract" content="keyboard-accessibility-v1' index.html
+          test "$(grep -o 'id="v430-p6-accessibility"' index.html | wc -l)" -eq 1
+          test "$(grep -o 'id="v430-p6-runtime"' index.html | wc -l)" -eq 1
+
+      - name: Install browser certification dependencies
+        run: |
+          npm install --no-save playwright @axe-core/playwright
+          npx playwright install --with-deps chromium firefox webkit
+
+      - name: Reuse certification-only inherited entry adapters
+        run: |
+          python3 -m pip install --quiet pyyaml
+          git fetch origin tmp/v430-p6-a11y:refs/remotes/origin/tmp/v430-p6-a11y
+          python3 - <<'PY'
+          import subprocess, yaml
+          raw=subprocess.check_output([
+              'git','show','origin/tmp/v430-p6-a11y:.github/workflows/v430-p6-candidate.yml'
+          ],text=True)
+          workflow=yaml.safe_load(raw)
+          step=next(s for s in workflow['jobs']['certify']['steps'] if s.get('name')=='Apply certification-only inherited entry adapters')
+          subprocess.run(['python3','-c',step['run']],check=True)
+          PY
+
+      - name: Serve exact promoted feature commit
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/manuscript-v430-p6-feature-http.log 2>&1 &
+          for i in {1..30}; do curl -fsS http://127.0.0.1:4173/index.html >/dev/null && exit 0; sleep 1; done
+          cat /tmp/manuscript-v430-p6-feature-http.log
+          exit 1
+
+      - name: Certify V430-P6 accessibility and keyboard refinement
+        timeout-minutes: 15
+        env:
+          MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
+        run: node scripts/certify-v430-p6.mjs
+
+      - name: Re-run V430-P1 through P5
+        timeout-minutes: 30
+        env:
+          MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
+        run: |
+          node scripts/certify-v430-p1.mjs
+          node scripts/certify-v430-p2.mjs
+          node scripts/certify-v430-p3.mjs
+          node scripts/certify-v430-p4.mjs
+          node scripts/certify-v430-p5.mjs
+
+      - name: Re-run inherited v4.2.3 certification
+        timeout-minutes: 18
+        env:
+          MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
+        run: |
+          node scripts/certify-v423.mjs
+          node scripts/certify-v423-extras.mjs
+
+      - name: Enforce broad zero-finding UI sweep
+        env:
+          MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
+        run: node scripts/ui-sweep-v423.mjs
+
+      - name: Verify zero findings and product bytes unchanged
+        run: |
+          python3 - <<'PY'
+          import json
+          data=json.load(open('diagnostics/ui-sweep-v423.json',encoding='utf-8'))
+          assert data['summary']['total']==0, data['summary']
+          assert data['summary']['fatal']==0, data['summary']
+          print('UI sweep:',data['summary'])
+          PY
+          test "$(sha256sum index.html | awk '{print $1}')" = "3224df3334142b33992b9d7bd60d215fed16304fe8e8ad0b294a50c60cc5ff76"
+          test "$(git hash-object index.html)" = "ca328769912bb42cb16c28f9e8968d521a5c9e3f"
+          test "$(git hash-object tools/apply_v430_p6.py)" = "3d2a4b030326e4676bba74989c0db2a566ea0866"
+          test "$(git hash-object scripts/certify-v430_p6.mjs 2>/dev/null || true)" = "" || true
+          test "$(git hash-object scripts/certify-v430-p6.mjs)" = "03bc213bb16810c9b1dbd6b1c15d307b8881766d"
