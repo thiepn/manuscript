@@ -38,6 +38,34 @@ layout_new = '''  html[data-screen="editor"][data-v430-focus="true"] .editor-pre
     min-width: 0 !important;
   }
 
+  /* The inherited v4.2.2 tablet Split hotfix force-shows .mobile-hidden
+     panes with a highly specific display:flex!important rule. Focus Mode
+     intentionally preserves the underlying Split state, so beat that rule
+     only while Focus is active instead of mutating workspace state. */
+  html[data-screen="editor"][data-v430-focus="true"] .editor-preview:not(.editor-only):not(.preview-only) > .preview-pane,
+  html[data-screen="editor"][data-v430-focus="true"] .editor-preview:not(.editor-only):not(.preview-only) > .preview-pane.mobile-hidden,
+  html[data-screen="editor"][data-v430-focus="true"] .editor-preview > .preview-pane.mobile-hidden {
+    display: none !important;
+    flex: 0 0 0 !important;
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    border-top: 0 !important;
+  }
+
+  html[data-screen="editor"][data-v430-focus="true"] .editor-preview:not(.editor-only):not(.preview-only) > .splitter,
+  html[data-screen="editor"][data-v430-focus="true"] .editor-preview > .splitter {
+    display: none !important;
+    flex: 0 0 0 !important;
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+
   html[data-screen="editor"][data-v430-focus="true"] .editor-pane,
   html[data-screen="editor"][data-v430-focus="true"] .editor-pane.mobile-hidden {
     display: flex !important;
@@ -77,4 +105,4 @@ if not changed:
     raise SystemExit(0)
 
 path.write_text(text, encoding='utf-8')
-print('Refined V430-P3 focus layout and tablet active-state stability')
+print('Refined V430-P3 focus layout, tablet preview hiding, and active-state stability')
