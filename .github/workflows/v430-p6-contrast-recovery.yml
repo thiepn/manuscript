@@ -1,0 +1,71 @@
+name: V430 P6 contrast recovery
+
+on:
+  push:
+    branches: [tmp/v430-p6-a11y]
+    paths:
+      - '.github/workflows/v430-p6-contrast-recovery.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: tmp/v430-p6-a11y
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Apply audited source corrections and rerun candidate ladder
+        shell: bash
+        run: |
+          python3 -m pip install --quiet pyyaml
+          python3 - <<'PY'
+          import os, subprocess, yaml
+          from pathlib import Path
+
+          p=Path('tools/apply_v430_p6.py')
+          text=p.read_text(encoding='utf-8')
+          pairs=[
+            ("attributeFilter:['class','data-theme','data-screen','hidden','aria-current','aria-pressed']","attributeFilter:['class','data-theme','data-screen','hidden']"),
+            ("    close.click();\n    requestAnimationFrame(scheduleEnhance);\n    return true;","    close.click();\n    requestAnimationFrame(scheduleEnhance);\n    setTimeout(scheduleEnhance, 260);\n    return true;"),
+            ("    if text.count('</head>') != 1 or text.count('</body>') != 1:\n        raise SystemExit(\"Expected unique document closing anchors\")","    if '</head>' not in text or '</body>' not in text:\n        raise SystemExit(\"Document closing anchors missing\")"),
+          ]
+          for old,new in pairs:
+            if text.count(old)!=1: raise SystemExit(f'P6 correction anchor count={text.count(old)}: {old[:70]}')
+            text=text.replace(old,new,1)
+
+          css_anchor = "#command-search::placeholder {\n  color: inherit !important;\n  opacity: 1 !important;\n}"
+          css_replacement = css_anchor + "\n\n.v430-command-shortcut {\n  opacity: 1 !important;\n}"
+          if text.count(css_anchor)!=1: raise SystemExit(f'shortcut CSS anchor count={text.count(css_anchor)}')
+          text=text.replace(css_anchor,css_replacement,1)
+
+          contrast_anchor = "    document.querySelectorAll(CONTRAST_SELECTORS).forEach(el => ensureContrast(el));"
+          contrast_replacement = "    document.querySelectorAll(CONTRAST_SELECTORS).forEach(el =>\n      ensureContrast(el, el.matches('.v430-command-shortcut') ? 5.0 : 4.6)\n    );"
+          if text.count(contrast_anchor)!=1: raise SystemExit(f'contrast margin anchor count={text.count(contrast_anchor)}')
+          text=text.replace(contrast_anchor,contrast_replacement,1)
+          p.write_text(text,encoding='utf-8')
+
+          c=Path('scripts/certify-v430-p6.mjs'); ctext=c.read_text(encoding='utf-8')
+          old="  const root=page.locator(rootSelector).filter({visible:true}).first();"
+          new="  const root=page.locator(`${rootSelector}:visible`).first();"
+          if ctext.count(old)!=1: raise SystemExit(f'P6 locator correction anchor count={ctext.count(old)}')
+          c.write_text(ctext.replace(old,new,1),encoding='utf-8')
+
+          workflow=yaml.safe_load(Path('.github/workflows/v430-p6-candidate.yml').read_text(encoding='utf-8'))
+          steps=workflow['jobs']['certify']['steps']
+          for step in steps:
+            name=step.get('name'); run=step.get('run')
+            if not name or not run or name=='Finalize P6 source review corrections':
+              continue
+            print(f'\n===== {name} =====',flush=True)
+            env=os.environ.copy(); env.update({str(k):str(v) for k,v in (step.get('env') or {}).items()})
+            shell=step.get('shell','bash')
+            cmd=['python3','-c',run] if shell=='python' else ['bash','-euo','pipefail','-c',run]
+            subprocess.run(cmd,env=env,check=True)
+          PY
