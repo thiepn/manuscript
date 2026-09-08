@@ -188,6 +188,15 @@ html[data-screen="editor"] .v430-command-trigger[aria-expanded="true"] {
   text-align: left;
 }
 
+/* Touch users need a genuine target, not a nominal 38px rule that can be
+   compressed by inherited mobile/coarse-pointer styles. Keep desktop compact
+   while making tablet/mobile quick actions comfortably tappable. */
+@media (pointer: coarse) {
+  .command-layer .v430-command-fast-btn {
+    min-height: 46px !important;
+  }
+}
+
 .v430-command-fast-btn:hover,
 .v430-command-fast-btn:focus-visible {
   background: var(--surface-hover);
