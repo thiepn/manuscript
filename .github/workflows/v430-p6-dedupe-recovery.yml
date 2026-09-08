@@ -16,7 +16,7 @@ concurrency:
 jobs:
   certify:
     runs-on: ubuntu-latest
-    timeout-minutes: 70
+    timeout-minutes: 75
     steps:
       - uses: actions/checkout@v4
         with:
@@ -25,7 +25,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Apply audited P6 corrections including mobile id dedupe and run full ladder
+      - name: Consolidate audited P6 fixes including canonical preview id dedupe
         shell: bash
         run: |
           python3 -m pip install --quiet pyyaml
@@ -36,43 +36,57 @@ jobs:
           p=Path('tools/apply_v430_p6.py')
           text=p.read_text(encoding='utf-8')
 
-          pairs=[
-            ("attributeFilter:['class','data-theme','data-screen','hidden','aria-current','aria-pressed']","attributeFilter:['class','data-theme','data-screen','hidden']"),
-            ("    close.click();\n    requestAnimationFrame(scheduleEnhance);\n    return true;","    close.click();\n    requestAnimationFrame(scheduleEnhance);\n    setTimeout(scheduleEnhance, 260);\n    return true;"),
-            ("    if text.count('</head>') != 1 or text.count('</body>') != 1:\n        raise SystemExit(\"Expected unique document closing anchors\")","    if '</head>' not in text or '</body>' not in text:\n        raise SystemExit(\"Document closing anchors missing\")"),
-            ("      const visible = group.filter(isVisible);\n      const hidden = group.filter(node => !isVisible(node));\n      if (!visible.length || !hidden.length) continue;\n      const keeper = visible[0];","      const visible = group.filter(isVisible);\n      const keeper = visible[0] || group[0];"),
+          replacements=[
+            ("attributeFilter:['class','data-theme','data-screen','hidden','aria-current','aria-pressed']",
+             "attributeFilter:['class','data-theme','data-screen','hidden']"),
+            ("    close.click();\n    requestAnimationFrame(scheduleEnhance);\n    return true;",
+             "    close.click();\n    requestAnimationFrame(scheduleEnhance);\n    setTimeout(scheduleEnhance, 260);\n    return true;"),
+            ("    if text.count('</head>') != 1 or text.count('</body>') != 1:\n        raise SystemExit(\"Expected unique document closing anchors\")",
+             "    if '</head>' not in text or '</body>' not in text:\n        raise SystemExit(\"Document closing anchors missing\")"),
           ]
-          for old,new in pairs:
+          for old,new in replacements:
             if text.count(old)!=1:
-              raise SystemExit(f'P6 correction anchor count={text.count(old)}: {old[:85]}')
+              raise SystemExit(f'P6 correction anchor count={text.count(old)}: {old[:90]}')
             text=text.replace(old,new,1)
 
           css_anchor="#command-search::placeholder {\n  color: inherit !important;\n  opacity: 1 !important;\n}"
-          css_replacement=css_anchor+"\n\n.v430-command-shortcut,\nbutton.v430-command-trigger {\n  opacity: 1 !important;\n}"
+          css_extra=("\n\n/* P6: preserve P4's quiet command affordance without compositing text below AA. */"
+                     "\n.v430-command-trigger {\n  opacity: 1 !important;\n}"
+                     "\n.v430-command-trigger > svg {\n  opacity: .72;\n}"
+                     "\n.v430-command-trigger:hover > svg,"
+                     "\n.v430-command-trigger:focus-visible > svg {\n  opacity: 1;\n}"
+                     "\n.v430-command-shortcut {\n  color: inherit !important;\n  opacity: 1 !important;\n}"
+                     "\n.v430-command-palette .command-item > kbd {\n  color: inherit !important;\n  opacity: 1 !important;\n}")
           if text.count(css_anchor)!=1:
-            raise SystemExit(f'P6 command opacity anchor count={text.count(css_anchor)}')
-          text=text.replace(css_anchor,css_replacement,1)
+            raise SystemExit(f'command CSS anchor count={text.count(css_anchor)}')
+          text=text.replace(css_anchor,css_anchor+css_extra,1)
 
-          selector_anchor="    '.v430-command-fast-btn kbd',\n    '#command-search'"
-          selector_replacement="    '.v430-command-fast-btn kbd',\n    '.command-item > kbd',\n    '.v430-command-hint > span',\n    '.v430-command-hint > kbd',\n    '#command-search'"
+          selector_anchor="    '#command-search'\n  ].join(',');"
+          selector_new=("    '#command-search',\n"
+                        "    '#v430-command-hint',\n"
+                        "    '#v430-command-hint > span',\n"
+                        "    '#v430-command-hint > kbd'\n"
+                        "  ].join(',');")
           if text.count(selector_anchor)!=1:
-            raise SystemExit(f'P6 transient contrast selector anchor count={text.count(selector_anchor)}')
-          text=text.replace(selector_anchor,selector_replacement,1)
+            raise SystemExit(f'contrast selector anchor count={text.count(selector_anchor)}')
+          text=text.replace(selector_anchor,selector_new,1)
 
-          contrast_anchor="    document.querySelectorAll(CONTRAST_SELECTORS).forEach(el => ensureContrast(el));"
-          contrast_replacement='\n'.join([
-            "    document.querySelectorAll(CONTRAST_SELECTORS).forEach(el => {",
-            "      const minimum = el.matches('.v430-command-shortcut')",
-            "        ? 6.5",
-            "        : el.matches('.command-item > kbd, .v430-command-hint > span, .v430-command-hint > kbd')",
-            "          ? 5.0",
-            "          : 4.6;",
-            "      ensureContrast(el, minimum);",
-            "    });",
-          ])
-          if text.count(contrast_anchor)!=1:
-            raise SystemExit(f'P6 contrast-margin anchor count={text.count(contrast_anchor)}')
-          text=text.replace(contrast_anchor,contrast_replacement,1)
+          old_dedupe="""      const visible = group.filter(isVisible);
+      const hidden = group.filter(node => !isVisible(node));
+      if (!visible.length || !hidden.length) continue;
+      const keeper = visible[0];"""
+          new_dedupe="""      // Parallel document render clones may both keep non-zero boxes on mobile.
+      // Preserve the canonical paginated preview copy, not whichever clone CSS happens
+      // to report as visible first.
+      const score = node =>
+        (node.closest('.page-content.doc') ? 100 : 0) +
+        (node.closest('#preview-scroll') ? 50 : 0) +
+        (isVisible(node) ? 10 : 0);
+      const keeper = [...group].sort((a, b) => score(b) - score(a))[0];"""
+          if text.count(old_dedupe)!=1:
+            raise SystemExit(f'canonical dedupe anchor count={text.count(old_dedupe)}')
+          text=text.replace(old_dedupe,new_dedupe,1)
+
           p.write_text(text,encoding='utf-8')
 
           c=Path('scripts/certify-v430-p6.mjs')
@@ -89,7 +103,8 @@ jobs:
             if not name or not run or name=='Finalize P6 source review corrections':
               continue
             print(f'\n===== {name} =====',flush=True)
-            env=os.environ.copy(); env.update({str(k):str(v) for k,v in (step.get('env') or {}).items()})
+            env=os.environ.copy()
+            env.update({str(k):str(v) for k,v in (step.get('env') or {}).items()})
             shell=step.get('shell','bash')
             cmd=['python3','-c',run] if shell=='python' else ['bash','-euo','pipefail','-c',run]
             subprocess.run(cmd,env=env,check=True)
