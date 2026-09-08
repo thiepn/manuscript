@@ -191,7 +191,9 @@ async function certifyMobile(page, profile) {
   const buttons = quick.locator('.v430-command-fast-btn');
   check(await buttons.count() === 6, `${profile.name}: mobile quick-action count wrong`);
   const focus = quick.locator('[data-command-action="focus-mode"]').first();
-  check(await focus.isDisabled(), `${profile.name}: mobile Focus quick action should be unavailable before P5`);
+  const p5 = await page.locator('#v430-p5-mobile-first').count() === 1;
+  if (p5) check(!(await focus.isDisabled()), `${profile.name}: P5 should enable the mobile Focus quick action in Write`);
+  else check(await focus.isDisabled(), `${profile.name}: mobile Focus quick action should be unavailable before P5`);
   const rects = await buttons.evaluateAll(nodes => nodes.map(node => {
     const r = node.getBoundingClientRect();
     return { left: r.left, right: r.right, width: r.width, height: r.height };

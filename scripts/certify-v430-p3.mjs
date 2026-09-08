@@ -205,15 +205,29 @@ async function certifyFocusProfile(page, profile) {
 
 async function certifyMobileProfile(page, profile) {
   await page.waitForTimeout(200);
-  check(await page.locator('.v430-focus-trigger').count() === 0, `${profile.name}: desktop focus trigger leaked into mobile DOM`);
+  const p5 = await page.locator('#v430-p5-mobile-first').count() === 1;
+  const focusTrigger = page.locator('.v430-focus-trigger').first();
   const mobileNav = page.locator('.mobile-bottom-nav:visible').first();
   check(await visible(mobileNav), `${profile.name}: mobile navigation missing`);
-  const enter = await page.evaluate(() => ({
-    eligible: window.__manuscriptV430P3?.eligible,
-    result: window.__manuscriptV430P3?.enter(),
-    attr: document.documentElement.dataset.v430Focus || '',
-  }));
-  check(enter.eligible === false && enter.result === false && !enter.attr, `${profile.name}: focus runtime leaked into mobile ${JSON.stringify(enter)}`);
+
+  if (!p5) {
+    check(await page.locator('.v430-focus-trigger').count() === 0, `${profile.name}: desktop focus trigger leaked into mobile DOM`);
+    const enter = await page.evaluate(() => ({
+      eligible: window.__manuscriptV430P3?.eligible,
+      result: window.__manuscriptV430P3?.enter(),
+      attr: document.documentElement.dataset.v430Focus || '',
+    }));
+    check(enter.eligible === false && enter.result === false && !enter.attr, `${profile.name}: focus runtime leaked into mobile ${JSON.stringify(enter)}`);
+  } else {
+    // P5 deliberately broadens the P3 state machine to mobile. The trigger is
+    // retained in DOM for the explicit Focus exit path but hidden while Focus
+    // is inactive. P5's own suite certifies entry, exit, and mobile geometry.
+    check(await focusTrigger.count() === 1, `${profile.name}: P5 did not extend the P3 Focus trigger to mobile`);
+    check(!(await focusTrigger.isVisible().catch(() => false)), `${profile.name}: inactive mobile Focus trigger should remain hidden`);
+    check(!await page.locator('html').getAttribute('data-v430-focus'), `${profile.name}: mobile Focus activated without user action`);
+    check(await page.evaluate(() => !!window.__manuscriptV430P3), `${profile.name}: P3 Focus runtime missing under P5`);
+  }
+
   const targets = await mobileNav.locator('button:visible').evaluateAll(buttons => buttons.map(button => {
     const r = button.getBoundingClientRect();
     return { width: r.width, height: r.height };

@@ -7,8 +7,38 @@ text = path.read_text(encoding='utf-8')
 STYLE_ID = 'v430-p5-mobile-first'
 SCRIPT_ID = 'v430-p5-runtime'
 CONTRACT = 'mobile-first-interaction-v1'
+META = f'<meta name="manuscript-mobile-first-contract" content="{CONTRACT}">'
+P3_DESKTOP_MEDIA = "const media = window.matchMedia('(min-width: 768px)');"
+P3_ALL_WIDTHS_MEDIA = "const media = window.matchMedia('(min-width: 0px)');"
+P4_COMMAND_GUARD_OLD = 'html[data-screen="editor"] .appbar > [data-action="command"]:not(.v430-command-trigger) {'
+P4_COMMAND_GUARD_P5 = 'html[data-screen="editor"] .appbar > [data-action="command"]:not(.v430-command-trigger):not(.v430-mobile-command-trigger) {'
 
-if f'id="{STYLE_ID}"' in text and f'id="{SCRIPT_ID}"' in text:
+style_marker = f'id="{STYLE_ID}"'
+script_marker = f'id="{SCRIPT_ID}"'
+marker_state = (style_marker in text, script_marker in text, META in text)
+
+# Be idempotent when fully applied, but fail closed on a partially injected P5
+# contract. Re-running a partially injected patcher must never duplicate style,
+# runtime, or metadata blocks.
+if any(marker_state):
+    if not all(marker_state):
+        raise SystemExit(f'Partial V430-P5 contract detected: style={marker_state[0]} runtime={marker_state[1]} meta={marker_state[2]}')
+    if text.count(style_marker) != 1 or text.count(script_marker) != 1 or text.count(META) != 1:
+        raise SystemExit('Duplicate V430-P5 contract markers detected')
+    p3_start = text.find('<script id="v430-p3-runtime">')
+    p3_end = text.find('</script>', p3_start)
+    if p3_start < 0 or p3_end < 0:
+        raise SystemExit('P3 runtime block missing while validating applied P5 contract')
+    p3_runtime = text[p3_start:p3_end]
+    if P3_DESKTOP_MEDIA in p3_runtime or p3_runtime.count(P3_ALL_WIDTHS_MEDIA) != 1:
+        raise SystemExit('V430-P5 markers exist but P3 Focus eligibility is not in the certified all-width state')
+    p4_start = text.find('<style id="v430-p4-command-palette">')
+    p4_end = text.find('</style>', p4_start)
+    if p4_start < 0 or p4_end < 0:
+        raise SystemExit('P4 style block missing while validating applied P5 contract')
+    p4_style = text[p4_start:p4_end]
+    if p4_style.count(P4_COMMAND_GUARD_P5) != 1 or P4_COMMAND_GUARD_OLD in p4_style:
+        raise SystemExit('V430-P5 markers exist but the P4 command guard is not P5-aware')
     print('V430-P5 mobile-first contract already applied')
     raise SystemExit(0)
 
@@ -20,27 +50,52 @@ for required in (
     'id="v430-p4-command-palette"',
     'id="v430-p4-runtime"',
 ):
-    if required not in text:
-        raise SystemExit(f'Prerequisite contract missing: {required}')
+    if text.count(required) != 1:
+        raise SystemExit(f'Prerequisite contract missing or duplicated: {required}')
 
-# P3 deliberately deferred mobile focus to P5. Keep one Focus state machine by
-# broadening its eligibility here rather than introducing a second mobile-only
-# focus implementation. P5 supplies the <768 presentation layer below.
-p3_media = "const media = window.matchMedia('(min-width: 768px)');"
-if p3_media not in text:
-    raise SystemExit('P3 focus eligibility anchor missing')
-text = text.replace(p3_media, "const media = window.matchMedia('(min-width: 0px)');", 1)
+# P3 deliberately deferred mobile Focus to P5. Keep P3 as the only Focus state
+# machine; P5 broadens only P3 eligibility and supplies narrow-screen layout.
+p3_start = text.find('<script id="v430-p3-runtime">')
+p3_end = text.find('</script>', p3_start)
+if p3_start < 0 or p3_end < 0:
+    raise SystemExit('P3 runtime block missing')
+p3_runtime = text[p3_start:p3_end]
+if p3_runtime.count(P3_DESKTOP_MEDIA) == 1 and P3_ALL_WIDTHS_MEDIA not in p3_runtime:
+    p3_runtime = p3_runtime.replace(P3_DESKTOP_MEDIA, P3_ALL_WIDTHS_MEDIA, 1)
+    text = text[:p3_start] + p3_runtime + text[p3_end:]
+elif p3_runtime.count(P3_ALL_WIDTHS_MEDIA) == 1 and P3_DESKTOP_MEDIA not in p3_runtime:
+    # Safe recovery point if a previous process broadened P3 but stopped before
+    # inserting any P5 contract markers.
+    pass
+else:
+    raise SystemExit('P3 Focus eligibility anchor is missing, duplicated, or ambiguous inside the P3 runtime')
 
-if '</head>' not in text or '</body>' not in text:
-    raise SystemExit('HTML injection anchors missing')
+# Extend P4's command guard only for the P5-owned mobile presentation trigger.
+p4_start = text.find('<style id="v430-p4-command-palette">')
+p4_end = text.find('</style>', p4_start)
+if p4_start < 0 or p4_end < 0:
+    raise SystemExit('P4 command-palette style block missing')
+p4_style = text[p4_start:p4_end]
+if p4_style.count(P4_COMMAND_GUARD_OLD) == 1 and P4_COMMAND_GUARD_P5 not in p4_style:
+    p4_style = p4_style.replace(P4_COMMAND_GUARD_OLD, P4_COMMAND_GUARD_P5, 1)
+    text = text[:p4_start] + p4_style + text[p4_end:]
+elif p4_style.count(P4_COMMAND_GUARD_P5) == 1 and P4_COMMAND_GUARD_OLD not in p4_style:
+    pass
+else:
+    raise SystemExit('P4 command guard is missing, duplicated, or ambiguous')
+
+head_close = text.find('</head>')
+body_open = text.find('<body')
+if head_close < 0 or body_open < 0 or head_close > body_open or '</body>' not in text:
+    raise SystemExit('HTML injection anchors missing or out of document order')
 
 style = r'''
 <meta name="manuscript-mobile-first-contract" content="mobile-first-interaction-v1">
 <style id="v430-p5-mobile-first">
 /* V430-P5 — Mobile-First Navigation & Interaction
-   Existing actions and state remain authoritative. This layer makes the
-   certified workflow, command palette, panels, and Focus Mode genuinely
-   usable on narrow/coarse-pointer surfaces. */
+   Existing Manuscript actions and state remain authoritative. P5 changes the
+   presentation, target geometry and semantics of those controls; it does not
+   create a second workflow, panel, command, or Focus state machine. */
 @media (max-width: 767px) {
   :root {
     --v430-mobile-nav-core: 64px;
@@ -56,8 +111,8 @@ style = r'''
     overflow: hidden !important;
   }
 
-  /* The bottom nav owns publishing on mobile; duplicate top-bar export and
-     low-frequency theme chrome only compete with the document title. */
+  /* Publishing is already available in the five-action bottom nav. Removing
+     duplicate low-frequency top-bar chrome protects title space at 320px. */
   html[data-screen="editor"] .appbar > [data-action="export"],
   html[data-screen="editor"] .appbar > [data-action="theme"] {
     display: none !important;
@@ -66,11 +121,11 @@ style = r'''
   html[data-screen="editor"] .appbar > [data-action="home"],
   html[data-screen="editor"] .appbar > [data-action="more"],
   html[data-screen="editor"] .v430-mobile-command-trigger {
-    width: 42px !important;
-    min-width: 42px !important;
-    height: 42px !important;
-    min-height: 42px !important;
-    flex: 0 0 42px !important;
+    width: 44px !important;
+    min-width: 44px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    flex: 0 0 44px !important;
     border-radius: 7px !important;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
@@ -86,7 +141,7 @@ style = r'''
     width: 100% !important;
     min-width: 0 !important;
     max-width: none !important;
-    padding-inline: 6px !important;
+    padding-inline: 5px !important;
     text-overflow: ellipsis;
   }
 
@@ -184,6 +239,8 @@ style = r'''
     transform: translateX(-50%);
   }
 
+  /* Existing mobile-hidden/body surface logic still owns panel state. P5 only
+     turns an open panel into a viewport-safe sheet between app bar and nav. */
   html[data-screen="editor"] .left-panel,
   html[data-screen="editor"] .inspector {
     top: 50px !important;
@@ -235,8 +292,34 @@ style = r'''
     touch-action: manipulation;
   }
 
-  /* Mobile command access behaves like a bottom sheet while retaining the
-     native command palette's combobox/listbox keyboard semantics. */
+  /* Utility and modal controls are high-frequency touch surfaces reached from
+     mobile navigation. Keep them usable without changing their business logic. */
+  html[data-screen="editor"] #v430-utility-menu button,
+  html[data-screen="editor"] .modal-layer button,
+  html[data-screen="editor"] .modal-layer [role="button"] {
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+
+  html[data-screen="editor"] .modal-layer {
+    box-sizing: border-box;
+    padding: max(8px, env(safe-area-inset-top, 0px)) max(8px, env(safe-area-inset-right, 0px)) max(8px, env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px)) !important;
+    overflow: hidden !important;
+  }
+
+  html[data-screen="editor"] .modal-layer .modal {
+    box-sizing: border-box;
+    max-width: calc(100vw - 16px) !important;
+    max-height: calc(100dvh - 16px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) !important;
+    margin: auto !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Mobile command access behaves like a bottom sheet while retaining P4's
+     native command palette, registry and keyboard semantics. */
   .command-layer {
     align-items: end !important;
     padding: 8px max(8px, env(safe-area-inset-right, 0px)) max(8px, env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px)) !important;
@@ -276,8 +359,8 @@ style = r'''
     min-height: 48px !important;
   }
 
-  /* Mobile Focus — P3 remains the state machine; P5 defines the narrow-screen
-     presentation and a visible, explicit exit path. */
+  /* P3 remains the only Focus state machine. P5 provides its narrow-screen
+     presentation and keeps one explicit, reachable exit control. */
   html[data-screen="editor"][data-v430-focus="true"] .toolbar,
   html[data-screen="editor"][data-v430-focus="true"] .activity-rail,
   html[data-screen="editor"][data-v430-focus="true"] .left-panel,
@@ -315,13 +398,14 @@ style = r'''
     justify-content: center;
     width: auto !important;
     min-width: 94px !important;
-    height: 40px !important;
-    min-height: 40px !important;
+    height: 44px !important;
+    min-height: 44px !important;
     padding-inline: 10px !important;
     border: 1px solid var(--border-default) !important;
     border-radius: 7px !important;
     background: var(--surface-2) !important;
     opacity: 1 !important;
+    touch-action: manipulation;
   }
 
   html[data-screen="editor"][data-v430-focus="true"] .v430-focus-label {
@@ -375,11 +459,12 @@ style = r'''
 }
 
 @media (pointer: coarse) and (min-width: 768px) {
-  /* Tablet-edge controls stay comfortably tappable without changing desktop
-     density or the certified >=768 navigation model. */
-  html[data-screen="editor"] .v430-command-trigger,
+  html[data-screen="editor"] .v430-command-trigger {
+    min-width: 44px;
+    min-height: 44px;
+  }
   html[data-screen="editor"] .v430-focus-trigger {
-    min-height: 40px;
+    min-height: 44px;
   }
 }
 
@@ -399,10 +484,13 @@ script = r'''
   const root = document.documentElement;
   const mobile = window.matchMedia('(max-width: 767px)');
   let commandTrigger = null;
-  let observer = null;
+  let rootObserver = null;
+  let navObserver = null;
+  let observedNav = null;
   let scheduled = false;
 
   function setAttr(el, name, value) {
+    if (!el) return;
     if (value == null || value === false) {
       if (el.hasAttribute(name)) el.removeAttribute(name);
       return;
@@ -438,46 +526,71 @@ script = r'''
     }
   }
 
+  function relabelPublish(publish) {
+    if (!publish || publish.dataset.v430PublishLabel === 'true') return;
+    let changed = false;
+    const walker = document.createTreeWalker(publish, NodeFilter.SHOW_TEXT);
+    let node;
+    while ((node = walker.nextNode())) {
+      if (/export/i.test(node.textContent || '')) {
+        node.textContent = node.textContent.replace(/export/i, 'Publish');
+        changed = true;
+        break;
+      }
+    }
+    if (!changed && !/publish/i.test(publish.textContent || '')) {
+      const label = document.createElement('span');
+      label.className = 'v430-publish-label';
+      label.textContent = 'Publish';
+      publish.append(label);
+    }
+    publish.dataset.v430PublishLabel = 'true';
+  }
+
+  function observeNav(nav) {
+    if (observedNav === nav) return;
+    navObserver?.disconnect();
+    observedNav = nav || null;
+    if (!nav) return;
+    navObserver = new MutationObserver(schedule);
+    navObserver.observe(nav, { subtree: true, attributes: true, attributeFilter: ['class'] });
+  }
+
   function enhanceMobileNav() {
     const nav = document.querySelector('.mobile-bottom-nav');
-    if (!nav) return;
+    if (!nav) {
+      observeNav(null);
+      return;
+    }
     nav.classList.add('v430-mobile-nav');
     setAttr(nav, 'aria-label', 'Mobile document workflow');
+    observeNav(nav);
 
     const buttons = [...nav.querySelectorAll('.mobile-nav-btn')];
-    buttons.forEach(button => {
+    for (const button of buttons) {
       const active = button.classList.contains('active');
       setAttr(button, 'aria-current', active ? 'page' : null);
-      setAttr(button, 'aria-pressed', null);
-    });
+      // Preserve any native aria-pressed semantics already owned by Manuscript.
+    }
 
     const publish = nav.querySelector('[data-action="export"]');
     if (publish) {
       setAttr(publish, 'aria-label', 'Publish: export, print, or save the document');
-      if (publish.dataset.v430PublishLabel !== 'true') {
-        const textNode = [...publish.childNodes].find(node => node.nodeType === Node.TEXT_NODE && node.textContent.trim());
-        if (textNode) textNode.textContent = 'Publish';
-        publish.dataset.v430PublishLabel = 'true';
-      }
+      relabelPublish(publish);
     }
   }
 
-  function syncOverlayState() {
+  function syncCommandState() {
     const commandOpen = !!document.querySelector('.command-layer');
     if (commandTrigger?.isConnected) setAttr(commandTrigger, 'aria-expanded', commandOpen ? 'true' : 'false');
-
-    const surface = document.querySelector('.command-layer') ? 'command'
-      : document.querySelector('.left-panel:not(.mobile-hidden),.inspector:not(.mobile-hidden)') ? 'panel'
-      : 'document';
-    if (mobile.matches && root.dataset.screen === 'editor') root.dataset.v430MobileSurface = surface;
-    else delete root.dataset.v430MobileSurface;
   }
 
   function sync() {
     scheduled = false;
     ensureCommandTrigger();
     if (mobile.matches && root.dataset.screen === 'editor') enhanceMobileNav();
-    syncOverlayState();
+    else observeNav(null);
+    syncCommandState();
   }
 
   function schedule() {
@@ -488,14 +601,15 @@ script = r'''
 
   function boot() {
     sync();
-    observer = new MutationObserver(schedule);
-    observer.observe(document.documentElement, {
+    rootObserver = new MutationObserver(schedule);
+    rootObserver.observe(document.documentElement, {
       subtree: true,
       childList: true,
       attributes: true,
-      attributeFilter: ['data-screen', 'data-v430-focus', 'class'],
+      attributeFilter: ['data-screen', 'data-v430-focus'],
     });
     mobile.addEventListener?.('change', schedule);
+    document.addEventListener('click', schedule, true);
   }
 
   window.__manuscriptV430P5 = {
@@ -515,5 +629,27 @@ body_pos = text.rfind('</body>')
 if body_pos < 0:
     raise SystemExit('Final body closing anchor missing')
 text = text[:body_pos] + script + '\n' + text[body_pos:]
+
+# Final structural postconditions prevent silently writing a corrupt partial
+# patch if an upstream anchor changes.
+for marker in (style_marker, script_marker, META):
+    if text.count(marker) != 1:
+        raise SystemExit(f'V430-P5 postcondition failed for {marker!r}: count={text.count(marker)}')
+p3_start = text.find('<script id="v430-p3-runtime">')
+p3_end = text.find('</script>', p3_start)
+if p3_start < 0 or p3_end < 0:
+    raise SystemExit('V430-P5 postcondition failed: P3 runtime block missing')
+p3_runtime = text[p3_start:p3_end]
+if p3_runtime.count(P3_ALL_WIDTHS_MEDIA) != 1 or P3_DESKTOP_MEDIA in p3_runtime:
+    raise SystemExit('V430-P5 postcondition failed: P3 runtime eligibility is not exactly all-width')
+
+p4_start = text.find('<style id="v430-p4-command-palette">')
+p4_end = text.find('</style>', p4_start)
+if p4_start < 0 or p4_end < 0:
+    raise SystemExit('V430-P5 postcondition failed: P4 style block missing')
+p4_style = text[p4_start:p4_end]
+if p4_style.count(P4_COMMAND_GUARD_P5) != 1 or P4_COMMAND_GUARD_OLD in p4_style:
+    raise SystemExit('V430-P5 postcondition failed: P4 command guard is not P5-aware')
+
 path.write_text(text, encoding='utf-8')
 print('Applied V430-P5 mobile-first navigation and interaction')
