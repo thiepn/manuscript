@@ -3330,6 +3330,77 @@ html[data-screen="editor"] :where(
   }
 }
 </style>
+<meta name="manuscript-hardening-contract" content="full-regression-responsive-v1">
+<style id="v430-p7-responsive-hardening">
+/* Manuscript v4.3.0 P7 — full regression + responsive hardening. */
+
+/* P1 quieted More by applying opacity to the whole control. Parent opacity
+   composites text below AA in paper themes. Keep de-emphasis on the icon only. */
+html[data-screen="editor"] .v430-utility-trigger {
+  opacity: 1 !important;
+}
+html[data-screen="editor"] .v430-utility-trigger > svg {
+  opacity: .68;
+}
+html[data-screen="editor"] .v430-utility-trigger:hover > svg,
+html[data-screen="editor"] .v430-utility-trigger:focus-visible > svg,
+html[data-screen="editor"] .v430-utility-trigger[aria-expanded="true"] > svg {
+  opacity: 1;
+}
+html[data-screen="editor"] .v430-more-label {
+  opacity: 1 !important;
+}
+
+/* Verified compact labels that sit below AA in specific muted themes. The tiny
+   Checks action and theme toast body are intentionally readable in every theme. */
+html[data-screen="editor"] .toast .toast-text,
+html[data-screen="editor"] .status-action[data-panel="diagnostics"] {
+  color: var(--text-primary) !important;
+}
+html[data-screen="editor"][data-theme="typesetter"] :where(
+  .toolbar button[data-workspace],
+  .preview-toolbar button[data-preview]
+),
+html[data-screen="editor"][data-theme="blueprint"] :where(
+  .toolbar button[data-workspace],
+  .preview-toolbar button[data-preview]
+) {
+  color: var(--text-primary) !important;
+}
+
+/* WebKit updates CSS media queries and viewport metrics immediately but may
+   defer JS resize/rAF delivery for hundreds of milliseconds. Keep P5's mobile
+   command trigger mounted while the editor exists and make both command entry
+   points mutually exclusive through CSS at the actual layout breakpoint. */
+@media (max-width: 767px) {
+  html[data-screen="editor"] .v430-command-trigger {
+    display: none !important;
+  }
+}
+@media (min-width: 768px) {
+  html[data-screen="editor"] .v430-mobile-command-trigger {
+    display: none !important;
+  }
+}
+
+/* P4's desktop palette uses a viewport-relative top margin. At short desktop
+   heights that margin is added after max-height calculation and pushes the
+   palette below the viewport. Collapse only that decorative offset and keep
+   scrolling inside the existing command list. */
+@media (min-width: 768px) and (max-height: 520px) {
+  html[data-screen="editor"] .command-layer {
+    padding: 8px !important;
+    align-items: start !important;
+  }
+  html[data-screen="editor"] .command-layer .command-palette.v430-command-palette {
+    margin: 0 auto !important;
+    max-height: calc(100dvh - 16px) !important;
+  }
+  html[data-screen="editor"] .command-layer .command-list {
+    min-height: 0 !important;
+  }
+}
+</style>
 </head>
 <body>
   <a class="skip-link" data-skip-link href="#app">Skip to Manuscript</a>
@@ -17579,6 +17650,7 @@ __require("main");
 
   const root = document.documentElement;
   const mobile = window.matchMedia('(max-width: 767px)');
+  const mobileNow = () => window.innerWidth <= 767;
   let commandTrigger = null;
   let rootObserver = null;
   let navObserver = null;
@@ -17596,7 +17668,7 @@ __require("main");
   }
 
   function ensureCommandTrigger() {
-    if (!mobile.matches || root.dataset.screen !== 'editor') {
+    if (root.dataset.screen !== 'editor') {
       commandTrigger?.remove();
       commandTrigger = null;
       return;
@@ -17684,7 +17756,7 @@ __require("main");
   function sync() {
     scheduled = false;
     ensureCommandTrigger();
-    if (mobile.matches && root.dataset.screen === 'editor') enhanceMobileNav();
+    if (mobileNow() && root.dataset.screen === 'editor') enhanceMobileNav();
     else observeNav(null);
     syncCommandState();
   }
@@ -17710,7 +17782,7 @@ __require("main");
 
   window.__manuscriptV430P5 = {
     sync: schedule,
-    get mobile() { return mobile.matches; },
+    get mobile() { return mobileNow(); },
     get commandTrigger() { return commandTrigger; },
   };
 
@@ -18166,6 +18238,91 @@ __require("main");
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, {once:true});
   else start();
+})();
+</script>
+<script id="v430-p7-runtime">
+(() => {
+  'use strict';
+  if (window.__manuscriptV430P7) return;
+
+  const root = document.documentElement;
+  const mobileMedia = window.matchMedia('(max-width: 767px)');
+  const mobileNow = () => window.innerWidth <= 767;
+  let scheduled = false;
+  let widthObserver = null;
+
+  function cleanupMobileSemantics() {
+    if (mobileNow()) return;
+    document.querySelectorAll('.left-panel[data-v430-p6-mobile-dialog="true"],.inspector[data-v430-p6-mobile-dialog="true"]').forEach(surface => {
+      const kind = surface.matches('.left-panel') ? 'add' : 'style';
+      surface.removeAttribute('data-v430-p6-mobile-dialog');
+      if (surface.getAttribute('role') === 'dialog') surface.removeAttribute('role');
+      if (surface.getAttribute('aria-modal') === 'true') surface.removeAttribute('aria-modal');
+      const p6Label = kind === 'add' ? 'Add content' : 'Style';
+      if (!surface.hasAttribute('aria-labelledby') && surface.getAttribute('aria-label') === p6Label) {
+        surface.removeAttribute('aria-label');
+      }
+    });
+  }
+
+  function resyncResponsiveOwners() {
+    // P5 and P6 remain authoritative. P7 only prompts their existing schedulers.
+    window.__manuscriptV430P5?.sync?.();
+    window.__manuscriptV430P6?.refresh?.();
+  }
+
+  function sync() {
+    scheduled = false;
+    if (root.dataset.screen !== 'editor') return;
+    cleanupMobileSemantics();
+  }
+
+  function schedule() {
+    if (scheduled) return;
+    scheduled = true;
+    requestAnimationFrame(sync);
+  }
+
+  function handleResize() {
+    resyncResponsiveOwners();
+    schedule();
+    requestAnimationFrame(resyncResponsiveOwners);
+    setTimeout(() => {
+      resyncResponsiveOwners();
+      schedule();
+    }, 60);
+  }
+
+  const rootObserver = new MutationObserver(records => {
+    if (records.some(record => record.type === 'attributes' && record.attributeName === 'data-screen')) {
+      // P5 creates/removes the mobile trigger on screen ownership changes; CSS
+      // handles breakpoint visibility for both command entry points.
+      resyncResponsiveOwners();
+      schedule();
+    }
+  });
+
+  function boot() {
+    rootObserver.observe(root, {attributes:true,attributeFilter:['data-screen']});
+    window.addEventListener('resize', handleResize, {passive:true});
+    window.visualViewport?.addEventListener?.('resize', handleResize, {passive:true});
+    mobileMedia.addEventListener?.('change', handleResize);
+    if ('ResizeObserver' in window) {
+      widthObserver = new ResizeObserver(() => handleResize());
+      widthObserver.observe(root);
+    }
+    resyncResponsiveOwners();
+    schedule();
+  }
+
+  window.__manuscriptV430P7 = {
+    version:'full-regression-responsive-v1',
+    refresh:schedule,
+    syncResponsive:handleResize,
+  };
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true});
+  else boot();
 })();
 </script>
 </body>
