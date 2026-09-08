@@ -25,7 +25,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Consolidate audited P6 fixes including canonical preview id dedupe
+      - name: Consolidate audited P6 fixes including mobile focus restoration
         shell: bash
         run: |
           python3 -m pip install --quiet pyyaml
@@ -86,6 +86,35 @@ jobs:
           if text.count(old_dedupe)!=1:
             raise SystemExit(f'canonical dedupe anchor count={text.count(old_dedupe)}')
           text=text.replace(old_dedupe,new_dedupe,1)
+
+          old_restore=("  function restoreMobileOrigin(previous) {\n"
+                       "    if (!previous?.origin?.isConnected || !isVisible(previous.origin)) return;\n"
+                       "    const active = document.activeElement;\n"
+                       "    if (active === document.body || active === document.documentElement || !isVisible(active) || previous.root.contains(active)) {\n"
+                       "      previous.origin.focus({preventScroll:true});\n"
+                       "    }\n"
+                       "  }")
+          new_restore=("  function resolveMobileOrigin(previous) {\n"
+                       "    if (previous?.origin?.isConnected && isVisible(previous.origin)) return previous.origin;\n"
+                       "    const selector = previous?.kind === 'add'\n"
+                       "      ? '.mobile-bottom-nav [data-action=\"workflow-content\"]'\n"
+                       "      : previous?.kind === 'style'\n"
+                       "        ? '.mobile-bottom-nav [data-mobile=\"style\"]'\n"
+                       "        : '';\n"
+                       "    if (!selector) return null;\n"
+                       "    return [...document.querySelectorAll(selector)].find(isVisible) || null;\n"
+                       "  }\n\n"
+                       "  function restoreMobileOrigin(previous) {\n"
+                       "    const origin = resolveMobileOrigin(previous);\n"
+                       "    if (!origin) return;\n"
+                       "    const active = document.activeElement;\n"
+                       "    if (active === document.body || active === document.documentElement || !isVisible(active) || previous.root.contains(active)) {\n"
+                       "      origin.focus({preventScroll:true});\n"
+                       "    }\n"
+                       "  }")
+          if text.count(old_restore)!=1:
+            raise SystemExit(f'mobile restoration anchor count={text.count(old_restore)}')
+          text=text.replace(old_restore,new_restore,1)
 
           p.write_text(text,encoding='utf-8')
 
