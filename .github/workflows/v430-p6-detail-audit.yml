@@ -1,0 +1,52 @@
+name: V430 P6 detail audit
+
+on:
+  push:
+    branches: [tmp/v430-p6-a11y]
+    paths:
+      - '.github/workflows/v430-p6-detail-audit.yml'
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: tmp/v430-p6-a11y
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/http.log 2>&1 &
+          for i in {1..30}; do curl -fsS http://127.0.0.1:4173/index.html >/dev/null && exit 0; sleep 1; done
+          exit 1
+      - name: Inspect focus containment and duplicate-id provenance
+        env:
+          MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
+        run: |
+          cat > p6-detail.mjs <<'EOF'
+          import { chromium } from 'playwright';
+          const url=process.env.MANUSCRIPT_URL;
+          const visible=async l=>(await l.count())&&await l.isVisible().catch(()=>false);
+          async function closeModal(page){const l=page.locator('.modal-layer').first();if(await visible(l)){const c=l.locator('[data-action="modal-close"],.modal-close').first();if(await visible(c))await c.click().catch(()=>{});else await page.keyboard.press('Escape');}}
+          async function openEditor(page){await page.goto(url,{waitUntil:'load'});await page.waitForFunction(()=>['landing','home','editor'].includes(document.documentElement.dataset.screen||''),null,{timeout:15000});let s=await page.locator('html').getAttribute('data-screen');if(s==='landing'){await closeModal(page);const h=page.locator('[data-action="home"]:visible').first();if(await h.count())try{await h.click({timeout:4000});}catch{await h.evaluate(n=>n.click());}await page.waitForTimeout(100);s=await page.locator('html').getAttribute('data-screen');}if(s!=='editor'){await closeModal(page);const blank=page.locator('.modal-layer [data-action="onboarding-blank"]:visible').first();if(await blank.count())await blank.click();else{const n=page.locator('[data-action="new"]:visible').first();if(await n.count())await n.click();const b=page.locator('.modal-layer [data-action="onboarding-blank"]:visible').first();if(await b.count())await b.click();}}await page.waitForFunction(()=>document.documentElement.dataset.screen==='editor',null,{timeout:15000});await page.waitForSelector('.cm-content',{timeout:15000});}
+          async function focusCycle(page,root,steps=30){const out=[];for(let i=0;i<steps;i++){await page.keyboard.press('Tab');out.push(await page.evaluate(sel=>{const e=document.activeElement,r=document.querySelector(sel);return{inside:!!(r&&e&&r.contains(e)),tag:e?.tagName||'',cls:String(e?.className||''),action:e?.getAttribute?.('data-action')||'',aria:e?.getAttribute?.('aria-label')||''};},root));}return out;}
+          for(const profile of [{name:'desktop',viewport:{width:1440,height:900}},{name:'mobile',viewport:{width:390,height:844},isMobile:true,hasTouch:true}]){
+            const browser=await chromium.launch({headless:true});const ctx=await browser.newContext({viewport:profile.viewport,isMobile:!!profile.isMobile,hasTouch:!!profile.hasTouch});const page=await ctx.newPage();await openEditor(page);await closeModal(page);
+            const dup=await page.evaluate(()=>[...document.querySelectorAll('#untitled-document')].map((e,i)=>({i,tag:e.tagName,cls:e.className,hidden:!(e.offsetWidth||e.offsetHeight||e.getClientRects().length),parent:e.parentElement?.className||'',grand:e.parentElement?.parentElement?.className||'',html:e.outerHTML.slice(0,500),links:[...document.querySelectorAll('a[href="#untitled-document"]')].length})));
+            console.log(profile.name,'DUPLICATES',JSON.stringify(dup));
+            const pub=page.locator('[data-action="export"]:visible').first();await pub.focus();await page.keyboard.press('Enter');await page.waitForTimeout(160);const modal=page.locator('.modal-layer .modal:visible').first();if(await visible(modal)){const info=await modal.evaluate(m=>({html:m.outerHTML.slice(0,1200),focusables:[...m.querySelectorAll('button,a[href],input,select,textarea,[tabindex]')].filter(e=>{const r=e.getBoundingClientRect(),s=getComputedStyle(e);return r.width>0&&r.height>0&&s.display!=='none'&&s.visibility!=='hidden'&&e.tabIndex>=0}).map(e=>({tag:e.tagName,cls:e.className,action:e.getAttribute('data-action'),aria:e.getAttribute('aria-label'),text:(e.textContent||'').trim().slice(0,80)}))}));console.log(profile.name,'PUBLISH',JSON.stringify(info));console.log(profile.name,'PUBLISH_CYCLE',JSON.stringify(await focusCycle(page,'.modal-layer .modal:visible',40)));await page.keyboard.press('Escape');await page.waitForTimeout(80);}
+            await page.keyboard.press('Control+k');await page.locator('.command-layer .command-palette').first().waitFor({state:'visible'});console.log(profile.name,'COMMAND_CYCLE',JSON.stringify(await focusCycle(page,'.command-layer .command-palette',30)));await page.keyboard.press('Escape');await page.waitForTimeout(80);
+            if(profile.name==='mobile'){const add=page.locator('.mobile-bottom-nav [data-action="workflow-content"]:visible').first();await add.focus();await page.keyboard.press('Enter');await page.waitForTimeout(120);const panel=page.locator('.left-panel:visible').first();if(await visible(panel)){console.log('mobile ADD',JSON.stringify(await panel.evaluate(p=>({role:p.getAttribute('role'),label:p.getAttribute('aria-label'),labelledby:p.getAttribute('aria-labelledby'),focusables:[...p.querySelectorAll('button,a[href],input,select,textarea,[tabindex]')].filter(e=>e.tabIndex>=0).map(e=>({tag:e.tagName,cls:e.className,action:e.getAttribute('data-action'),aria:e.getAttribute('aria-label'),text:(e.textContent||'').trim().slice(0,60)}))}))));console.log('mobile ADD_CYCLE',JSON.stringify(await focusCycle(page,'.left-panel:visible',25)));}
+              await page.keyboard.press('Escape');await page.waitForTimeout(100);console.log('mobile ADD_ESCAPE',JSON.stringify(await page.evaluate(()=>({open:document.querySelector('.workspace')?.classList.contains('left-open'),active:{tag:document.activeElement?.tagName,cls:String(document.activeElement?.className||''),action:document.activeElement?.getAttribute?.('data-action'),aria:document.activeElement?.getAttribute?.('aria-label')}}))));
+              const style=page.locator('.mobile-bottom-nav [data-mobile="style"]:visible').first();await style.focus();await page.keyboard.press('Enter');await page.waitForTimeout(120);const ins=page.locator('.inspector:visible').first();if(await visible(ins)){console.log('mobile STYLE',JSON.stringify(await ins.evaluate(p=>({role:p.getAttribute('role'),label:p.getAttribute('aria-label'),labelledby:p.getAttribute('aria-labelledby'),focusables:[...p.querySelectorAll('button,a[href],input,select,textarea,[tabindex]')].filter(e=>e.tabIndex>=0).map(e=>({tag:e.tagName,cls:e.className,action:e.getAttribute('data-action'),aria:e.getAttribute('aria-label'),text:(e.textContent||'').trim().slice(0,60)}))}))));console.log('mobile STYLE_CYCLE',JSON.stringify(await focusCycle(page,'.inspector:visible',25)));}
+            }
+            await ctx.close();await browser.close();
+          }
+          EOF
+          node p6-detail.mjs
+          rm p6-detail.mjs
