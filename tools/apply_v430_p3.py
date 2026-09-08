@@ -350,6 +350,9 @@ script = r'''
 '''
 
 text = text.replace('</head>', style + '\n</head>', 1)
-text = text.replace('</body>', script + '\n</body>', 1)
+body_pos = text.rfind('</body>')
+if body_pos < 0:
+    raise SystemExit('Final body closing anchor missing')
+text = text[:body_pos] + script + '\n' + text[body_pos:]
 path.write_text(text, encoding='utf-8')
 print('Applied V430-P3 reversible focus mode')
