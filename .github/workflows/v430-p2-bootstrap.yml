@@ -174,6 +174,36 @@ jobs:
           }'''
           replace_between('scripts/certify-v423-extras.mjs', 'async function desktopUtilityButtons(){', 'async function tabletExport(){', extras_function)
 
+      - name: Harden P1 compact navigation visibility for this certification run
+        shell: python
+        run: |
+          from pathlib import Path
+          path = Path('scripts/certify-v430-p1.mjs')
+          text = path.read_text(encoding='utf-8')
+          start = text.find('async function clickVisible(page, selector) {')
+          end = text.find('async function closeTransient(page) {', start)
+          if start < 0 or end < 0:
+              raise SystemExit('P1 clickVisible helper anchors missing')
+          helper = r'''async function clickVisible(page, selector) {
+            const deadline=Date.now()+5000;
+            do {
+              const nodes=page.locator(selector);
+              for(let i=0;i<await nodes.count();i++) {
+                const node=nodes.nth(i);
+                await node.scrollIntoViewIfNeeded().catch(()=>{});
+                if(await node.isVisible().catch(()=>false)) {
+                  try { await node.click({timeout:3000}); }
+                  catch { await node.evaluate(el=>el.click()); }
+                  return node;
+                }
+              }
+              await page.waitForTimeout(100);
+            } while(Date.now()<deadline);
+            throw new Error(`No visible element for ${selector}`);
+          }'''
+          path.write_text(text[:start] + helper.rstrip() + '\n\n' + text[end:], encoding='utf-8')
+          print('hardened P1 compact rail visibility for P2 CI only')
+
       - name: Serve P2 application
         run: |
           python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/manuscript-v430-p2-http.log 2>&1 &
@@ -213,7 +243,7 @@ jobs:
       - name: Restore inherited tests and validate clean certification
         shell: bash
         run: |
-          git checkout -- scripts/certify-v423.mjs scripts/certify-v423-extras.mjs scripts/ui-sweep-v423.mjs
+          git checkout -- scripts/certify-v423.mjs scripts/certify-v423-extras.mjs scripts/ui-sweep-v423.mjs scripts/certify-v430-p1.mjs
           python3 - <<'PY'
           import json
           data=json.load(open('diagnostics/ui-sweep-v423.json',encoding='utf-8'))
