@@ -74,62 +74,66 @@ jobs:
             raise SystemExit(f'P6 contrast-margin anchor count={text.count(contrast_anchor)}')
           text=text.replace(contrast_anchor,contrast_replacement,1)
 
-          restore_anchor='''  function restoreMobileOrigin(previous) {
-    if (!previous?.origin?.isConnected || !isVisible(previous.origin)) return;
-    const active = document.activeElement;
-    if (active === document.body || active === document.documentElement || !isVisible(active) || previous.root.contains(active)) {
-      previous.origin.focus({preventScroll:true});
-    }
-  }
-
-  function enhanceMobileSurface() {
-    if (!mobileMedia.matches) {
-      if (activeMobileSurface) restoreMobileOrigin(activeMobileSurface);
-      activeMobileSurface = null;
-      return;
-    }
-    const surface = visibleMobileSurface();
-    if (!surface) {
-      if (activeMobileSurface) restoreMobileOrigin(activeMobileSurface);
-      activeMobileSurface = null;
-      return;
-    }'''
-          restore_replacement='''  function restoreMobileOrigin(previous) {
-    if (!previous?.origin?.isConnected || !isVisible(previous.origin)) return;
-    const active = document.activeElement;
-    if (active === document.body || active === document.documentElement || !isVisible(active) || previous.root.contains(active)) {
-      previous.origin.focus({preventScroll:true});
-    }
-  }
-
-  function scheduleMobileOriginRestore(previous) {
-    if (!previous?.origin?.isConnected) return;
-    const attempt = () => {
-      if (visibleMobileSurface()) return;
-      restoreMobileOrigin(previous);
-    };
-    requestAnimationFrame(attempt);
-    [40, 100, 180, 230, 320, 480].forEach(delay => setTimeout(attempt, delay));
-  }
-
-  function enhanceMobileSurface() {
-    if (!mobileMedia.matches) {
-      if (activeMobileSurface) {
-        const previous = activeMobileSurface;
-        activeMobileSurface = null;
-        scheduleMobileOriginRestore(previous);
-      }
-      return;
-    }
-    const surface = visibleMobileSurface();
-    if (!surface) {
-      if (activeMobileSurface) {
-        const previous = activeMobileSurface;
-        activeMobileSurface = null;
-        scheduleMobileOriginRestore(previous);
-      }
-      return;
-    }'''
+          restore_anchor='\n'.join([
+            "  function restoreMobileOrigin(previous) {",
+            "    if (!previous?.origin?.isConnected || !isVisible(previous.origin)) return;",
+            "    const active = document.activeElement;",
+            "    if (active === document.body || active === document.documentElement || !isVisible(active) || previous.root.contains(active)) {",
+            "      previous.origin.focus({preventScroll:true});",
+            "    }",
+            "  }",
+            "",
+            "  function enhanceMobileSurface() {",
+            "    if (!mobileMedia.matches) {",
+            "      if (activeMobileSurface) restoreMobileOrigin(activeMobileSurface);",
+            "      activeMobileSurface = null;",
+            "      return;",
+            "    }",
+            "    const surface = visibleMobileSurface();",
+            "    if (!surface) {",
+            "      if (activeMobileSurface) restoreMobileOrigin(activeMobileSurface);",
+            "      activeMobileSurface = null;",
+            "      return;",
+            "    }",
+          ])
+          restore_replacement='\n'.join([
+            "  function restoreMobileOrigin(previous) {",
+            "    if (!previous?.origin?.isConnected || !isVisible(previous.origin)) return;",
+            "    const active = document.activeElement;",
+            "    if (active === document.body || active === document.documentElement || !isVisible(active) || previous.root.contains(active)) {",
+            "      previous.origin.focus({preventScroll:true});",
+            "    }",
+            "  }",
+            "",
+            "  function scheduleMobileOriginRestore(previous) {",
+            "    if (!previous?.origin?.isConnected) return;",
+            "    const attempt = () => {",
+            "      if (visibleMobileSurface()) return;",
+            "      restoreMobileOrigin(previous);",
+            "    };",
+            "    requestAnimationFrame(attempt);",
+            "    [40, 100, 180, 230, 320, 480].forEach(delay => setTimeout(attempt, delay));",
+            "  }",
+            "",
+            "  function enhanceMobileSurface() {",
+            "    if (!mobileMedia.matches) {",
+            "      if (activeMobileSurface) {",
+            "        const previous = activeMobileSurface;",
+            "        activeMobileSurface = null;",
+            "        scheduleMobileOriginRestore(previous);",
+            "      }",
+            "      return;",
+            "    }",
+            "    const surface = visibleMobileSurface();",
+            "    if (!surface) {",
+            "      if (activeMobileSurface) {",
+            "        const previous = activeMobileSurface;",
+            "        activeMobileSurface = null;",
+            "        scheduleMobileOriginRestore(previous);",
+            "      }",
+            "      return;",
+            "    }",
+          ])
           if text.count(restore_anchor)!=1:
             raise SystemExit(f'P6 mobile focus restoration anchor count={text.count(restore_anchor)}')
           text=text.replace(restore_anchor,restore_replacement,1)
