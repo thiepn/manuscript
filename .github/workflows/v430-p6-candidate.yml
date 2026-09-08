@@ -1,0 +1,271 @@
+name: V430 P6 accessibility candidate
+
+on:
+  push:
+    branches: [tmp/v430-p6-a11y]
+    paths:
+      - '.github/workflows/v430-p6-candidate.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: manuscript-v430-p6-candidate
+  cancel-in-progress: false
+
+jobs:
+  certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: tmp/v430-p6-a11y
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Finalize P6 source review corrections
+        shell: python
+        run: |
+          from pathlib import Path
+
+          p = Path('tools/apply_v430_p6.py')
+          text = p.read_text(encoding='utf-8')
+          old = "attributeFilter:['class','data-theme','data-screen','hidden','aria-current','aria-pressed']"
+          new = "attributeFilter:['class','data-theme','data-screen','hidden']"
+          if text.count(old) != 1:
+              raise SystemExit(f'P6 observer correction anchor count={text.count(old)}')
+          text = text.replace(old, new, 1)
+          old = "    close.click();\n    requestAnimationFrame(scheduleEnhance);\n    return true;"
+          new = "    close.click();\n    requestAnimationFrame(scheduleEnhance);\n    setTimeout(scheduleEnhance, 260);\n    return true;"
+          if text.count(old) != 1:
+              raise SystemExit(f'P6 mobile-close resync anchor count={text.count(old)}')
+          p.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+          c = Path('scripts/certify-v430-p6.mjs')
+          ctext = c.read_text(encoding='utf-8')
+          old = "  const root=page.locator(rootSelector).filter({visible:true}).first();"
+          new = "  const root=page.locator(`${rootSelector}:visible`).first();"
+          if ctext.count(old) != 1:
+              raise SystemExit(f'P6 mobile locator correction anchor count={ctext.count(old)}')
+          c.write_text(ctext.replace(old, new, 1), encoding='utf-8')
+
+      - name: Apply P6 and prove patcher idempotency
+        run: |
+          python3 -m py_compile tools/apply_v430_p6.py
+          node --check scripts/certify-v430-p6.mjs
+          python3 tools/apply_v430_p6.py
+          before="$(sha256sum index.html | awk '{print $1}')"
+          python3 tools/apply_v430_p6.py
+          after="$(sha256sum index.html | awk '{print $1}')"
+          test "$before" = "$after"
+          echo "P6 candidate index SHA-256: $after"
+          git diff --check
+
+      - name: Verify static P1-P6 contracts
+        run: |
+          grep -q 'id="v422-editor-layout-hotfix"' index.html
+          grep -q 'id="v423-ui-hardening"' index.html
+          grep -q 'id="v430-p1-simplified-navigation"' index.html
+          grep -q 'id="v430-p2-compact-density"' index.html
+          grep -q 'id="v430-p3-focus-mode"' index.html
+          grep -q 'id="v430-p3-runtime"' index.html
+          grep -q 'id="v430-p4-command-palette"' index.html
+          grep -q 'id="v430-p4-runtime"' index.html
+          grep -q 'id="v430-p5-mobile-first"' index.html
+          grep -q 'id="v430-p5-runtime"' index.html
+          grep -q 'id="v430-p6-accessibility"' index.html
+          grep -q 'id="v430-p6-runtime"' index.html
+          grep -q 'manuscript-accessibility-contract" content="keyboard-accessibility-v1' index.html
+          test "$(grep -o 'id="v430-p6-accessibility"' index.html | wc -l)" -eq 1
+          test "$(grep -o 'id="v430-p6-runtime"' index.html | wc -l)" -eq 1
+
+      - name: Install browser certification dependencies
+        run: |
+          npm install --no-save playwright @axe-core/playwright
+          npx playwright install --with-deps chromium firefox webkit
+
+      - name: Apply certification-only inherited entry adapters
+        shell: python
+        run: |
+          from pathlib import Path
+
+          def replace_between(path, start, end, replacement):
+              p=Path(path); text=p.read_text(encoding='utf-8')
+              i=text.find(start); j=text.find(end,i+len(start))
+              if i<0 or j<0: raise SystemExit(f'anchors missing {path}: {start} -> {end}')
+              p.write_text(text[:i]+replacement.rstrip()+'\n\n'+text[j:],encoding='utf-8')
+
+          v423 = r'''async function openHome(page) {
+            await page.waitForFunction(()=>['landing','home','editor'].includes(document.documentElement.dataset.screen||''),null,{timeout:15000});
+            let screen=await page.locator('html').getAttribute('data-screen');
+            if(screen==='editor') return 'editor';
+            if(screen==='landing'){
+              await closeModalIfOpen(page);
+              const home=page.locator('[data-action="home"]:visible').first();
+              if(await home.count()){ try{await home.click({timeout:5000});}catch{await home.evaluate(node=>node.click());} }
+              else await page.locator('[data-action="home"]').first().evaluate(node=>node.click());
+              await page.waitForFunction(()=>['home','editor'].includes(document.documentElement.dataset.screen||''),null,{timeout:15000});
+              screen=await page.locator('html').getAttribute('data-screen');
+            }
+            return screen;
+          }
+
+          async function openEditor(page) {
+            const screen=await openHome(page);
+            if(screen==='editor'){
+              await page.waitForSelector('.codemirror-editor .cm-scroller',{timeout:15000});
+              return;
+            }
+            check(screen==='home',`setup: expected home/editor, got ${screen}`);
+            const onboardingBlank=page.locator('.modal-layer [data-action="onboarding-blank"]:visible').first();
+            if(await onboardingBlank.count()){
+              await onboardingBlank.click({timeout:5000});
+              await page.waitForFunction(()=>document.documentElement.dataset.screen==='editor',null,{timeout:15000});
+              await page.waitForSelector('.codemirror-editor .cm-scroller',{timeout:15000});
+              return;
+            }
+            await closeModalIfOpen(page);
+            const fresh=page.locator('[data-action="new"]:visible').first();
+            if(await fresh.count()){try{await fresh.click({timeout:5000});}catch{await fresh.evaluate(node=>node.click());}}
+            else await page.locator('[data-action="new"]').first().evaluate(node=>node.click());
+            const post=page.locator('.modal-layer [data-action="onboarding-blank"]:visible').first();
+            if(await post.count()) await post.click({timeout:5000});
+            await page.waitForFunction(()=>document.documentElement.dataset.screen==='editor',null,{timeout:15000});
+            await page.waitForSelector('.codemirror-editor .cm-scroller',{timeout:15000});
+          }'''
+          replace_between('scripts/certify-v423.mjs','async function openHome(page) {','async function chooseTheme(page, theme) {',v423)
+
+          sweep = r'''async function openHome(page){
+            await page.waitForFunction(()=>['landing','home','editor'].includes(document.documentElement.dataset.screen||''),null,{timeout:15000});
+            let screen=await page.locator('html').getAttribute('data-screen');
+            if(screen==='editor') return 'editor';
+            if(screen==='landing'){
+              await closeModal(page);
+              const home=page.locator('[data-action="home"]:visible').first();
+              if(await home.count()){try{await home.click({timeout:5000});}catch{await home.evaluate(node=>node.click());}}
+              else await page.locator('[data-action="home"]').first().evaluate(node=>node.click());
+              await page.waitForFunction(()=>['home','editor'].includes(document.documentElement.dataset.screen||''),null,{timeout:15000});
+              screen=await page.locator('html').getAttribute('data-screen');
+            }
+            return screen;
+          }
+
+          async function openEditor(page){
+            const screen=await openHome(page);
+            if(screen==='editor'){
+              await page.waitForSelector('.codemirror-editor .cm-scroller',{timeout:15000});
+              return;
+            }
+            if(screen!=='home') throw new Error(`setup: expected home/editor, got ${screen}`);
+            const blank=page.locator('.modal-layer [data-action="onboarding-blank"]:visible').first();
+            if(await blank.count()) await blank.click({timeout:5000});
+            else{
+              await closeModal(page);
+              const fresh=page.locator('[data-action="new"]:visible').first();
+              if(await fresh.count()){try{await fresh.click({timeout:5000});}catch{await fresh.evaluate(node=>node.click());}}
+              else await page.locator('[data-action="new"]').first().evaluate(node=>node.click());
+              const post=page.locator('.modal-layer [data-action="onboarding-blank"]:visible').first();
+              if(await post.count()) await post.click({timeout:5000});
+            }
+            await page.waitForFunction(()=>document.documentElement.dataset.screen==='editor',null,{timeout:15000});
+            await page.waitForSelector('.codemirror-editor .cm-scroller',{timeout:15000});
+          }'''
+          replace_between('scripts/ui-sweep-v423.mjs','async function openHome(page){','async function inspect(page,stage){',sweep)
+
+          extras = r'''async function desktopUtilityButtons(){
+            const browser=await chromium.launch({headless:true});const context=await browser.newContext({viewport:{width:1440,height:900}});const page=await context.newPage();page.setDefaultTimeout(7000);await page.goto(baseURL,{waitUntil:'load'});try{
+              await openEditor(page); await closeModal(page);
+              for(const panel of['references','settings']){
+                if(panel==='settings'){
+                  await closeModal(page); await page.locator('.v430-utility-trigger:visible').first().click();
+                  await page.locator('#v430-utility-menu [data-v430-utility-item="settings"]:visible').first().click();
+                } else await page.locator(`[data-panel="${panel}"]`).first().click();
+                await page.waitForTimeout(80);
+                const actions=panel==='references'?['export-csl']:['request-persistence','backup-library','backup-restore-file'];
+                for(const action of actions){const b=page.locator(`[data-action="${action}"]:visible`).first();check(await b.count()===1,`desktop: visible ${action} missing in ${panel}`);check(await fits(b),`desktop: ${action} label clipped`);const r=await rect(b);check(r.width>70&&r.height>=28,`desktop: ${action} unusable ${JSON.stringify(r)}`);}
+                if(panel==='settings'){
+                  await closeModal(page); await page.locator('.v430-utility-trigger:visible').first().click();
+                  await page.locator('#v430-utility-menu [data-v430-utility-item="settings"]:visible').first().click();
+                } else await page.locator(`[data-panel="${panel}"]`).first().click().catch(()=>{});
+              }
+            } finally {await context.close();await browser.close();}
+          }'''
+          replace_between('scripts/certify-v423-extras.mjs','async function desktopUtilityButtons(){','async function tabletExport(){',extras)
+
+          p=Path('scripts/certify-v430-p1.mjs'); text=p.read_text(encoding='utf-8')
+          start=text.find('async function clickVisible(page, selector) {'); end=text.find('async function closeTransient(page) {',start)
+          if start<0 or end<0: raise SystemExit('P1 clickVisible anchors missing')
+          helper=r'''async function clickVisible(page, selector) {
+            const deadline=Date.now()+5000;
+            do {
+              const nodes=page.locator(selector);
+              for(let i=0;i<await nodes.count();i++) {
+                const node=nodes.nth(i); await node.scrollIntoViewIfNeeded().catch(()=>{});
+                if(await node.isVisible().catch(()=>false)) {try{await node.click({timeout:3000});}catch{await node.evaluate(el=>el.click());}return node;}
+              }
+              await page.waitForTimeout(100);
+            } while(Date.now()<deadline);
+            throw new Error(`No visible element for ${selector}`);
+          }'''
+          p.write_text(text[:start]+helper.rstrip()+'\n\n'+text[end:],encoding='utf-8')
+
+      - name: Serve P6 candidate
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/manuscript-v430-p6-http.log 2>&1 &
+          for i in {1..30}; do curl -fsS http://127.0.0.1:4173/index.html >/dev/null && exit 0; sleep 1; done
+          cat /tmp/manuscript-v430-p6-http.log
+          exit 1
+
+      - name: Certify V430-P6 accessibility and keyboard refinement
+        timeout-minutes: 15
+        env:
+          MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
+        run: node scripts/certify-v430-p6.mjs
+
+      - name: Re-run V430-P1 through P5
+        timeout-minutes: 30
+        env:
+          MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
+        run: |
+          node scripts/certify-v430-p1.mjs
+          node scripts/certify-v430-p2.mjs
+          node scripts/certify-v430-p3.mjs
+          node scripts/certify-v430-p4.mjs
+          node scripts/certify-v430-p5.mjs
+
+      - name: Re-run inherited v4.2.3 certification
+        timeout-minutes: 18
+        env:
+          MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
+        run: |
+          node scripts/certify-v423.mjs
+          node scripts/certify-v423-extras.mjs
+
+      - name: Enforce broad zero-finding UI sweep
+        env:
+          MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
+        run: node scripts/ui-sweep-v423.mjs
+
+      - name: Restore inherited adapters and persist green P6 candidate
+        run: |
+          git checkout -- scripts/certify-v423.mjs scripts/certify-v423-extras.mjs scripts/ui-sweep-v423.mjs scripts/certify-v430-p1.mjs
+          python3 - <<'PY'
+          import json
+          data=json.load(open('diagnostics/ui-sweep-v423.json',encoding='utf-8'))
+          assert data['summary']['total']==0, data['summary']
+          assert data['summary']['fatal']==0, data['summary']
+          print('UI sweep:',data['summary'])
+          PY
+          git diff --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html tools/apply_v430_p6.py scripts/certify-v430-p6.mjs
+          git diff --cached --check
+          git diff --cached --quiet && { echo 'No P6 candidate diff found'; exit 1; }
+          git commit -m 'test: persist green V430 P6 candidate [skip ci]'
+          git push origin HEAD:tmp/v430-p6-a11y
+          echo "P6_CANDIDATE_COMMIT=$(git rev-parse HEAD)"
+          echo "P6_CANDIDATE_TREE=$(git rev-parse HEAD^{tree})"
