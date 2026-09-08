@@ -1,0 +1,70 @@
+name: V430 P6 command palette contrast debug
+
+on:
+  push:
+    branches: [tmp/v430-p6-a11y]
+    paths:
+      - '.github/workflows/v430-p6-command-contrast-debug.yml'
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: tmp/v430-p6-a11y
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build latest P6 candidate
+        shell: python
+        run: |
+          from pathlib import Path
+          p=Path('tools/apply_v430_p6.py'); text=p.read_text(encoding='utf-8')
+          pairs=[
+            ("attributeFilter:['class','data-theme','data-screen','hidden','aria-current','aria-pressed']","attributeFilter:['class','data-theme','data-screen','hidden']"),
+            ("    close.click();\n    requestAnimationFrame(scheduleEnhance);\n    return true;","    close.click();\n    requestAnimationFrame(scheduleEnhance);\n    setTimeout(scheduleEnhance, 260);\n    return true;"),
+            ("    if text.count('</head>') != 1 or text.count('</body>') != 1:\n        raise SystemExit(\"Expected unique document closing anchors\")","    if '</head>' not in text or '</body>' not in text:\n        raise SystemExit(\"Document closing anchors missing\")"),
+          ]
+          for old,new in pairs:
+            if text.count(old)!=1: raise SystemExit(f'anchor mismatch: {old[:60]}')
+            text=text.replace(old,new,1)
+          css="#command-search::placeholder {\n  color: inherit !important;\n  opacity: 1 !important;\n}"
+          css2=css+"\n\n.v430-command-shortcut,\nbutton.v430-command-trigger {\n  opacity: 1 !important;\n}"
+          if text.count(css)!=1: raise SystemExit('command opacity CSS anchor mismatch')
+          text=text.replace(css,css2,1)
+          old="    document.querySelectorAll(CONTRAST_SELECTORS).forEach(el => ensureContrast(el));"
+          new="    document.querySelectorAll(CONTRAST_SELECTORS).forEach(el =>\n      ensureContrast(el, el.matches('.v430-command-shortcut') ? 5.0 : 4.6)\n    );"
+          if text.count(old)!=1: raise SystemExit('contrast margin anchor mismatch')
+          p.write_text(text.replace(old,new,1),encoding='utf-8')
+      - run: |
+          python3 tools/apply_v430_p6.py
+          npm install --no-save playwright @axe-core/playwright
+          npx playwright install --with-deps chromium
+      - run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/http.log 2>&1 &
+          for i in {1..30}; do curl -fsS http://127.0.0.1:4173/index.html >/dev/null && exit 0; sleep 1; done
+          exit 1
+      - name: Print command palette contrast evidence
+        env:
+          MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
+        run: |
+          cat > p6-command-contrast.mjs <<'EOF'
+          import { chromium } from 'playwright';
+          import AxeBuilder from '@axe-core/playwright';
+          const url=process.env.MANUSCRIPT_URL;
+          const visible=async l=>(await l.count())>0&&await l.isVisible().catch(()=>false);
+          async function closeModal(page){const l=page.locator('.modal-layer').first();if(await visible(l)){const c=l.locator('[data-action="modal-close"],.modal-close').first();if(await visible(c))await c.click().catch(()=>{});else await page.keyboard.press('Escape');await page.waitForTimeout(70);}}
+          async function clickVisible(page,sel){for(let i=0;i<await page.locator(sel).count();i++){const n=page.locator(sel).nth(i);if(await n.isVisible().catch(()=>false)){try{await n.click({timeout:3000});}catch{await n.evaluate(e=>e.click());}return;}}throw new Error(`missing ${sel}`);}
+          async function openEditor(page){await page.goto(url,{waitUntil:'load'});await page.waitForFunction(()=>['landing','home','editor'].includes(document.documentElement.dataset.screen||''),null,{timeout:15000});let s=await page.locator('html').getAttribute('data-screen');if(s==='landing'){await closeModal(page);await clickVisible(page,'[data-action="home"]');await page.waitForFunction(()=>['home','editor'].includes(document.documentElement.dataset.screen||''),null,{timeout:15000});s=await page.locator('html').getAttribute('data-screen');}if(s!=='editor'){await closeModal(page);const b=page.locator('.modal-layer [data-action="onboarding-blank"]:visible').first();if(await b.count())await b.click();else{await clickVisible(page,'[data-action="new"]');const p=page.locator('.modal-layer [data-action="onboarding-blank"]:visible').first();if(await p.count())await p.click();}}await page.waitForFunction(()=>document.documentElement.dataset.screen==='editor',null,{timeout:15000});await page.waitForSelector('.cm-content',{timeout:15000});}
+          const browser=await chromium.launch({headless:true});const ctx=await browser.newContext({viewport:{width:1440,height:900}});const page=await ctx.newPage();await openEditor(page);await closeModal(page);await page.waitForTimeout(300);
+          await page.locator('.cm-content').first().focus();await page.keyboard.press('Control+k');const palette=page.locator('.command-layer .command-palette:visible').first();await palette.waitFor({state:'visible'});await page.waitForTimeout(700);await page.evaluate(()=>window.__manuscriptV430P6?.refresh?.());await page.waitForTimeout(400);
+          const axe=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa','wcag22aa']).analyze();
+          const serious=axe.violations.filter(v=>['serious','critical'].includes(v.impact));
+          console.log('SERIOUS',JSON.stringify(serious.map(v=>({id:v.id,impact:v.impact,count:v.nodes.length,targets:v.nodes.map(n=>n.target)}))));
+          for(const v of serious){for(const n of v.nodes){console.log('NODE',v.id,JSON.stringify(n.target));console.log('HTML',n.html);console.log('SUMMARY',n.failureSummary);const sel=n.target.join(' ');const d=await page.locator(sel).first().evaluate(el=>{const chain=[];for(let x=el;x&&chain.length<7;x=x.parentElement){const s=getComputedStyle(x);chain.push({tag:x.tagName,id:x.id,cls:String(x.className||''),color:s.color,bg:s.backgroundColor,opacity:s.opacity,filter:s.filter,fontSize:s.fontSize,fontWeight:s.fontWeight,inline:x.getAttribute('style')||''});}return{outer:el.outerHTML.slice(0,800),chain};}).catch(e=>({error:String(e)}));console.log('DETAIL',JSON.stringify(d));}}
+          console.log('P6_OVERRIDES',await page.locator('[data-v430-p6-contrast="true"]:visible').evaluateAll(nodes=>nodes.map(el=>({tag:el.tagName,cls:String(el.className||''),text:(el.textContent||'').trim().slice(0,80),style:el.getAttribute('style')||'',opacity:getComputedStyle(el).opacity,color:getComputedStyle(el).color,bg:getComputedStyle(el).backgroundColor}))));
+          await ctx.close();await browser.close();
+          EOF
+          node p6-command-contrast.mjs
