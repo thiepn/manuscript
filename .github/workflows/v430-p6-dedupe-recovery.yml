@@ -71,18 +71,18 @@ jobs:
             raise SystemExit(f'contrast selector anchor count={text.count(selector_anchor)}')
           text=text.replace(selector_anchor,selector_new,1)
 
-          old_dedupe="""      const visible = group.filter(isVisible);
-      const hidden = group.filter(node => !isVisible(node));
-      if (!visible.length || !hidden.length) continue;
-      const keeper = visible[0];"""
-          new_dedupe="""      // Parallel document render clones may both keep non-zero boxes on mobile.
-      // Preserve the canonical paginated preview copy, not whichever clone CSS happens
-      // to report as visible first.
-      const score = node =>
-        (node.closest('.page-content.doc') ? 100 : 0) +
-        (node.closest('#preview-scroll') ? 50 : 0) +
-        (isVisible(node) ? 10 : 0);
-      const keeper = [...group].sort((a, b) => score(b) - score(a))[0];"""
+          old_dedupe=("      const visible = group.filter(isVisible);\n"
+                      "      const hidden = group.filter(node => !isVisible(node));\n"
+                      "      if (!visible.length || !hidden.length) continue;\n"
+                      "      const keeper = visible[0];")
+          new_dedupe=("      // Parallel document render clones may both keep non-zero boxes on mobile.\n"
+                      "      // Preserve the canonical paginated preview copy, not whichever clone CSS happens\n"
+                      "      // to report as visible first.\n"
+                      "      const score = node =>\n"
+                      "        (node.closest('.page-content.doc') ? 100 : 0) +\n"
+                      "        (node.closest('#preview-scroll') ? 50 : 0) +\n"
+                      "        (isVisible(node) ? 10 : 0);\n"
+                      "      const keeper = [...group].sort((a, b) => score(b) - score(a))[0];")
           if text.count(old_dedupe)!=1:
             raise SystemExit(f'canonical dedupe anchor count={text.count(old_dedupe)}')
           text=text.replace(old_dedupe,new_dedupe,1)
