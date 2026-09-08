@@ -131,6 +131,7 @@ html[data-screen="editor"] .v430-focus-trigger[aria-pressed="true"] {
   }
 
   html[data-screen="editor"][data-v430-focus="true"] .main-stage {
+    grid-column: 1 / -1 !important;
     min-width: 0;
     width: 100%;
   }
