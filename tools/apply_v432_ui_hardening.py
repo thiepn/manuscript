@@ -21,6 +21,9 @@ V432_STYLE = '''
 @media(max-width:767px) and (pointer:coarse){
   .toolbar .icon-btn{width:42px;min-width:42px;min-height:42px}
 }
+@media(max-width:380px){
+  .modal,.modal.wide{max-height:calc(100dvh - 8px - env(safe-area-inset-top,0px))!important}
+}
 </style>
 '''
 
@@ -35,8 +38,6 @@ def replace_version(text: str, old: str, new: str, label: str) -> str:
 
 
 def remove_head_escape(text: str, style_id: str) -> str:
-    # The broken source contains the literal two-character token "\\n" directly
-    # before each named style, not an actual newline. Remove only those exact tokens.
     marker = f'<style id="{style_id}">'
     bad = '\\n' + marker
     if bad in text:
@@ -115,6 +116,7 @@ Released: 2026-09-09
 - Removes two literal `\\n` tokens that caused Chromium to terminate `<head>` early, reparent later style/meta nodes into `<body>`, and render a visible strip above the app.
 - Reserves fixed mobile bottom-navigation height so editor and preview content never extend under navigation.
 - Enlarges compact coarse-pointer actions and restores mobile toolbar target width while retaining desktop density.
+- Keeps bottom-sheet modals within very small phone viewports, including while their entrance transition is settling.
 - Retains the v4.3.1 Markdown learning examples and publishing behavior.
 
 ## Verification
