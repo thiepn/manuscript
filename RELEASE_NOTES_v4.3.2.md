@@ -8,6 +8,7 @@ Released: 2026-09-09
 - Reserves fixed mobile bottom-navigation height so editor and preview content never extend under navigation.
 - Enlarges compact coarse-pointer actions and restores mobile toolbar target width while retaining desktop density.
 - Keeps bottom-sheet modals within very small phone viewports, including while their entrance transition is settling.
+- Corrects Pages preview fit/zoom alignment so scaled pages remain centered and fully visible instead of being displaced to the right, especially on phones.
 - Retains the v4.3.1 Markdown learning examples and publishing behavior.
 
 ## Verification
@@ -16,4 +17,4 @@ Certified with the legacy multi-viewport sweep and a deeper Chromium audit cover
 
 Canonical standalone HTML SHA-256:
 
-`23e110fbc28f013a05bd94a0b196b30e76d74d900883403ad67d1734b2a1a9db`
+`d3da733c3d87dc15b5e38c596a182eaf0d0d28b76483c88342710c74e305eeab`
