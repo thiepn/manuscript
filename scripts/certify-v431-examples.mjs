@@ -6,6 +6,7 @@ const sw = await fs.readFile('sw.js', 'utf8');
 const digest = (await fs.readFile('V431_SHA256.txt', 'utf8')).trim();
 const failures = [];
 const check = (condition, message) => { if (!condition) failures.push(message); };
+const countText = (text, needle) => text.split(needle).length - 1;
 
 const examples = [
   ['markdown-basics', 'Markdown Basics', ['# Markdown Basics', '**bold**', '[Markdown Guide]', '~~strikethrough~~']],
@@ -20,6 +21,8 @@ check(html.includes("exports.RELEASE_NAME = 'Manuscript v4.3.1 Stable';"), 'RELE
 check(html.includes("exports.RELEASE_PHASE = 'V431 — Markdown Learning Examples';"), 'V431 release phase missing');
 check(html.includes('manuscript-learning-contract" content="markdown-examples-v1'), 'learning contract missing');
 check(html.includes('New to Markdown?'), 'Template Gallery learning hint missing');
+check(!html.includes('{#sec-'), 'unsupported custom heading-attribute lesson remains');
+check(!html.includes('Heading anchors'), 'unsupported heading-anchor lesson remains');
 check(sw.includes('`${CACHE_PREFIX}v4.3.1`'), 'service-worker cache not bumped to v4.3.1');
 check(/^[a-f0-9]{64}$/.test(digest), 'V431_SHA256.txt is invalid');
 
@@ -91,13 +94,10 @@ if (process.env.MANUSCRIPT_URL) {
         check(await page.locator('#flow-document .math-display').count() >= 2, 'browser: display math missing');
       }
       if (id === 'manuscript-publishing-extras') {
-        const frontMatterHeading = page.locator('#flow-document #sec-frontmatter');
-        const generatedHeading = page.locator('#flow-document #sec-generated');
-        const frontMatterLinks = page.locator('#flow-document a[href="#sec-frontmatter"]');
-        const generatedLinks = page.locator('#flow-document a[href="#sec-generated"]');
-        check(await frontMatterHeading.count() === 1, 'browser: explicit front-matter heading anchor missing');
-        check(await generatedHeading.count() === 1, 'browser: explicit generated-elements heading anchor missing');
-        check(await frontMatterLinks.count() >= 1 && await generatedLinks.count() >= 1, 'browser: generated TOC anchor links missing');
+        check(!source.includes('{#sec-'), 'browser: unsupported custom heading syntax remains in source');
+        check(!preview.includes('[[toc]]'), 'browser: TOC directive leaked as literal preview text');
+        check(countText(preview, 'Front matter') >= 2, 'browser: generated TOC did not include Front matter');
+        check(countText(preview, 'Generated elements') >= 2, 'browser: generated TOC did not include Generated elements');
         check(await page.locator('#flow-document .callout').count() >= 2, 'browser: callouts missing');
       }
       check(errors.length === 0, `browser: ${id} page errors: ${errors.join(' | ')}`);
