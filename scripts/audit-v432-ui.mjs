@@ -30,15 +30,36 @@ async function closeModal(page) {
   const layer = page.locator('.modal-layer').first();
   if (!await visible(layer)) return;
   const close = layer.locator('[data-action="modal-close"], .modal-close').first();
-  if (await visible(close)) await close.click(); else await page.keyboard.press('Escape');
-  await layer.waitFor({ state: 'detached', timeout: 3000 }).catch(() => {});
+  if (await visible(close)) await close.click({ timeout: 5000 }); else await page.keyboard.press('Escape');
+  await layer.waitFor({ state: 'detached', timeout: 5000 }).catch(async () => {
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(100);
+  });
 }
 
 async function goHome(page) {
   await closeModal(page);
+  let screen = await page.locator('html').getAttribute('data-screen');
+  if (screen === 'home') return;
   const home = page.locator('[data-action="home"]:visible').first();
-  if (await visible(home)) await home.click();
-  await page.waitForFunction(() => document.documentElement.dataset.screen === 'home', null, { timeout: 10000 });
+  if (await visible(home)) await home.click({ timeout: 5000 });
+  else if (screen === 'landing') {
+    const fallback = page.locator('[data-action="home"]').first();
+    if (await fallback.count()) await fallback.click({ timeout: 5000, force: true });
+  }
+  try {
+    await page.waitForFunction(() => document.documentElement.dataset.screen === 'home', null, { timeout: 8000 });
+  } catch {
+    // A fresh navigation removes any transient modal/state race without preserving profile state.
+    await page.goto(baseURL, { waitUntil: 'load', timeout: 45000 });
+    await closeModal(page);
+    screen = await page.locator('html').getAttribute('data-screen');
+    if (screen !== 'home') {
+      const retry = page.locator('[data-action="home"]').first();
+      if (await retry.count()) await retry.click({ timeout: 5000, force: true });
+    }
+    await page.waitForFunction(() => document.documentElement.dataset.screen === 'home', null, { timeout: 10000 });
+  }
   await closeModal(page);
 }
 
@@ -46,7 +67,9 @@ async function openTemplates(page) {
   const button = page.locator('[data-action="templates"]:visible').first();
   if (!await visible(button)) throw new Error('Visible Templates trigger not found');
   await button.click();
-  await page.locator('.modal-layer .modal').waitFor({ state: 'visible' });
+  await page.locator('.modal-layer .modal').waitFor({ state: 'visible', timeout: 8000 });
+  // Let the short modal entrance animation finish before geometry/screenshots are sampled.
+  await page.waitForTimeout(240);
 }
 
 async function openLearningExample(page, id = 'markdown-basics') {
@@ -56,12 +79,11 @@ async function openLearningExample(page, id = 'markdown-basics') {
   await use.click();
   await page.waitForFunction(() => document.documentElement.dataset.screen === 'editor', null, { timeout: 10000 });
   await page.waitForSelector('.codemirror-editor .cm-scroller', { timeout: 10000 });
-  await page.waitForTimeout(150);
+  await page.waitForTimeout(180);
 }
 
 async function screenshot(page, profile, stage) {
-  const file = path.join(outDir, `${profile}-${stage}.png`);
-  await page.screenshot({ path: file, fullPage: false });
+  await page.screenshot({ path: path.join(outDir, `${profile}-${stage}.png`), fullPage: false });
 }
 
 async function measure(page) {
@@ -85,15 +107,27 @@ async function measure(page) {
     const workspace = sel('.workspace');
     const nav = sel('.mobile-bottom-nav');
     const cards = all('.template-card');
-    const learning = all('.template-card').filter(card => /Markdown Basics|Lists, Tasks|Code, Math|Manuscript Publishing Extras/.test(card.textContent || ''));
+    const learning = cards.filter(card => /Markdown Basics|Lists, Tasks|Code, Math|Manuscript Publishing Extras/.test(card.textContent || ''));
     const touchButtons = all('button').map(el => ({ text: (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 80), className: el.className, ...rect(el) }));
     const modalParts = modal ? {
       modal: rect(modal),
-      head: sel('.modal-head') && shown(sel('.modal-head')) ? rect(sel('.modal-head')) : null,
-      body: sel('.modal-body') && shown(sel('.modal-body')) ? { ...rect(sel('.modal-body')), scrollHeight: sel('.modal-body').scrollHeight, clientHeight: sel('.modal-body').clientHeight, scrollWidth: sel('.modal-body').scrollWidth, clientWidth: sel('.modal-body').clientWidth } : null,
-      foot: sel('.modal-foot') && shown(sel('.modal-foot')) ? { ...rect(sel('.modal-foot')), scrollWidth: sel('.modal-foot').scrollWidth, clientWidth: sel('.modal-foot').clientWidth } : null,
+      opacity: Number(getComputedStyle(modal).opacity || 1),
+      head: modal.querySelector('.modal-head') && shown(modal.querySelector('.modal-head')) ? rect(modal.querySelector('.modal-head')) : null,
+      body: modal.querySelector('.modal-body') && shown(modal.querySelector('.modal-body')) ? { ...rect(modal.querySelector('.modal-body')), scrollHeight: modal.querySelector('.modal-body').scrollHeight, clientHeight: modal.querySelector('.modal-body').clientHeight, scrollWidth: modal.querySelector('.modal-body').scrollWidth, clientWidth: modal.querySelector('.modal-body').clientWidth } : null,
+      foot: modal.querySelector('.modal-foot') && shown(modal.querySelector('.modal-foot')) ? { ...rect(modal.querySelector('.modal-foot')), scrollWidth: modal.querySelector('.modal-foot').scrollWidth, clientWidth: modal.querySelector('.modal-foot').clientWidth } : null,
     } : null;
     const title = sel('.doc-title');
+    const bodyTextNodes = [...document.body.childNodes]
+      .filter(node => node.nodeType === Node.TEXT_NODE && (node.textContent || '').trim())
+      .map(node => ({ text: node.textContent, trimmed: (node.textContent || '').trim().slice(0, 200) }));
+    const bodyChildren = [...document.body.childNodes].slice(0, 12).map(node => ({
+      type: node.nodeType,
+      name: node.nodeName,
+      text: node.nodeType === Node.TEXT_NODE ? (node.textContent || '').slice(0, 120) : '',
+      id: node.nodeType === Node.ELEMENT_NODE ? node.id || '' : '',
+      className: node.nodeType === Node.ELEMENT_NODE ? String(node.className || '').slice(0, 120) : '',
+    }));
+    const topElement = document.elementFromPoint(Math.min(8, vw - 1), Math.min(8, vh - 1));
     return {
       vw, vh,
       root: { scrollWidth: document.documentElement.scrollWidth, clientWidth: document.documentElement.clientWidth, scrollHeight: document.documentElement.scrollHeight },
@@ -108,6 +142,10 @@ async function measure(page) {
       buttons: touchButtons,
       docTitle: title && shown(title) ? { ...rect(title), scrollWidth: title.scrollWidth, clientWidth: title.clientWidth, value: title.value } : null,
       focusables: all('button:not(:disabled),input:not(:disabled),select:not(:disabled),textarea:not(:disabled),a[href],[tabindex]:not([tabindex="-1"])').length,
+      bodyTextNodes,
+      bodyChildren,
+      bodyTextStart: (document.body.innerText || '').slice(0, 240),
+      topElement: topElement ? { tag: topElement.tagName, id: topElement.id || '', className: String(topElement.className || ''), text: (topElement.textContent || '').trim().slice(0, 160) } : null,
     };
   });
 }
@@ -115,10 +153,12 @@ async function measure(page) {
 function inspect(profile, stage, m) {
   const p = profile.name;
   if (m.root.scrollWidth > m.vw + 2) add(p, stage, 'high', 'ROOT_X_OVERFLOW', 'Root document overflows horizontally.', { scrollWidth: m.root.scrollWidth, viewport: m.vw });
+  if (m.bodyTextNodes.length) add(p, stage, 'high', 'STRAY_ROOT_TEXT', 'Unexpected direct text node is rendered at the body root.', { nodes: m.bodyTextNodes, children: m.bodyChildren, bodyTextStart: m.bodyTextStart, topElement: m.topElement });
 
   if (m.modal) {
     const r = m.modal.modal;
     if (r.left < -1 || r.right > m.vw + 1 || r.top < -1 || r.bottom > m.vh + 1) add(p, stage, 'high', 'MODAL_CLIPPED', 'Modal extends outside the viewport.', r);
+    if (m.modal.opacity < 0.98) add(p, stage, 'medium', 'MODAL_NOT_SETTLED', 'Modal is still partly transparent after its entrance animation.', { opacity: m.modal.opacity });
     if (m.modal.body?.scrollWidth > m.modal.body?.clientWidth + 2) add(p, stage, 'high', 'MODAL_BODY_X_OVERFLOW', 'Modal body has unintended horizontal scrolling.', m.modal.body);
     if (m.modal.foot?.scrollWidth > m.modal.foot?.clientWidth + 2) add(p, stage, 'high', 'MODAL_FOOT_X_OVERFLOW', 'Modal footer overflows horizontally.', m.modal.foot);
     if (m.modal.head && m.modal.body && m.modal.head.bottom > m.modal.body.top + 1) add(p, stage, 'high', 'MODAL_HEAD_BODY_OVERLAP', 'Modal header overlaps body.');
@@ -147,19 +187,12 @@ function inspect(profile, stage, m) {
 
 for (const profile of profiles) {
   const browser = await chromium.launch({ headless: true });
-  const context = await browser.newContext({
-    viewport: { width: profile.width, height: profile.height },
-    isMobile: profile.mobile,
-    hasTouch: profile.mobile,
-    deviceScaleFactor: profile.mobile ? 2 : 1,
-  });
+  const context = await browser.newContext({ viewport: { width: profile.width, height: profile.height }, isMobile: profile.mobile, hasTouch: profile.mobile, deviceScaleFactor: profile.mobile ? 2 : 1 });
   const page = await context.newPage();
   page.setDefaultTimeout(8000);
-  const pageErrors = [];
-  const consoleErrors = [];
+  const pageErrors = [], consoleErrors = [], stages = [];
   page.on('pageerror', e => pageErrors.push(String(e)));
   page.on('console', m => { if (m.type() === 'error') consoleErrors.push(m.text()); });
-  const stages = [];
   try {
     await page.goto(baseURL, { waitUntil: 'load', timeout: 45000 });
     await closeModal(page);
@@ -192,7 +225,7 @@ for (const profile of profiles) {
       for (const mode of ['editor', 'split', 'preview']) {
         const button = page.locator(`[data-workspace="${mode}"]:visible`).first();
         if (await visible(button)) await button.click();
-        await page.waitForTimeout(80);
+        await page.waitForTimeout(90);
         m = await measure(page); inspect(profile, `workspace-${mode}`, m); stages.push({ stage: `workspace-${mode}`, metrics: m });
       }
     }
@@ -207,12 +240,7 @@ for (const profile of profiles) {
   }
 }
 
-report.summary = {
-  total: report.findings.length,
-  high: report.findings.filter(x => x.severity === 'high').length,
-  medium: report.findings.filter(x => x.severity === 'medium').length,
-  fatal: report.findings.filter(x => x.severity === 'fatal').length,
-};
+report.summary = { total: report.findings.length, high: report.findings.filter(x => x.severity === 'high').length, medium: report.findings.filter(x => x.severity === 'medium').length, fatal: report.findings.filter(x => x.severity === 'fatal').length };
 fs.writeFileSync(path.join(outDir, 'report.json'), JSON.stringify(report, null, 2));
 let md = `# Manuscript v4.3.2 deep UI audit\n\n- High: ${report.summary.high}\n- Medium: ${report.summary.medium}\n- Fatal: ${report.summary.fatal}\n- Total: ${report.summary.total}\n\n`;
 if (!report.findings.length) md += 'No findings.\n';
