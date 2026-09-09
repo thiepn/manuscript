@@ -32,7 +32,7 @@ class StructureAudit(HTMLParser):
     def handle_startendtag(self, tag, attrs):
         tag = tag.lower()
         attrs_dict = dict(attrs)
-        if tag in ('meta',):
+        if tag == 'meta':
             self.events.append((self.getpos(), 'startend', tag, attrs_dict.get('id', ''), attrs_dict.get('name', '')))
             if self.head_closed and not self.body_started:
                 self.between_head_body.append((self.getpos(), tag, attrs_dict.get('id', ''), attrs_dict.get('name', '')))
@@ -58,6 +58,15 @@ class StructureAudit(HTMLParser):
 parser = StructureAudit()
 parser.feed(source)
 
+print('--- exact legacy style prefixes ---')
+for style_id in ('v422-editor-layout-hotfix', 'v423-ui-hardening'):
+    marker = f'<style id="{style_id}">'
+    offset = source.find(marker)
+    print(style_id, 'offset=', offset)
+    if offset >= 0:
+        print('prefix repr=', repr(source[max(0, offset - 80):offset + len(marker) + 20]))
+        print('prefix codepoints=', [ord(ch) for ch in source[max(0, offset - 20):offset]])
+
 print('--- structural events ---')
 for event in parser.events:
     pos, kind, tag, ident, name = event
@@ -74,7 +83,7 @@ for (line_col, data) in parser.findings:
     print(f'line={line_col[0]} col={line_col[1]} repr={data!r}')
 
 print('--- escaped-newline source scan ---')
-for needle in (r'\n \n', r'\n\n', r'\n  \n', r'\n \n '):
+for needle in (r'\n', r'\n \n', r'\n\n', r'\n  \n', r'\n \n '):
     offsets = []
     pos = 0
     while True:
@@ -90,6 +99,5 @@ for needle in (r'\n \n', r'\n\n', r'\n  \n', r'\n \n '):
         context = source[max(0, offset-120):min(len(source), offset+len(needle)+160)]
         print(f'  line={line} col={col} offset={offset} context={context!r}')
 
-# Treat any head-only markup or non-whitespace text between </head> and <body> as invalid.
 if parser.between_head_body or parser.findings:
     raise SystemExit(1)
