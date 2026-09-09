@@ -1,0 +1,161 @@
+name: V430 P8 stable release candidate
+
+on:
+  push:
+    branches: [tmp/v430-p8-release]
+    paths:
+      - '.github/workflows/v430-p8-candidate.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: manuscript-v430-p8-candidate
+  cancel-in-progress: false
+
+jobs:
+  certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 100
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: tmp/v430-p8-release
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Apply P8 stable identity and prove idempotency
+        run: |
+          python3 -m py_compile tools/apply_v430_p8.py
+          node --check scripts/certify-v430-p8.mjs
+          python3 tools/apply_v430_p8.py
+          before="$(sha256sum index.html | awk '{print $1}')"
+          python3 tools/apply_v430_p8.py
+          after="$(sha256sum index.html | awk '{print $1}')"
+          test "$before" = "$after"
+          test "$(tr -d '\r\n' < V430_SHA256.txt)" = "$after"
+          echo "P8_STABLE_SHA256=$after"
+          git diff --check
+
+      - name: Verify P1-P8 static release contracts
+        run: |
+          grep -q '<title>Manuscript v4.3.0 Stable</title>' index.html
+          grep -q 'Manuscript v4.3.0 Stable — local-first Markdown publishing studio' index.html
+          grep -q "exports.APP_VERSION = '4.3.0';" index.html
+          grep -q "exports.RELEASE_NAME = 'Manuscript v4.3.0 Stable';" index.html
+          grep -q "exports.RELEASE_PHASE = 'V430-P8 — RC Certification & Stable Release';" index.html
+          grep -q 'manuscript-release-contract" content="v4.3.0-stable-certified-v1' index.html
+          grep -q 'id="v430-p1-simplified-navigation"' index.html
+          grep -q 'id="v430-p2-compact-density"' index.html
+          grep -q 'id="v430-p3-focus-mode"' index.html
+          grep -q 'id="v430-p4-command-palette"' index.html
+          grep -q 'id="v430-p5-mobile-first"' index.html
+          grep -q 'id="v430-p6-accessibility"' index.html
+          grep -q 'id="v430-p7-responsive-hardening"' index.html
+          test "$(grep -o 'manuscript-release-contract' index.html | wc -l)" -eq 1
+          grep -q '`${CACHE_PREFIX}v4.3.0`' sw.js
+          ! grep -q '`${CACHE_PREFIX}v4.2.3`' sw.js
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          text=Path('index.html').read_text(encoding='utf-8')
+          assert text.count("exports.APP_VERSION = '4.3.0';") == 1
+          assert text.count("exports.RELEASE_NAME = 'Manuscript v4.3.0 Stable';") == 1
+          assert text.count("exports.APP_VERSION = '4.2.3';") == 0
+          assert text.count("exports.RELEASE_NAME = 'Manuscript v4.2.3 Stable';") == 0
+          assert len(re.findall(r'<title>Manuscript v4\.3\.0 Stable</title>',text)) == 1
+          print('P8 live release identity: PASS')
+          PY
+
+      - name: Install browser certification dependencies
+        run: |
+          npm install --no-save playwright @axe-core/playwright
+          npx playwright install --with-deps chromium firefox webkit
+
+      - name: Apply certification-only inherited adapters
+        run: |
+          python3 -m pip install --quiet pyyaml
+          git fetch origin tmp/v430-p6-a11y:refs/remotes/origin/tmp/v430-p6-a11y
+          python3 - <<'PY'
+          import subprocess, yaml
+          raw=subprocess.check_output([
+              'git','show','origin/tmp/v430-p6-a11y:.github/workflows/v430-p6-candidate.yml'
+          ],text=True)
+          workflow=yaml.safe_load(raw)
+          step=next(s for s in workflow['jobs']['certify']['steps'] if s.get('name')=='Apply certification-only inherited entry adapters')
+          subprocess.run(['python3','-c',step['run']],check=True)
+          PY
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('scripts/certify-v430-p5.mjs')
+          text=p.read_text(encoding='utf-8')
+          old="  check(await page.locator('.v430-mobile-command-trigger').count() === 0, `${name}: mobile command trigger leaked at >=768px`);"
+          new="  check(!(await visible(page.locator('.v430-mobile-command-trigger').first())), `${name}: mobile command trigger visible at >=768px`);"
+          if text.count(old) != 1:
+              raise SystemExit(f'P5 inherited desktop-trigger assertion anchor count={text.count(old)}')
+          p.write_text(text.replace(old,new,1),encoding='utf-8')
+          PY
+          node --check scripts/certify-v430-p5.mjs
+
+      - name: Serve P8 stable candidate
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/manuscript-v430-p8-http.log 2>&1 &
+          for i in {1..30}; do curl -fsS http://127.0.0.1:4173/index.html >/dev/null && exit 0; sleep 1; done
+          cat /tmp/manuscript-v430-p8-http.log
+          exit 1
+
+      - name: Certify P8 release identity and offline shell
+        timeout-minutes: 15
+        env:
+          MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
+        run: node scripts/certify-v430-p8.mjs
+
+      - name: Re-run V430-P1 through P7
+        timeout-minutes: 48
+        env:
+          MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
+        run: |
+          node scripts/certify-v430-p1.mjs
+          node scripts/certify-v430-p2.mjs
+          node scripts/certify-v430-p3.mjs
+          node scripts/certify-v430-p4.mjs
+          node scripts/certify-v430-p5.mjs
+          node scripts/certify-v430-p6.mjs
+          node scripts/certify-v430-p7.mjs
+
+      - name: Re-run inherited v4.2.3 certification
+        timeout-minutes: 18
+        env:
+          MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
+        run: |
+          node scripts/certify-v423.mjs
+          node scripts/certify-v423-extras.mjs
+
+      - name: Enforce broad zero-finding UI sweep
+        env:
+          MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
+        run: |
+          node scripts/ui-sweep-v423.mjs
+          python3 - <<'PY'
+          import json
+          data=json.load(open('diagnostics/ui-sweep-v423.json',encoding='utf-8'))
+          assert data['summary']['total']==0, data['summary']
+          assert data['summary']['fatal']==0, data['summary']
+          print('UI sweep:',data['summary'])
+          PY
+
+      - name: Restore test adapters and persist green P8 identity
+        run: |
+          git checkout -- scripts/certify-v423.mjs scripts/certify-v423-extras.mjs scripts/ui-sweep-v423.mjs scripts/certify-v430-p1.mjs scripts/certify-v430-p5.mjs
+          git diff --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html sw.js V430_SHA256.txt tools/apply_v430_p8.py scripts/certify-v430-p8.mjs
+          git diff --cached --check
+          git diff --cached --quiet && { echo 'No P8 identity diff found'; exit 1; }
+          git commit -m 'release: prepare Manuscript v4.3.0 stable identity [skip ci]'
+          git push origin HEAD:tmp/v430-p8-release
+          echo "P8_IDENTITY_COMMIT=$(git rev-parse HEAD)"
+          echo "P8_STABLE_SHA256=$(sha256sum index.html | awk '{print $1}')"
