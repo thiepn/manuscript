@@ -22,9 +22,9 @@
   <meta name="manuscript-browser-contract" content="capability-evidence-v1">
   <meta name="manuscript-deployment-contract" content="relative-sw-github-pages-v1">
   <meta name="manuscript-concurrency-contract" content="lock-and-conflict-guard-v1">
-  <meta name="description" content="Manuscript v4.3.1 Stable — local-first Markdown publishing studio with editable Markdown learning examples, screen-scoped scrolling, six curated interface themes, deterministic pagination, and publication-ready export.">
-  <title>Manuscript v4.3.1 Stable</title>
-<meta name="manuscript-release-contract" content="v4.3.1-stable-markdown-learning-v1">
+  <meta name="description" content="Manuscript v4.3.2 Stable — local-first Markdown publishing studio with hardened responsive UI, editable Markdown learning examples, deterministic pagination, and publication-ready export.">
+  <title>Manuscript v4.3.2 Stable</title>
+<meta name="manuscript-release-contract" content="v4.3.2-stable-ui-regression-hardening-v1">
 <meta name="manuscript-learning-contract" content="markdown-examples-v1">
 <meta name="manuscript-ui-contract" content="responsive-ui-hardening-v1">
 <meta name="manuscript-editor-layout-contract" content="exclusive-workspace-panes+mobile-flex-height-v1">
@@ -1953,7 +1953,7 @@ html[data-density="compact"] .toolbar .icon-btn{width:28px;height:28px}
 
 <meta name="manuscript-certification-contract" content="scroll-v2+themes-v2+visual-v1.1">
 
-\n<style id="v422-editor-layout-hotfix">
+<style id="v422-editor-layout-hotfix">
 /* Manuscript v4.2.3 — editor mode + mobile height-chain repair. */
 
 /* Workspace modes are mutually exclusive at every viewport width. */
@@ -2013,7 +2013,7 @@ html[data-density="compact"] .toolbar .icon-btn{width:28px;height:28px}
 }
 </style>
 
-\n<style id="v423-ui-hardening">
+<style id="v423-ui-hardening">
 /* Manuscript v4.2.3 — responsive UI hardening. */
 
 /* Modal actions must wrap instead of shrinking labels into clipped controls. */
@@ -3402,6 +3402,27 @@ html[data-screen="editor"][data-theme="blueprint"] :where(
   html[data-screen="editor"] .command-layer .command-list {
     min-height: 0 !important;
   }
+}
+</style>
+
+<meta name="manuscript-ui-regression-contract" content="v432-valid-head+mobile-nav-clearance+coarse-targets-v1">
+<style id="v432-ui-regression-hardening">
+/* Manuscript v4.3.2 — UI regression hardening. */
+@media(max-width:767px){
+  .workspace{
+    flex:0 0 calc(100dvh - var(--appbar-h) - var(--toolbar-h) - var(--mobile-nav-h))!important;
+    height:calc(100dvh - var(--appbar-h) - var(--toolbar-h) - var(--mobile-nav-h))!important;
+    max-height:calc(100dvh - var(--appbar-h) - var(--toolbar-h) - var(--mobile-nav-h))!important;
+  }
+}
+@media(pointer:coarse){
+  .btn.small{height:auto;min-height:40px}
+}
+@media(max-width:767px) and (pointer:coarse){
+  .toolbar .icon-btn{width:42px;min-width:42px;min-height:42px}
+}
+@media(max-width:380px){
+  .modal,.modal.wide{max-height:calc(100dvh - 8px - env(safe-area-inset-top,0px))!important}
 }
 </style>
 </head>
@@ -5131,11 +5152,11 @@ function installBootstrapState(state) {
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FEATURE_FREEZE = exports.RELEASE_PHASE = exports.RELEASE_CHANNEL = exports.PROJECT_SCHEMA_VERSION = exports.RELEASE_NAME = exports.APP_VERSION = void 0;
-exports.APP_VERSION = '4.3.1';
-exports.RELEASE_NAME = 'Manuscript v4.3.1 Stable';
+exports.APP_VERSION = '4.3.2';
+exports.RELEASE_NAME = 'Manuscript v4.3.2 Stable';
 exports.PROJECT_SCHEMA_VERSION = 6;
 exports.RELEASE_CHANNEL = 'stable';
-exports.RELEASE_PHASE = 'V431 — Markdown Learning Examples';
+exports.RELEASE_PHASE = 'V432 — UI Regression Hardening';
 exports.FEATURE_FREEZE = true;
 
 },

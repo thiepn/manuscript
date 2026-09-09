@@ -49,9 +49,27 @@ jobs:
             node --check "$file"
           done
 
-          if [[ -f V431_SHA256.txt ]]; then
-            node scripts/certify-v431-examples.mjs
-          fi
+          APP_VERSION="$(python3 - <<'PY'
+          import re
+          from pathlib import Path
+          text = Path('index.html').read_text(encoding='utf-8')
+          match = re.search(r"exports\.APP_VERSION\s*=\s*'([^']+)';", text)
+          if not match:
+              raise SystemExit('missing APP_VERSION')
+          print(match.group(1))
+          PY
+          )"
+
+          case "$APP_VERSION" in
+            4.3.1)
+              test -f V431_SHA256.txt
+              node scripts/certify-v431-examples.mjs
+              ;;
+            4.3.2)
+              test -f V432_SHA256.txt
+              python3 tools/audit_v432_source.py
+              ;;
+          esac
 
       - name: Verify version and cache coherence
         shell: bash
