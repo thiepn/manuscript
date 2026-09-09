@@ -8,7 +8,7 @@ jobs:
   ui-audit:
     if: github.head_ref == 'fix/v432-ui-regression-hardening'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -27,11 +27,15 @@ jobs:
           done
           cat /tmp/v432-ui.log
           exit 1
-      - name: Run legacy full UI sweep against current app
+      - name: Run legacy full UI sweep
         env:
           MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
         run: node scripts/ui-sweep-v423.mjs
-      - name: Upload diagnostics
+      - name: Run deep boundary and gallery audit
+        env:
+          MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
+        run: node scripts/audit-v432-ui.mjs
+      - name: Upload diagnostics and screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
