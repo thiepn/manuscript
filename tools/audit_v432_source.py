@@ -38,11 +38,23 @@ print(f'body root text nodes: {len(parser.findings)}')
 for (line_col, data) in parser.findings:
     line, col = line_col
     print(f'line={line} col={col} repr={data!r}')
-    lines = source.splitlines()
-    lo = max(0, line - 3)
-    hi = min(len(lines), line + 2)
-    print('\n'.join(f'{i+1}: {lines[i]}' for i in range(lo, hi)))
-    print('---')
+
+print('--- escaped-newline source scan ---')
+for needle in (r'\n \n', r'\n\n', r'\n  \n', r'\n \n '):
+    offsets = []
+    pos = 0
+    while True:
+        pos = source.find(needle, pos)
+        if pos < 0:
+            break
+        offsets.append(pos)
+        pos += max(1, len(needle))
+    print(f'{needle!r}: {len(offsets)} occurrences')
+    for offset in offsets[:20]:
+        line = source.count('\n', 0, offset) + 1
+        col = offset - source.rfind('\n', 0, offset) - 1
+        context = source[max(0, offset-140):min(len(source), offset+len(needle)+180)]
+        print(f'  line={line} col={col} offset={offset} context={context!r}')
 
 if parser.findings:
     raise SystemExit(1)
