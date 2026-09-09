@@ -1,0 +1,40 @@
+name: V432 UI Regression Audit
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  ui-audit:
+    if: github.head_ref == 'fix/v432-ui-regression-hardening'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Serve candidate
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/v432-ui.log 2>&1 &
+          for i in {1..30}; do
+            curl -fsS http://127.0.0.1:4173/index.html >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/v432-ui.log
+          exit 1
+      - name: Run legacy full UI sweep against current app
+        env:
+          MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
+        run: node scripts/ui-sweep-v423.mjs
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v432-ui-audit
+          path: diagnostics/
+          if-no-files-found: warn
