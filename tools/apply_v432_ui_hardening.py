@@ -42,11 +42,16 @@ def replace_version(text: str, old: str, new: str, label: str) -> str:
 
 
 def remove_head_escape(text: str, style_id: str) -> str:
-    bad = f'\n\\\n<style id="{style_id}">'
-    good = f'\n<style id="{style_id}">'
-    if bad in text:
-        return text.replace(bad, good, 1)
-    if good in text:
+    # Match only a standalone backslash line immediately before the named style.
+    # Legacy patches used indentation inconsistently, so tolerate horizontal space.
+    pattern = re.compile(rf'\n[ \t]*\\[ \t]*\n([ \t]*)<style id="{re.escape(style_id)}">')
+    matches = list(pattern.finditer(text))
+    if len(matches) == 1:
+        return pattern.sub(lambda m: '\n' + m.group(1) + f'<style id="{style_id}">', text, count=1)
+    if len(matches) > 1:
+        raise SystemExit(f'{style_id}: multiple standalone head escapes found')
+    # Idempotent path: the style exists and is no longer preceded by the bad escape.
+    if re.search(rf'^[ \t]*<style id="{re.escape(style_id)}">', text, flags=re.M):
         return text
     raise SystemExit(f'{style_id}: structural anchor missing')
 
@@ -84,8 +89,6 @@ def main():
             raise SystemExit(f'head/body insertion anchor count={text.count(anchor)}')
         text = text.replace(anchor, V432_STYLE + '</head>\n<body>', 1)
 
-    # Static structure requirements. The two legacy style blocks and all newer UI
-    # hardening must remain inside the one structural head.
     head_close = text.find('</head>')
     body_start = text.find('<body>')
     if head_close < 0 or body_start < 0 or head_close > body_start:
@@ -103,7 +106,8 @@ def main():
             raise SystemExit(f'{style_id}: not contained by structural head')
 
     for style_id in ('v422-editor-layout-hotfix', 'v423-ui-hardening'):
-        if f'\n\\\n<style id="{style_id}">' in text:
+        bad = re.compile(rf'\n[ \t]*\\[ \t]*\n[ \t]*<style id="{re.escape(style_id)}">')
+        if bad.search(text):
             raise SystemExit(f'{style_id}: invalid standalone head escape remains')
 
     INDEX.write_text(text, encoding='utf-8')
