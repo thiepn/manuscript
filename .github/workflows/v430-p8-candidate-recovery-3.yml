@@ -1,0 +1,45 @@
+name: V430 P8 candidate recovery 3
+
+on:
+  push:
+    branches: [tmp/v430-p8-release]
+    paths:
+      - '.github/workflows/v430-p8-candidate-recovery-3.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: manuscript-v430-p8-candidate-recovery-3
+  cancel-in-progress: false
+
+jobs:
+  certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 100
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: tmp/v430-p8-release
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Execute current P8 candidate ladder
+        shell: bash
+        run: |
+          python3 -m pip install --quiet pyyaml
+          python3 - <<'PY'
+          import os, subprocess, yaml
+          from pathlib import Path
+          workflow=yaml.safe_load(Path('.github/workflows/v430-p8-candidate.yml').read_text(encoding='utf-8'))
+          for step in workflow['jobs']['certify']['steps']:
+              name=step.get('name'); run=step.get('run')
+              if not name or not run:
+                  continue
+              print(f'\n===== {name} =====',flush=True)
+              env=os.environ.copy(); env.update({str(k):str(v) for k,v in (step.get('env') or {}).items()})
+              shell=step.get('shell','bash')
+              cmd=['python3','-c',run] if shell=='python' else ['bash','-euo','pipefail','-c',run]
+              subprocess.run(cmd,env=env,check=True)
+          PY
