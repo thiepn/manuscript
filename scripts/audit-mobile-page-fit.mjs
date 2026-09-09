@@ -28,24 +28,45 @@ async function closeModal(page) {
   const close = layer.locator('[data-action="modal-close"],.modal-close').first();
   if (await visible(close)) await close.click({ timeout: 5000 });
   else await page.keyboard.press('Escape');
-  await layer.waitFor({ state: 'detached', timeout: 5000 }).catch(() => {});
+  await layer.waitFor({ state: 'detached', timeout: 5000 }).catch(async () => {
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(100);
+  });
 }
 
 async function goHome(page) {
   await closeModal(page);
-  if (await page.locator('html').getAttribute('data-screen') === 'home') return;
-  const home = page.locator('[data-action="home"]').first();
-  if (await home.count()) await home.click({ force: true });
-  await page.waitForFunction(() => document.documentElement.dataset.screen === 'home', null, { timeout: 10000 });
+  let screen = await page.locator('html').getAttribute('data-screen');
+  if (screen === 'home') return;
+  const home = page.locator('[data-action="home"]:visible').first();
+  if (await visible(home)) await home.click({ timeout: 5000 });
+  else if (screen === 'landing') {
+    const fallback = page.locator('[data-action="home"]').first();
+    if (await fallback.count()) await fallback.click({ timeout: 5000, force: true });
+  }
+  try {
+    await page.waitForFunction(() => document.documentElement.dataset.screen === 'home', null, { timeout: 8000 });
+  } catch {
+    await page.goto(baseURL, { waitUntil: 'load', timeout: 45000 });
+    await closeModal(page);
+    screen = await page.locator('html').getAttribute('data-screen');
+    if (screen !== 'home') {
+      const retry = page.locator('[data-action="home"]').first();
+      if (await retry.count()) await retry.click({ timeout: 5000, force: true });
+    }
+    await page.waitForFunction(() => document.documentElement.dataset.screen === 'home', null, { timeout: 10000 });
+  }
   await closeModal(page);
 }
 
 async function openExample(page) {
   await goHome(page);
   const templates = page.locator('[data-action="templates"]:visible').first();
+  if (!await visible(templates)) throw new Error('Visible Templates trigger not found');
   await templates.click();
   await page.locator('.modal-layer .modal').waitFor({ state: 'visible', timeout: 8000 });
   const use = page.locator('[data-action="use-template"][data-id="markdown-basics"]').first();
+  if (!await visible(use)) throw new Error('Markdown Basics template action is missing');
   await use.click();
   await page.waitForFunction(() => document.documentElement.dataset.screen === 'editor', null, { timeout: 10000 });
   await page.waitForSelector('.codemirror-editor .cm-scroller', { timeout: 10000 });
