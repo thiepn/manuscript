@@ -1,0 +1,51 @@
+name: V430 P8 release identity audit
+
+on:
+  push:
+    branches: [tmp/v430-p8-release]
+    paths:
+      - '.github/workflows/v430-p8-release-audit.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: tmp/v430-p8-release
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Audit release/version identity
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re, json
+          text=Path('index.html').read_text(encoding='utf-8')
+          versions=sorted(set(re.findall(r'v?4\.[0-9]+\.[0-9]+(?:[-+][A-Za-z0-9._-]+)?',text)))
+          print('INDEX_SHA256',__import__('hashlib').sha256(text.encode()).hexdigest())
+          print('INDEX_BYTES',len(text.encode()))
+          print('VERSIONS',json.dumps(versions))
+          for pat in [r'<title>[^<]{0,120}</title>',r'Manuscript[^<"\n]{0,100}v4\.[0-9]+\.[0-9]+[^<"\n]{0,100}',r'v4\.2\.3',r'4\.2\.3']:
+              matches=list(re.finditer(pat,text,re.I))
+              print('PATTERN',pat,'COUNT',len(matches))
+              for m in matches[:20]:
+                  a=max(0,m.start()-100); b=min(len(text),m.end()+120)
+                  print('CONTEXT',repr(text[a:b]))
+          for marker in [
+              'manuscript-ui-contract','manuscript-navigation-contract','manuscript-density-contract',
+              'manuscript-focus-contract','manuscript-command-contract','manuscript-mobile-first-contract',
+              'manuscript-accessibility-contract','manuscript-hardening-contract'
+          ]:
+              print(marker,text.count(marker))
+          PY
+          echo '--- sw.js ---'
+          cat sw.js
+          echo '--- release-related files ---'
+          find . -maxdepth 2 -type f \( -name '*RELEASE*' -o -name 'V*_SHA256.txt' -o -name 'stable-release.yml' \) -print | sort
+          echo '--- feature history since v4.2.3 ---'
+          git log --oneline --decorate v4.2.3..HEAD
