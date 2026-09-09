@@ -1,6 +1,5 @@
 from pathlib import Path
 import hashlib
-import re
 
 INDEX = Path('index.html')
 SW = Path('sw.js')
@@ -9,9 +8,6 @@ V432_STYLE = '''
 <meta name="manuscript-ui-regression-contract" content="v432-valid-head+mobile-nav-clearance+coarse-targets-v1">
 <style id="v432-ui-regression-hardening">
 /* Manuscript v4.3.2 — UI regression hardening. */
-
-/* The fixed mobile navigation is deliberately outside normal layout flow.
-   Reserve its height explicitly so editor/preview content never sits beneath it. */
 @media(max-width:767px){
   .workspace{
     flex:0 0 calc(100dvh - var(--appbar-h) - var(--toolbar-h) - var(--mobile-nav-h))!important;
@@ -19,9 +15,6 @@ V432_STYLE = '''
     max-height:calc(100dvh - var(--appbar-h) - var(--toolbar-h) - var(--mobile-nav-h))!important;
   }
 }
-
-/* Compact controls remain visually compact with a mouse, while touch/coarse
-   pointers receive dependable target areas. */
 @media(pointer:coarse){
   .btn.small{height:auto;min-height:40px}
 }
@@ -42,16 +35,15 @@ def replace_version(text: str, old: str, new: str, label: str) -> str:
 
 
 def remove_head_escape(text: str, style_id: str) -> str:
-    # Match only a standalone backslash line immediately before the named style.
-    # Legacy patches used indentation inconsistently, so tolerate horizontal space.
-    pattern = re.compile(rf'\n[ \t]*\\[ \t]*\n([ \t]*)<style id="{re.escape(style_id)}">')
-    matches = list(pattern.finditer(text))
-    if len(matches) == 1:
-        return pattern.sub(lambda m: '\n' + m.group(1) + f'<style id="{style_id}">', text, count=1)
-    if len(matches) > 1:
-        raise SystemExit(f'{style_id}: multiple standalone head escapes found')
-    # Idempotent path: the style exists and is no longer preceded by the bad escape.
-    if re.search(rf'^[ \t]*<style id="{re.escape(style_id)}">', text, flags=re.M):
+    # The broken source contains the literal two-character token "\\n" directly
+    # before each named style, not an actual newline. Remove only those exact tokens.
+    marker = f'<style id="{style_id}">'
+    bad = '\\n' + marker
+    if bad in text:
+        if text.count(bad) != 1:
+            raise SystemExit(f'{style_id}: expected one literal newline token')
+        return text.replace(bad, marker, 1)
+    if marker in text:
         return text
     raise SystemExit(f'{style_id}: structural anchor missing')
 
@@ -59,10 +51,6 @@ def remove_head_escape(text: str, style_id: str) -> str:
 def main():
     text = INDEX.read_text(encoding='utf-8')
 
-    # v4.2.2/v4.2.3 patch generation left two standalone backslashes in <head>.
-    # In the HTML5 parser, non-whitespace text inside <head> implicitly ends the head,
-    # causing every following style/meta node to be reparented into <body> and rendering
-    # a visible "\\n \\n" strip. Remove the invalid characters at their source.
     text = remove_head_escape(text, 'v422-editor-layout-hotfix')
     text = remove_head_escape(text, 'v423-ui-hardening')
 
@@ -94,21 +82,16 @@ def main():
     if head_close < 0 or body_start < 0 or head_close > body_start:
         raise SystemExit('invalid structural head/body ordering')
     for style_id in (
-        'v422-editor-layout-hotfix',
-        'v423-ui-hardening',
-        'v430-p1-simplified-navigation',
-        'v430-p5-mobile-first',
-        'v430-p7-responsive-hardening',
-        'v432-ui-regression-hardening',
+        'v422-editor-layout-hotfix', 'v423-ui-hardening',
+        'v430-p1-simplified-navigation', 'v430-p5-mobile-first',
+        'v430-p7-responsive-hardening', 'v432-ui-regression-hardening',
     ):
         position = text.find(f'id="{style_id}"')
         if position < 0 or position > head_close:
             raise SystemExit(f'{style_id}: not contained by structural head')
-
     for style_id in ('v422-editor-layout-hotfix', 'v423-ui-hardening'):
-        bad = re.compile(rf'\n[ \t]*\\[ \t]*\n[ \t]*<style id="{re.escape(style_id)}">')
-        if bad.search(text):
-            raise SystemExit(f'{style_id}: invalid standalone head escape remains')
+        if '\\n' + f'<style id="{style_id}">' in text:
+            raise SystemExit(f'{style_id}: literal newline token remains')
 
     INDEX.write_text(text, encoding='utf-8')
 
@@ -129,20 +112,19 @@ Released: 2026-09-09
 
 ## UI regression hardening
 
-- Repairs malformed document-head markup introduced by legacy UI patch blocks. Two standalone backslash characters caused Chromium's HTML parser to terminate `<head>` early, move later style/meta nodes into `<body>`, and render a visible `\\n` strip above the application.
-- Reserves the fixed mobile bottom-navigation height in the editor workspace so source/preview content no longer extends underneath navigation at phone and 767px boundary widths.
-- Enlarges compact actions for coarse pointers and restores mobile toolbar target width without increasing desktop density.
-- Retains all v4.3.1 Markdown learning examples and existing publishing behavior.
+- Removes two literal `\\n` tokens that caused Chromium to terminate `<head>` early, reparent later style/meta nodes into `<body>`, and render a visible strip above the app.
+- Reserves fixed mobile bottom-navigation height so editor and preview content never extend under navigation.
+- Enlarges compact coarse-pointer actions and restores mobile toolbar target width while retaining desktop density.
+- Retains the v4.3.1 Markdown learning examples and publishing behavior.
 
 ## Verification
 
-The v4.3.2 release is certified with the legacy multi-viewport UI sweep plus a deeper Chromium audit covering 320, 360, 390, 480, 767, 768, 900, 901, 1024, and 1440px widths, Template Gallery geometry, editor/preview modes, mobile navigation clearance, coarse-pointer targets, root DOM structure, overflow, and runtime errors.
+Certified with the legacy multi-viewport sweep and a deeper Chromium audit covering 320, 360, 390, 480, 767, 768, 900, 901, 1024, and 1440px widths; Template Gallery geometry; editor/preview modes; mobile navigation clearance; touch targets; root DOM structure; overflow; and runtime errors.
 
 Canonical standalone HTML SHA-256:
 
 `{digest}`
 ''', encoding='utf-8')
-
     print(f'Patched Manuscript v4.3.2 UI hardening; index sha256={digest}')
 
 
