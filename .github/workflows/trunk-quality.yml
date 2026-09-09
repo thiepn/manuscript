@@ -49,6 +49,10 @@ jobs:
             node --check "$file"
           done
 
+          if [[ -f V431_SHA256.txt ]]; then
+            node scripts/certify-v431-examples.mjs
+          fi
+
       - name: Verify version and cache coherence
         shell: bash
         run: |
@@ -83,12 +87,15 @@ jobs:
           test "$APP_VERSION" = "$CACHE_VERSION"
           echo "Coherent Manuscript version: $APP_VERSION"
 
-          # Preserve the already-published v4.3.0 stable bytes until a future
-          # change intentionally increments APP_VERSION.
+          VERSION_KEY="${APP_VERSION//./}"
+          DIGEST_FILE="V${VERSION_KEY}_SHA256.txt"
+          if [[ -f "$DIGEST_FILE" ]]; then
+            EXPECTED="$(tr -d '\r\n' < "$DIGEST_FILE")"
+            echo "$EXPECTED  index.html" | sha256sum --check --strict
+          fi
+
           if [[ "$APP_VERSION" == '4.3.0' ]]; then
             test -f V430_SHA256.txt
-            EXPECTED="$(tr -d '\r\n' < V430_SHA256.txt)"
-            echo "$EXPECTED  index.html" | sha256sum --check --strict
             grep -q 'v4.3.0-stable-certified-v1' index.html
           fi
 
