@@ -97,7 +97,19 @@ jobs:
               raise SystemExit(f'P5 inherited desktop-trigger assertion anchor count={text.count(old)}')
           p.write_text(text.replace(old,new,1),encoding='utf-8')
           PY
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('scripts/certify-v423.mjs')
+          text=p.read_text(encoding='utf-8')
+          old="    check(await page.title() === 'Manuscript v4.2.3 Stable', `${profile.name}: wrong title`);"
+          new="    check(await page.title() === 'Manuscript v4.3.0 Stable', `${profile.name}: wrong title`);"
+          if text.count(old) != 1:
+              raise SystemExit(f'V423 inherited title assertion anchor count={text.count(old)}')
+          p.write_text(text.replace(old,new,1),encoding='utf-8')
+          print('V423 inherited release-title assertion adapted to intentional v4.3.0 identity')
+          PY
           node --check scripts/certify-v430-p5.mjs
+          node --check scripts/certify-v423.mjs
 
       - name: Serve P8 stable candidate
         run: |
