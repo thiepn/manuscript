@@ -22,8 +22,9 @@
   <meta name="manuscript-browser-contract" content="capability-evidence-v1">
   <meta name="manuscript-deployment-contract" content="relative-sw-github-pages-v1">
   <meta name="manuscript-concurrency-contract" content="lock-and-conflict-guard-v1">
-  <meta name="description" content="Manuscript v4.2.3 Stable — local-first Markdown publishing studio with screen-scoped scrolling, six curated interface themes, consolidated editorial visual architecture, deterministic pagination, and publication-ready export.">
-  <title>Manuscript v4.2.3 Stable</title>
+  <meta name="description" content="Manuscript v4.3.0 Stable — local-first Markdown publishing studio with screen-scoped scrolling, six curated interface themes, consolidated editorial visual architecture, deterministic pagination, and publication-ready export.">
+  <title>Manuscript v4.3.0 Stable</title>
+<meta name="manuscript-release-contract" content="v4.3.0-stable-certified-v1">
 <meta name="manuscript-ui-contract" content="responsive-ui-hardening-v1">
 <meta name="manuscript-editor-layout-contract" content="exclusive-workspace-panes+mobile-flex-height-v1">
   <style>:root {
@@ -3353,6 +3354,7 @@ html[data-screen="editor"] .v430-more-label {
 
 /* Verified compact labels that sit below AA in specific muted themes. The tiny
    Checks action and theme toast body are intentionally readable in every theme. */
+html[data-screen="editor"] .toast .toast-title,
 html[data-screen="editor"] .toast .toast-text,
 html[data-screen="editor"] .status-action[data-panel="diagnostics"] {
   color: var(--text-primary) !important;
@@ -5128,11 +5130,11 @@ function installBootstrapState(state) {
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FEATURE_FREEZE = exports.RELEASE_PHASE = exports.RELEASE_CHANNEL = exports.PROJECT_SCHEMA_VERSION = exports.RELEASE_NAME = exports.APP_VERSION = void 0;
-exports.APP_VERSION = '4.2.3';
-exports.RELEASE_NAME = 'Manuscript v4.2.3 Stable';
+exports.APP_VERSION = '4.3.0';
+exports.RELEASE_NAME = 'Manuscript v4.3.0 Stable';
 exports.PROJECT_SCHEMA_VERSION = 6;
 exports.RELEASE_CHANNEL = 'stable';
-exports.RELEASE_PHASE = 'Phase 9 — Release Candidate Audit';
+exports.RELEASE_PHASE = 'V430-P8 — RC Certification & Stable Release';
 exports.FEATURE_FREEZE = true;
 
 },
