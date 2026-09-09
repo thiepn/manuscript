@@ -91,7 +91,13 @@ if (process.env.MANUSCRIPT_URL) {
         check(await page.locator('#flow-document .math-display').count() >= 2, 'browser: display math missing');
       }
       if (id === 'manuscript-publishing-extras') {
-        check(await page.locator('#flow-document .toc').count() >= 1, 'browser: generated TOC missing');
+        const frontMatterHeading = page.locator('#flow-document #sec-frontmatter');
+        const generatedHeading = page.locator('#flow-document #sec-generated');
+        const frontMatterLinks = page.locator('#flow-document a[href="#sec-frontmatter"]');
+        const generatedLinks = page.locator('#flow-document a[href="#sec-generated"]');
+        check(await frontMatterHeading.count() === 1, 'browser: explicit front-matter heading anchor missing');
+        check(await generatedHeading.count() === 1, 'browser: explicit generated-elements heading anchor missing');
+        check(await frontMatterLinks.count() >= 1 && await generatedLinks.count() >= 1, 'browser: generated TOC anchor links missing');
         check(await page.locator('#flow-document .callout').count() >= 2, 'browser: callouts missing');
       }
       check(errors.length === 0, `browser: ${id} page errors: ${errors.join(' | ')}`);
