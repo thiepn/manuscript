@@ -93,8 +93,10 @@ if (process.env.MANUSCRIPT_URL) {
       }
       if (id === 'manuscript-publishing-extras') {
         check(source.includes('{#sec-frontmatter}'), 'browser: heading-label syntax missing from source');
-        check(!preview.includes('{#sec-frontmatter}'), 'browser: heading-label syntax leaked as literal preview text');
-        check(!preview.includes('[[toc]]'), 'browser: TOC directive leaked as literal preview text');
+        check(!preview.includes('{#sec-frontmatter}'), 'browser: heading-label syntax leaked from its heading into preview');
+        // Each section title appears once in the generated contents and once as its heading.
+        // The instructional prose intentionally also renders `[[toc]]` literally as inline code,
+        // so literal token absence is not a valid TOC assertion.
         check(countText(preview, 'Front matter') >= 2, 'browser: generated TOC did not include Front matter');
         check(countText(preview, 'Generated elements') >= 2, 'browser: generated TOC did not include Generated elements');
         check(await page.locator('#flow-document .callout').count() >= 2, 'browser: callouts missing');
