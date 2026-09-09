@@ -1,0 +1,118 @@
+name: Manuscript Trunk Quality Gate
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: manuscript-trunk-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate tracked sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s index.html
+          test -s sw.js
+          grep -q '<title>Manuscript v' index.html
+          grep -q "exports.APP_VERSION = '" index.html
+          grep -q "exports.RELEASE_NAME = 'Manuscript v" index.html
+          grep -q "const CACHE_PREFIX = 'manuscript-shell-';" sw.js
+
+          if git grep -n -E '^(<<<<<<<|=======|>>>>>>>)'; then
+            echo 'Unresolved merge-conflict marker found.' >&2
+            exit 1
+          fi
+
+          python3 -m py_compile tools/*.py
+          node --check sw.js
+          for file in scripts/*.mjs; do
+            node --check "$file"
+          done
+
+      - name: Verify version and cache coherence
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t versions < <(python3 - <<'PY'
+          import re
+          from pathlib import Path
+
+          index = Path('index.html').read_text(encoding='utf-8')
+          sw = Path('sw.js').read_text(encoding='utf-8')
+
+          def required(pattern, text, label):
+              match = re.search(pattern, text)
+              if not match:
+                  raise SystemExit(f'missing {label}')
+              print(match.group(1))
+
+          required(r"exports\.APP_VERSION\s*=\s*'([^']+)';", index, 'APP_VERSION')
+          required(r'<title>Manuscript v([^ <]+)', index, 'title version')
+          required(r"exports\.RELEASE_NAME\s*=\s*'Manuscript v([^ ']+)", index, 'release-name version')
+          required(r'CACHE_NAME\s*=\s*`\$\{CACHE_PREFIX\}v([^`]+)`', sw, 'service-worker cache version')
+          PY
+          )
+
+          APP_VERSION="${versions[0]}"
+          TITLE_VERSION="${versions[1]}"
+          RELEASE_VERSION="${versions[2]}"
+          CACHE_VERSION="${versions[3]}"
+
+          test "$APP_VERSION" = "$TITLE_VERSION"
+          test "$APP_VERSION" = "$RELEASE_VERSION"
+          test "$APP_VERSION" = "$CACHE_VERSION"
+          echo "Coherent Manuscript version: $APP_VERSION"
+
+          # Preserve the already-published v4.3.0 stable bytes until a future
+          # change intentionally increments APP_VERSION.
+          if [[ "$APP_VERSION" == '4.3.0' ]]; then
+            test -f V430_SHA256.txt
+            EXPECTED="$(tr -d '\r\n' < V430_SHA256.txt)"
+            echo "$EXPECTED  index.html" | sha256sum --check --strict
+            grep -q 'v4.3.0-stable-certified-v1' index.html
+          fi
+
+      - name: Verify repository files are served byte-for-byte
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/manuscript-trunk.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+
+          ok=0
+          for _ in {1..30}; do
+            if curl -fsS http://127.0.0.1:4173/index.html -o /tmp/manuscript-index.html; then
+              ok=1
+              break
+            fi
+            sleep 0.2
+          done
+          if [[ "$ok" != '1' ]]; then
+            cat /tmp/manuscript-trunk.log
+            exit 1
+          fi
+
+          cmp index.html /tmp/manuscript-index.html
+          curl -fsS http://127.0.0.1:4173/sw.js -o /tmp/manuscript-sw.js
+          cmp sw.js /tmp/manuscript-sw.js
