@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 
 const baseURL=process.env.MANUSCRIPT_URL||'http://127.0.0.1:4173/index.html';
 const check=(ok,msg)=>assert.ok(ok,msg);
+const swURL=new URL('./sw.js',baseURL).href;
 
 async function certifyEngine(name,browserType,viewport){
   const browser=await browserType.launch({headless:true});
@@ -22,7 +23,9 @@ async function certifyEngine(name,browserType,viewport){
       '#v430-p4-command-palette','#v430-p4-runtime','#v430-p5-mobile-first','#v430-p5-runtime',
       '#v430-p6-accessibility','#v430-p6-runtime','#v430-p7-responsive-hardening','#v430-p7-runtime'
     ]) check(await page.locator(marker).count()===1,`${name}: inherited marker missing/duplicated ${marker}`);
-    const sw=await page.evaluate(async()=>await (await fetch('./sw.js',{cache:'no-store'})).text());
+    const swResponse=await context.request.get(swURL,{headers:{'cache-control':'no-cache'}});
+    check(swResponse.ok(),`${name}: service-worker request failed ${swResponse.status()} ${swResponse.statusText()}`);
+    const sw=await swResponse.text();
     check(sw.includes('`${CACHE_PREFIX}v4.3.0`'),`${name}: service-worker cache is not v4.3.0`);
     check(!sw.includes('`${CACHE_PREFIX}v4.2.3`'),`${name}: stale v4.2.3 service-worker cache remains`);
     check(errors.length===0,`${name}: page errors ${errors.join(' | ')}`);
