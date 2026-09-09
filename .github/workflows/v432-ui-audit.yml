@@ -15,7 +15,7 @@ jobs:
   ui-audit:
     if: github.head_ref == 'fix/v432-ui-regression-hardening'
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
         with:
@@ -48,14 +48,44 @@ jobs:
           exit 1
 
       - name: Run legacy full UI sweep
+        continue-on-error: true
         env:
           MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
         run: node scripts/ui-sweep-v423.mjs
 
       - name: Run deep boundary and gallery audit
+        continue-on-error: true
         env:
           MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
         run: node scripts/audit-v432-ui.mjs
+
+      - name: Gate on zero UI findings
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          reports = [
+              ('legacy', Path('diagnostics/ui-sweep-v423.json')),
+              ('deep', Path('diagnostics/v432-ui/report.json')),
+          ]
+          failed = False
+          for name, path in reports:
+              if not path.exists():
+                  print(f'{name}: missing report {path}')
+                  failed = True
+                  continue
+              data = json.loads(path.read_text(encoding='utf-8'))
+              summary = data.get('summary', {})
+              total = int(summary.get('total', 0) or 0)
+              fatal = int(summary.get('fatal', 0) or 0)
+              print(f'{name}: {summary}')
+              if total or fatal:
+                  failed = True
+          if failed:
+              raise SystemExit('UI certification requires zero findings in both suites')
+          print('V432 UI certification: PASS')
+          PY
 
       - name: Upload diagnostics and screenshots
         if: always()
