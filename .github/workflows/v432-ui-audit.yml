@@ -4,29 +4,38 @@ on:
   pull_request:
     branches: [main]
 
-jobs:
-  source-audit:
-    if: github.head_ref == 'fix/v432-ui-regression-hardening'
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v4
-      - name: Audit source-level root text and escaped newlines
-        run: python3 tools/audit_v432_source.py
+permissions:
+  contents: write
 
+concurrency:
+  group: v432-ui-regression-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
   ui-audit:
     if: github.head_ref == 'fix/v432-ui-regression-hardening'
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+
+      - name: Generate v4.3.2 hardened candidate
+        run: |
+          python3 tools/apply_v432_ui_hardening.py
+          python3 tools/audit_v432_source.py
+
       - name: Install Playwright
         run: |
           npm install --no-save playwright
           npx playwright install --with-deps chromium
+
       - name: Serve candidate
         run: |
           python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/v432-ui.log 2>&1 &
@@ -36,14 +45,17 @@ jobs:
           done
           cat /tmp/v432-ui.log
           exit 1
+
       - name: Run legacy full UI sweep
         env:
           MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
         run: node scripts/ui-sweep-v423.mjs
+
       - name: Run deep boundary and gallery audit
         env:
           MANUSCRIPT_URL: http://127.0.0.1:4173/index.html
         run: node scripts/audit-v432-ui.mjs
+
       - name: Upload diagnostics and screenshots
         if: always()
         uses: actions/upload-artifact@v4
@@ -51,3 +63,14 @@ jobs:
           name: v432-ui-audit
           path: diagnostics/
           if-no-files-found: warn
+
+      - name: Commit certified v4.3.2 application bytes
+        shell: bash
+        run: |
+          if ! git diff --quiet -- index.html sw.js V432_SHA256.txt RELEASE_NOTES_v4.3.2.md; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add index.html sw.js V432_SHA256.txt RELEASE_NOTES_v4.3.2.md
+            git commit -m 'fix: harden v4.3.2 UI regressions'
+            git push origin HEAD:${{ github.head_ref }}
+          fi
