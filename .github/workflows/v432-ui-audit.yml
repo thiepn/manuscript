@@ -28,6 +28,7 @@ jobs:
 
       - name: Generate v4.3.2 hardened candidate
         run: |
+          python3 tools/audit_v432_source.py
           python3 tools/apply_v432_ui_hardening.py
           python3 tools/audit_v432_source.py
 
