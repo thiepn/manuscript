@@ -5,6 +5,15 @@ on:
     branches: [main]
 
 jobs:
+  source-audit:
+    if: github.head_ref == 'fix/v432-ui-regression-hardening'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit source-level root text and escaped newlines
+        run: python3 tools/audit_v432_source.py
+
   ui-audit:
     if: github.head_ref == 'fix/v432-ui-regression-hardening'
     runs-on: ubuntu-latest
@@ -14,9 +23,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Audit source-level root text
-        continue-on-error: true
-        run: python3 tools/audit_v432_source.py
       - name: Install Playwright
         run: |
           npm install --no-save playwright
