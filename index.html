@@ -14276,7 +14276,11 @@ self.onmessage=async event=>{
             wrap.style.transform = 'none';
             wrap.style.marginBottom = '0px';
             wrap.style.zoom = String(scale);
-            wrap.style.width = `${100 / scale}%`;
+            // CSS zoom already participates in layout and changes the effective
+            // containing block. Expanding to 100/scale here double-compensates
+            // the width and pushes centered pages to the right, most visibly on
+            // phones. Keep the zoomed wrapper at the viewport/layout width.
+            wrap.style.width = '100%';
         } else {
             wrap.style.zoom = '';
             wrap.style.width = `${100 / scale}%`;
