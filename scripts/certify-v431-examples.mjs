@@ -12,7 +12,7 @@ const examples = [
   ['markdown-basics', 'Markdown Basics', ['# Markdown Basics', '**bold**', '[Markdown Guide]', '~~strikethrough~~']],
   ['markdown-lists-tables', 'Lists, Tasks & Tables', ['# Lists, Tasks & Tables', '- [x] Learn headings', '| Feature | Markdown | Purpose |']],
   ['markdown-code-math-footnotes', 'Code, Math & Footnotes', ['# Code, Math & Footnotes', '```python', '[^first]:', '$$']],
-  ['manuscript-publishing-extras', 'Manuscript Publishing Extras', ['# Manuscript Publishing Extras', '[[titlepage]]', '[[toc]]', '::: note', '<!-- manuscript:pagebreak -->']],
+  ['manuscript-publishing-extras', 'Manuscript Publishing Extras', ['# Manuscript Publishing Extras', '[[titlepage]]', '[[toc]]', '{#sec-frontmatter}', '::: note', '<!-- manuscript:pagebreak -->']],
 ];
 
 check(html.includes('<title>Manuscript v4.3.1 Stable</title>'), 'v4.3.1 title missing');
@@ -21,8 +21,6 @@ check(html.includes("exports.RELEASE_NAME = 'Manuscript v4.3.1 Stable';"), 'RELE
 check(html.includes("exports.RELEASE_PHASE = 'V431 — Markdown Learning Examples';"), 'V431 release phase missing');
 check(html.includes('manuscript-learning-contract" content="markdown-examples-v1'), 'learning contract missing');
 check(html.includes('New to Markdown?'), 'Template Gallery learning hint missing');
-check(!html.includes('{#sec-'), 'unsupported custom heading-attribute lesson remains');
-check(!html.includes('Heading anchors'), 'unsupported heading-anchor lesson remains');
 check(sw.includes('`${CACHE_PREFIX}v4.3.1`'), 'service-worker cache not bumped to v4.3.1');
 check(/^[a-f0-9]{64}$/.test(digest), 'V431_SHA256.txt is invalid');
 
@@ -94,7 +92,8 @@ if (process.env.MANUSCRIPT_URL) {
         check(await page.locator('#flow-document .math-display').count() >= 2, 'browser: display math missing');
       }
       if (id === 'manuscript-publishing-extras') {
-        check(!source.includes('{#sec-'), 'browser: unsupported custom heading syntax remains in source');
+        check(source.includes('{#sec-frontmatter}'), 'browser: heading-label syntax missing from source');
+        check(!preview.includes('{#sec-frontmatter}'), 'browser: heading-label syntax leaked as literal preview text');
         check(!preview.includes('[[toc]]'), 'browser: TOC directive leaked as literal preview text');
         check(countText(preview, 'Front matter') >= 2, 'browser: generated TOC did not include Front matter');
         check(countText(preview, 'Generated elements') >= 2, 'browser: generated TOC did not include Generated elements');
