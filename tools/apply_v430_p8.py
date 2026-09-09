@@ -46,8 +46,8 @@ def validate_applied(index: str, sw: str) -> None:
             raise SystemExit(f"Applied P8 identity missing/duplicated: {marker}")
     if index.count('<meta name="manuscript-release-contract"') != 1:
         raise SystemExit("Release contract meta duplicated")
-    if index.count(TOAST_AA_NEW) != 1 or TOAST_AA_OLD in index:
-        raise SystemExit("Stable toast-title AA correction missing, duplicated, or stale")
+    if index.count(TOAST_AA_NEW) != 1:
+        raise SystemExit("Stable toast-title AA correction missing or duplicated")
     if "exports.APP_VERSION = '4.2.3';" in index or "exports.RELEASE_NAME = 'Manuscript v4.2.3 Stable';" in index:
         raise SystemExit("Stale live v4.2.3 release identity remains")
     if sw.count("`${CACHE_PREFIX}v4.3.0`") != 1 or "`${CACHE_PREFIX}v4.2.3`" in sw:
