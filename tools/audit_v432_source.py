@@ -1,3 +1,4 @@
+from html.parser import HTMLParser
 from pathlib import Path
 
 source = Path('index.html').read_text(encoding='utf-8')
@@ -9,10 +10,29 @@ def check(condition: bool, message: str) -> None:
         failures.append(message)
 
 
-check(source.count('<head>') == 1, 'expected exactly one <head>')
-check(source.count('</head>') == 1, 'expected exactly one </head>')
-check(source.count('<body>') == 1, 'expected exactly one <body>')
-check(source.count('</body>') == 1, 'expected exactly one </body>')
+class StructuralTags(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=False)
+        self.starts = []
+        self.ends = []
+
+    def handle_starttag(self, tag, attrs):
+        if tag.lower() in {'html', 'head', 'body'}:
+            self.starts.append((tag.lower(), self.getpos()))
+
+    def handle_endtag(self, tag):
+        if tag.lower() in {'html', 'head', 'body'}:
+            self.ends.append((tag.lower(), self.getpos()))
+
+
+parser = StructuralTags()
+parser.feed(source)
+
+for tag in ('html', 'head', 'body'):
+    starts = [pos for current, pos in parser.starts if current == tag]
+    ends = [pos for current, pos in parser.ends if current == tag]
+    check(len(starts) == 1, f'expected exactly one structural <{tag}>, found {len(starts)}')
+    check(len(ends) == 1, f'expected exactly one structural </{tag}>, found {len(ends)}')
 
 head_close = source.find('</head>')
 body_start = source.find('<body>')
