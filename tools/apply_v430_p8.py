@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Apply Manuscript v4.3.0 P8 stable-release identity to certified P7.
 
-P8 does not redesign application behavior. It promotes the already-certified
-P1-P7 product bytes to stable release identity, bumps the service-worker cache,
-and writes the canonical SHA-256 file used by release CI.
+P8 promotes the already-certified P1-P7 product to stable release identity,
+bumps the service-worker cache, closes the one release-ladder AA toast-title
+edge case, and writes the canonical SHA-256 file used by release CI.
 """
 from __future__ import annotations
 
@@ -18,6 +18,11 @@ BASE_SHA256 = "8619c74a18ad80eb76b8ce6a67787509058b0ae70d7f0823cbdc8fce8359af3d"
 RELEASE_META = '<meta name="manuscript-release-contract" content="v4.3.0-stable-certified-v1">'
 OLD_NAME = "Manuscript v4.2.3 Stable"
 NEW_NAME = "Manuscript v4.3.0 Stable"
+TOAST_AA_OLD = '''html[data-screen="editor"] .toast .toast-text,
+html[data-screen="editor"] .status-action[data-panel="diagnostics"] {'''
+TOAST_AA_NEW = '''html[data-screen="editor"] .toast .toast-title,
+html[data-screen="editor"] .toast .toast-text,
+html[data-screen="editor"] .status-action[data-panel="diagnostics"] {'''
 
 
 def digest(text: str) -> str:
@@ -41,6 +46,8 @@ def validate_applied(index: str, sw: str) -> None:
             raise SystemExit(f"Applied P8 identity missing/duplicated: {marker}")
     if index.count('<meta name="manuscript-release-contract"') != 1:
         raise SystemExit("Release contract meta duplicated")
+    if index.count(TOAST_AA_NEW) != 1 or TOAST_AA_OLD in index:
+        raise SystemExit("Stable toast-title AA correction missing, duplicated, or stale")
     if "exports.APP_VERSION = '4.2.3';" in index or "exports.RELEASE_NAME = 'Manuscript v4.2.3 Stable';" in index:
         raise SystemExit("Stale live v4.2.3 release identity remains")
     if sw.count("`${CACHE_PREFIX}v4.3.0`") != 1 or "`${CACHE_PREFIX}v4.2.3`" in sw:
@@ -84,6 +91,10 @@ def main() -> None:
     for marker in inherited:
         if index.count(marker) != 1:
             raise SystemExit(f"Certified P1-P7 marker missing or duplicated: {marker}")
+
+    if index.count(TOAST_AA_OLD) != 1 or TOAST_AA_NEW in index:
+        raise SystemExit("P7 toast contrast anchor missing, duplicated, or already ambiguous")
+    index = index.replace(TOAST_AA_OLD, TOAST_AA_NEW, 1)
 
     replacements = (
         (f'<title>{OLD_NAME}</title>', f'<title>{NEW_NAME}</title>'),
