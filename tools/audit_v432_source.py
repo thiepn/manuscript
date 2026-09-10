@@ -1,5 +1,6 @@
 from html.parser import HTMLParser
 from pathlib import Path
+import re
 
 source = Path('index.html').read_text(encoding='utf-8')
 failures = []
@@ -35,7 +36,8 @@ for tag in ('html', 'head', 'body'):
     check(len(ends) == 1, f'expected exactly one structural </{tag}>, found {len(ends)}')
 
 head_close = source.find('</head>')
-body_start = source.find('<body>')
+body_match = re.search(r'<body\b[^>]*>', source, flags=re.I)
+body_start = body_match.start() if body_match else -1
 check(head_close >= 0 and body_start > head_close, 'body must start after the structural head closes')
 
 for style_id in (
@@ -55,6 +57,21 @@ for style_id in (
 for style_id in ('v422-editor-layout-hotfix', 'v423-ui-hardening'):
     marker = f'<style id="{style_id}">'
     check('\\n' + marker not in source, f'{style_id}: literal \\n token must not precede style')
+
+# Regression guard for the browser-visible "\\n" strip: escaped newline tokens
+# must never become structural text before a head child or immediately after body.
+head_source = source[:head_close] if head_close >= 0 else ''
+check(
+    re.search(r'\\[nr][ \t]*<(?:style|script|meta|link|title)\b', head_source, flags=re.I) is None,
+    'literal escaped newline must not appear as structural text inside <head>',
+)
+if body_match:
+    first_child = source.find('<', body_match.end())
+    body_prefix = source[body_match.end():first_child] if first_child >= 0 else source[body_match.end():]
+    check('\\n' not in body_prefix and '\\r' not in body_prefix,
+          'literal escaped newline must not appear immediately after <body>')
+check('literal-newline-artifact-guard' not in source,
+      'temporary literal-newline runtime guard must not ship')
 
 check('manuscript-ui-regression-contract' in source, 'v4.3.2 UI regression contract missing')
 check('<title>Manuscript v4.3.2 Stable</title>' in source, 'v4.3.2 title missing')
