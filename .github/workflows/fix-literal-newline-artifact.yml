@@ -1,0 +1,98 @@
+name: One-shot literal newline artifact repair
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/fix-literal-newline-artifact.yml
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Repair structural escaped-newline text
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib
+          import re
+
+          index = Path('index.html')
+          text = index.read_text(encoding='utf-8')
+
+          head = re.search(r'(?is)<head\b[^>]*>(.*?)</head>', text)
+          if not head:
+              raise SystemExit('structural <head> not found')
+
+          gap_re = re.compile(r'(?s)(?<=>)((?:[ \t\r\n]|\\[nr])+)(?=<)')
+
+          def clean_gap(match):
+              gap = match.group(1)
+              if '\\n' not in gap and '\\r' not in gap:
+                  return gap
+              return gap.replace('\\r', '\n').replace('\\n', '\n')
+
+          cleaned_head = gap_re.sub(clean_gap, head.group(1))
+          if cleaned_head != head.group(1):
+              start, end = head.span(1)
+              text = text[:start] + cleaned_head + text[end:]
+
+          body = re.search(r'(?is)<body\b[^>]*>', text)
+          if not body:
+              raise SystemExit('structural <body> not found')
+
+          first_child = text.find('<', body.end())
+          if first_child > body.end():
+              prefix = text[body.end():first_child]
+              if ('\\n' in prefix or '\\r' in prefix) and re.fullmatch(r'(?:\s|\\[nr])*', prefix):
+                  prefix = prefix.replace('\\r', '\n').replace('\\n', '\n')
+                  text = text[:body.end()] + prefix + text[first_child:]
+
+          guard_id = 'literal-newline-artifact-guard'
+          if f'id="{guard_id}"' not in text:
+              guard = r'''\n<script id="literal-newline-artifact-guard">\n(()=>{for(const n of Array.from(document.body.childNodes)){if(n.nodeType!==3)continue;const v=n.nodeValue||"";if(/\\[nr]/.test(v)&&/^(?:\s|\\n|\\r)+$/.test(v))n.remove();}})();\n</script>'''
+              body = re.search(r'(?is)<body\b[^>]*>', text)
+              text = text[:body.end()] + guard + text[body.end():]
+
+          # Source-level regression check: escaped newline tokens may not exist as
+          # standalone structural text between tags inside <head>.
+          head = re.search(r'(?is)<head\b[^>]*>(.*?)</head>', text)
+          bad = [m.group(1) for m in gap_re.finditer(head.group(1)) if '\\n' in m.group(1) or '\\r' in m.group(1)]
+          if bad:
+              raise SystemExit(f'structural escaped-newline text remains in <head>: {bad!r}')
+
+          index.write_text(text, encoding='utf-8')
+
+          # Manuscript has an offline shell. Changing the service-worker bytes forces
+          # existing installations to update and recache the corrected HTML.
+          sw = Path('sw.js')
+          if sw.exists():
+              marker = '// literal-newline-cache-refresh: 2026-09-10\n'
+              sw_text = sw.read_text(encoding='utf-8')
+              if marker not in sw_text:
+                  sw.write_text(marker + sw_text, encoding='utf-8')
+
+          digest_file = Path('V432_SHA256.txt')
+          if digest_file.exists():
+              digest = hashlib.sha256(index.read_bytes()).hexdigest()
+              digest_file.write_text(digest + '\n', encoding='utf-8')
+          PY
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          test ! -f sw.js || git add sw.js
+          test ! -f V432_SHA256.txt || git add V432_SHA256.txt
+          if ! git diff --cached --quiet; then
+            git commit -m 'fix: eliminate literal newline rendering artifact'
+            git push
+          fi
