@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Repair structural escaped-newline text
+      - name: Repair and verify HTML
         shell: bash
         run: |
           set -euo pipefail
@@ -26,32 +26,33 @@ jobs:
           import hashlib
           import re
 
-          index = Path('index.html')
-          text = index.read_text(encoding='utf-8')
+          path = Path('index.html')
+          text = path.read_text(encoding='utf-8')
+          gap_re = re.compile(r'(?s)(?<=>)((?:[ \t\r\n]|\\[nr])+)(?=<)')
 
-          # Convert only standalone escaped newline tokens between structural tags
-          # in <head>. Do not touch JavaScript/CSS/string data elsewhere.
           head = re.search(r'(?is)<head\b[^>]*>(.*?)</head>', text)
           if not head:
               raise SystemExit('structural <head> not found')
-          gap_re = re.compile(r'(?s)(?<=>)((?:[ \t\r\n]|\\[nr])+)(?=<)')
 
-          def clean_gap(match):
-              gap = match.group(1)
-              if '\\n' not in gap and '\\r' not in gap:
-                  return gap
-              return gap.replace('\\r', '\n').replace('\\n', '\n')
+          def clean_gap(m):
+              gap = m.group(1)
+              return gap.replace('\\r', '\n').replace('\\n', '\n') if ('\\n' in gap or '\\r' in gap) else gap
 
-          cleaned_head = gap_re.sub(clean_gap, head.group(1))
-          if cleaned_head != head.group(1):
-              start, end = head.span(1)
-              text = text[:start] + cleaned_head + text[end:]
+          cleaned = gap_re.sub(clean_gap, head.group(1))
+          if cleaned != head.group(1):
+              a, b = head.span(1)
+              text = text[:a] + cleaned + text[b:]
+
+          # Normalize the known TBC v3.4.0 patch block if this repository has it.
+          style_re = re.compile(r'(?is)(<style id="v340-product-polish">)(.*?)(</style>)')
+          m = style_re.search(text)
+          if m and ('\\n' in m.group(2) or '\\r' in m.group(2)):
+              inner = m.group(2).replace('\\r', '\n').replace('\\n', '\n')
+              text = text[:m.start()] + m.group(1) + inner + m.group(3) + text[m.end():]
 
           body = re.search(r'(?is)<body\b[^>]*>', text)
           if not body:
               raise SystemExit('structural <body> not found')
-
-          # Repair escaped-newline-only text immediately after <body>.
           first_child = text.find('<', body.end())
           if first_child > body.end():
               prefix = text[body.end():first_child]
@@ -59,37 +60,33 @@ jobs:
                   prefix = prefix.replace('\\r', '\n').replace('\\n', '\n')
                   text = text[:body.end()] + prefix + text[first_child:]
 
-          # Canonical runtime guard. Replace any earlier malformed copy rather
-          # than trusting it. The surrounding line breaks are real characters.
-          guard_id = 'literal-newline-artifact-guard'
           guard = '''<script id="literal-newline-artifact-guard">
 (()=>{for(const n of Array.from(document.body.childNodes)){if(n.nodeType!==3)continue;const v=n.nodeValue||"";if(/\\\\[nr]/.test(v)&&/^(?:\\s|\\\\n|\\\\r)+$/.test(v))n.remove();}})();
 </script>'''
           guard_re = re.compile(r'(?is)<script id="literal-newline-artifact-guard">.*?</script>')
           if guard_re.search(text):
-              text = guard_re.sub(guard, text, count=1)
+              text = guard_re.sub(lambda _: guard, text, count=1)
           else:
               body = re.search(r'(?is)<body\b[^>]*>', text)
               text = text[:body.end()] + '\n' + guard + text[body.end():]
 
-          # Final structural checks.
           head = re.search(r'(?is)<head\b[^>]*>(.*?)</head>', text)
           bad = [m.group(1) for m in gap_re.finditer(head.group(1)) if '\\n' in m.group(1) or '\\r' in m.group(1)]
           if bad:
-              raise SystemExit(f'structural escaped-newline text remains in <head>: {bad!r}')
+              raise SystemExit(f'escaped-newline structural text remains in head: {bad!r}')
 
           body = re.search(r'(?is)<body\b[^>]*>', text)
           first_child = text.find('<', body.end())
-          body_prefix = text[body.end():first_child]
-          if ('\\n' in body_prefix or '\\r' in body_prefix):
-              raise SystemExit(f'escaped-newline text remains after <body>: {body_prefix!r}')
-          if '\\n<script id="literal-newline-artifact-guard"' in text:
-              raise SystemExit('guard is preceded by a literal escaped newline')
+          prefix = text[body.end():first_child]
+          if '\\n' in prefix or '\\r' in prefix:
+              raise SystemExit(f'escaped-newline text remains after body open: {prefix!r}')
 
-          index.write_text(text, encoding='utf-8')
+          style = style_re.search(text)
+          if style and ('\\n' in style.group(2) or '\\r' in style.group(2)):
+              raise SystemExit('escaped-newline token remains in v340-product-polish')
 
-          # Force existing Manuscript service workers to update their bytes and
-          # recache the repaired shell without changing the release version.
+          path.write_text(text, encoding='utf-8')
+
           sw = Path('sw.js')
           if sw.exists():
               marker = '// literal-newline-cache-refresh: 2026-09-10\n'
@@ -97,9 +94,9 @@ jobs:
               if marker not in sw_text:
                   sw.write_text(marker + sw_text, encoding='utf-8')
 
-          digest_file = Path('V432_SHA256.txt')
-          if digest_file.exists():
-              digest_file.write_text(hashlib.sha256(index.read_bytes()).hexdigest() + '\n', encoding='utf-8')
+          digest = Path('V432_SHA256.txt')
+          if digest.exists():
+              digest.write_text(hashlib.sha256(path.read_bytes()).hexdigest() + '\n', encoding='utf-8')
           PY
 
           git config user.name 'github-actions[bot]'
@@ -108,6 +105,6 @@ jobs:
           test ! -f sw.js || git add sw.js
           test ! -f V432_SHA256.txt || git add V432_SHA256.txt
           if ! git diff --cached --quiet; then
-            git commit -m 'fix: write real newlines in rendering guard'
+            git commit -m 'fix: fully normalize literal newline artifacts'
             git push
           fi
