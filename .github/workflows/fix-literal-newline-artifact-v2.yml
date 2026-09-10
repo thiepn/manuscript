@@ -1,0 +1,94 @@
+name: Correct literal newline artifact repair
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/fix-literal-newline-artifact-v2.yml
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Normalize HTML and cache
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib, re
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          gap_re = re.compile(r'(?s)(?<=>)((?:[ \t\r\n]|\\[nr])+)(?=<)')
+
+          head = re.search(r'(?is)<head\b[^>]*>(.*?)</head>', s)
+          if not head:
+              raise SystemExit('missing head')
+          fixed_head = gap_re.sub(lambda m: m.group(1).replace('\\r','\n').replace('\\n','\n'), head.group(1))
+          if fixed_head != head.group(1):
+              a,b = head.span(1); s = s[:a] + fixed_head + s[b:]
+
+          style_re = re.compile(r'(?is)(<style id="v340-product-polish">)(.*?)(</style>)')
+          m = style_re.search(s)
+          if m:
+              inner = m.group(2).replace('\\r','\n').replace('\\n','\n')
+              s = s[:m.start()] + m.group(1) + inner + m.group(3) + s[m.end():]
+
+          body = re.search(r'(?is)<body\b[^>]*>', s)
+          if not body:
+              raise SystemExit('missing body')
+          child = s.find('<', body.end())
+          if child > body.end():
+              prefix = s[body.end():child]
+              if re.fullmatch(r'(?:\s|\\[nr])*', prefix):
+                  prefix = prefix.replace('\\r','\n').replace('\\n','\n')
+                  s = s[:body.end()] + prefix + s[child:]
+
+          guard = '''<script id="literal-newline-artifact-guard">
+(()=>{for(const n of Array.from(document.body.childNodes)){if(n.nodeType!==3)continue;const v=n.nodeValue||"";if(/\\\\[nr]/.test(v)&&/^(?:\\s|\\\\n|\\\\r)+$/.test(v))n.remove();}})();
+</script>'''
+          gr = re.compile(r'(?is)<script id="literal-newline-artifact-guard">.*?</script>')
+          if gr.search(s):
+              s = gr.sub(lambda _: guard, s, count=1)
+          else:
+              body = re.search(r'(?is)<body\b[^>]*>', s)
+              s = s[:body.end()] + '\n' + guard + s[body.end():]
+
+          head = re.search(r'(?is)<head\b[^>]*>(.*?)</head>', s)
+          if any(('\\n' in m.group(1) or '\\r' in m.group(1)) for m in gap_re.finditer(head.group(1))):
+              raise SystemExit('escaped structural newline remains in head')
+          body = re.search(r'(?is)<body\b[^>]*>', s)
+          child = s.find('<', body.end())
+          if '\\n' in s[body.end():child] or '\\r' in s[body.end():child]:
+              raise SystemExit('escaped structural newline remains after body')
+          m = style_re.search(s)
+          if m and ('\\n' in m.group(2) or '\\r' in m.group(2)):
+              raise SystemExit('escaped newline remains in v340 style')
+
+          p.write_text(s, encoding='utf-8')
+
+          sw = Path('sw.js')
+          if sw.exists():
+              marker='// literal-newline-cache-refresh: 2026-09-10\n'
+              t=sw.read_text(encoding='utf-8')
+              if marker not in t: sw.write_text(marker+t,encoding='utf-8')
+
+          d=Path('V432_SHA256.txt')
+          if d.exists(): d.write_text(hashlib.sha256(p.read_bytes()).hexdigest()+'\n',encoding='utf-8')
+          PY
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          test ! -f sw.js || git add sw.js
+          test ! -f V432_SHA256.txt || git add V432_SHA256.txt
+          if ! git diff --cached --quiet; then
+            git commit -m 'fix: fully normalize literal newline artifacts'
+            git push
+          fi
