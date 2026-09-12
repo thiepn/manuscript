@@ -1,6 +1,6 @@
 // PWA shell refresh: 2026-09-12
 const CACHE_PREFIX = 'manuscript-shell-';
-const CACHE_NAME = `${CACHE_PREFIX}v4.3.2-pwa1`;
+const CACHE_NAME = `${CACHE_PREFIX}v4.3.2`;
 const SHELL = [
   './',
   './index.html',
