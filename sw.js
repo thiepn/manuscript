@@ -1,7 +1,15 @@
-// literal-newline-cache-refresh: 2026-09-10
+// PWA shell refresh: 2026-09-12
 const CACHE_PREFIX = 'manuscript-shell-';
 const CACHE_NAME = `${CACHE_PREFIX}v4.3.2`;
-const SHELL = ['./', './index.html'];
+const SHELL = [
+  './',
+  './index.html',
+  './manifest.webmanifest',
+  './assets/icons/favicon.svg',
+  './assets/icons/icon-192.png',
+  './assets/icons/icon-512.png',
+  './assets/icons/icon-maskable-512.png'
+];
 
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
@@ -43,5 +51,10 @@ self.addEventListener('fetch', event => {
           Response.error();
       }
     })());
+    return;
+  }
+
+  if (request.destination === 'image' || request.destination === 'manifest') {
+    event.respondWith(caches.match(request).then(cached => cached || fetch(request)));
   }
 });
