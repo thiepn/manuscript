@@ -3425,6 +3425,15 @@ html[data-screen="editor"][data-theme="blueprint"] :where(
   .modal,.modal.wide{max-height:calc(100dvh - 8px - env(safe-area-inset-top,0px))!important}
 }
 </style>
+
+  <meta name="application-name" content="Manuscript">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Manuscript">
+  <link rel="icon" href="./assets/icons/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="./assets/icons/favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="./assets/icons/apple-touch-icon.png">
+  <link rel="manifest" href="./manifest.webmanifest">
 </head>
 <body>
 
@@ -10658,7 +10667,13 @@ class ExportEngine {
             throw new Error('Cannot build a print document without paginated pages.');
         const csp = `default-src 'none'; img-src data: https:; style-src 'unsafe-inline'; font-src data:; base-uri 'none'; form-action 'none'`;
         const title = request.title || request.project.title || 'Manuscript';
-        const html = `<!doctype html><html lang="${escapeHtml(request.project.metadata.language || 'en')}"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="${escapeHtml(csp)}"><meta name="viewport" content="width=device-width"><title>${escapeHtml(title)}</title><style>${request.documentCss}\n${pageCss(request.project, request.profile)}</style></head><body data-export-profile="${escapeHtml(request.profile.id)}">${sanitizedPages(request)}</body></html>`;
+        const html = `<!doctype html><html lang="${escapeHtml(request.project.metadata.language || 'en')}"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="${escapeHtml(csp)}"><meta name="viewport" content="width=device-width"><title>${escapeHtml(title)}</title><style>${request.documentCss}\n${pageCss(request.project, request.profile)}</style></head><body data-export-profile="${escapeHtml(request.profile.id)}">${sanitizedPages(request)}
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+}
+</script>
+</body></html>`;
         return { html, pageCount: request.pages.length, profileId: request.profile.id, createdAt: new Date().toISOString() };
     }
     async waitForResources(document, timeout = 8000) {
