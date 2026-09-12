@@ -1,0 +1,57 @@
+name: Temporary Manuscript PWA Registration Fix
+
+on:
+  push:
+    branches: [pwa-upgrade-worker]
+    paths:
+      - '.github/workflows/fix-pwa-registration.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Move PWA registration to the real app head
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('index.html')
+          html = path.read_text(encoding='utf-8')
+
+          bad = '''${sanitizedPages(request)}
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+}
+</script>
+</body></html>`;'''
+          good = '''${sanitizedPages(request)}</body></html>`;'''
+          if bad not in html:
+              raise SystemExit('Expected misplaced service-worker block not found')
+          html = html.replace(bad, good, 1)
+
+          manifest_link = '  <link rel="manifest" href="./manifest.webmanifest">'
+          register_link = '  <script src="./pwa-register.js" defer></script>'
+          if register_link not in html:
+              if manifest_link not in html:
+                  raise SystemExit('Manifest link anchor not found')
+              html = html.replace(manifest_link, manifest_link + '\n' + register_link, 1)
+
+          path.write_text(html, encoding='utf-8')
+          assert html.count('navigator.serviceWorker.register') == 0
+          assert html.count('./pwa-register.js') == 1
+          assert '${sanitizedPages(request)}</body></html>`;' in html
+          print('Manuscript registration placement validated')
+          PY
+      - name: Commit fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Fix Manuscript PWA registration placement"
+          git push origin HEAD:pwa-upgrade-worker
