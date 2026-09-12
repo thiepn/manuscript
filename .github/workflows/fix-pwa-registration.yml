@@ -22,15 +22,16 @@ jobs:
 
           path = Path('index.html')
           html = path.read_text(encoding='utf-8')
-
-          bad = '''${sanitizedPages(request)}
-<script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
-}
-</script>
-</body></html>`;'''
-          good = '''${sanitizedPages(request)}</body></html>`;'''
+          bad = "\n".join([
+              '${sanitizedPages(request)}',
+              '<script>',
+              'if ("serviceWorker" in navigator) {',
+              '  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));',
+              '}',
+              '</script>',
+              '</body></html>`;'
+          ])
+          good = '${sanitizedPages(request)}</body></html>`;'
           if bad not in html:
               raise SystemExit('Expected misplaced service-worker block not found')
           html = html.replace(bad, good, 1)
